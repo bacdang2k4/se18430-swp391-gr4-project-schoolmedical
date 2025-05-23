@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.controller;
 
+import com.dinhbachihi.spring_security.dto.UpdateRequest;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,9 @@ public class AdminController {
     @DeleteMapping("/users/{userEmail}")
     public ResponseEntity<String> deleteUser(@PathVariable("userEmail") String userEmail){
         return ResponseEntity.ok(adminService.deleteUserByEmail(userEmail));
+    }
+    @PutMapping("/users/{userEmail}")
+    public ResponseEntity<String> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UpdateRequest request){
+        return ResponseEntity.ok(adminService.updateUserByEmail(request,userEmail));
     }
 }
