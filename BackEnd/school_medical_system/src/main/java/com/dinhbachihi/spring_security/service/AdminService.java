@@ -10,4 +10,5 @@ public interface AdminService {
     User getUserByEmail(String email);
     String deleteUserByEmail(String email);
     String updateUserByEmail(UpdateRequest request, String email);
+    List<String> getAllStudentsEmails();
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,8 @@ public class AdminServiceImpl implements AdminService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         return "User updated";
+    }
+    public List<String> getAllStudentsEmails(){
+        return userRepository.findByEmailStartingWith("h").stream().map(User::getEmail).collect(Collectors.toList());
     }
 }

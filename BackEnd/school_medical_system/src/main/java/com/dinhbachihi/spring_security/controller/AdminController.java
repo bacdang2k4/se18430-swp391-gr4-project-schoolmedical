@@ -38,4 +38,8 @@ public class AdminController {
     public ResponseEntity<String> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UpdateRequest request){
         return ResponseEntity.ok(adminService.updateUserByEmail(request,userEmail));
     }
+    @GetMapping("listmail")
+    public ResponseEntity<List<String>> listMail(){
+        return ResponseEntity.ok(adminService.getAllStudentsEmails());
+    }
 }
