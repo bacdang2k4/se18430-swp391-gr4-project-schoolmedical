@@ -1,9 +1,9 @@
 package com.dinhbachihi.spring_security.service.impl;
 
-import com.dinhbachihi.spring_security.dto.JwtAuthenticationResponse;
-import com.dinhbachihi.spring_security.dto.RefreshTokenRequest;
-import com.dinhbachihi.spring_security.dto.SignInRequest;
-import com.dinhbachihi.spring_security.dto.SignUpRequest;
+import com.dinhbachihi.spring_security.dto.request.JwtAuthenticationResponse;
+import com.dinhbachihi.spring_security.dto.request.RefreshTokenRequest;
+import com.dinhbachihi.spring_security.dto.request.SignInRequest;
+import com.dinhbachihi.spring_security.dto.request.SignUpRequest;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AuthenticationService;

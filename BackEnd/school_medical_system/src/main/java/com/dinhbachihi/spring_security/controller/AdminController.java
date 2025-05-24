@@ -1,9 +1,10 @@
 package com.dinhbachihi.spring_security.controller;
 
+import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
+import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,22 +16,38 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping
-    public ResponseEntity<String> welcome(){
-        return ResponseEntity.ok("Hello Admin");
+    public ApiResponse<String> welcome(){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult("Hello Admin");
+        return response;
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> users(){
-        return ResponseEntity.ok(adminService.getUsers());
+    public ApiResponse<List<User>> users(){
+        ApiResponse<List<User>> response = new ApiResponse<>();
+        response.setResult(adminService.getUsers());
+        return response;
     }
 
     @GetMapping("/users/{userEmail}")
-    public ResponseEntity<User> user(@PathVariable("userEmail") String userEmail){
-        return ResponseEntity.ok(adminService.getUserByEmail(userEmail));
+    public ApiResponse<User> user(@PathVariable("userEmail") String userEmail){
+        ApiResponse<User> response = new ApiResponse<>();
+        response.setResult(adminService.getUserByEmail(userEmail));
+        return response;
     }
 
     @DeleteMapping("/users/{userEmail}")
-    public ResponseEntity<String> deleteUser(@PathVariable("userEmail") String userEmail){
-        return ResponseEntity.ok(adminService.deleteUserByEmail(userEmail));
+    public ApiResponse<String> deleteUser(@PathVariable("userEmail") String userEmail){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(adminService.deleteUserByEmail(userEmail));
+        return response;
+    }
+
+    @PutMapping("/users/{userEmail}")
+    public ApiResponse<String> updateUser(@PathVariable("userEmail") String userEmail
+            , @RequestBody UserUpdateRequest request){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(adminService.updateUserByEmail(userEmail, request));
+        return response;
     }
 }

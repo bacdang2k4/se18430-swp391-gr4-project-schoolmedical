@@ -1,4 +1,4 @@
-package com.dinhbachihi.spring_security.dto;
+package com.dinhbachihi.spring_security.dto.request;
 
 import com.dinhbachihi.spring_security.entity.Role;
 import lombok.Data;

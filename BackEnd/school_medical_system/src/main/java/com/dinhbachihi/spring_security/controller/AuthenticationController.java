@@ -1,9 +1,10 @@
 package com.dinhbachihi.spring_security.controller;
 
-import com.dinhbachihi.spring_security.dto.JwtAuthenticationResponse;
-import com.dinhbachihi.spring_security.dto.RefreshTokenRequest;
-import com.dinhbachihi.spring_security.dto.SignInRequest;
-import com.dinhbachihi.spring_security.dto.SignUpRequest;
+import com.dinhbachihi.spring_security.dto.request.JwtAuthenticationResponse;
+import com.dinhbachihi.spring_security.dto.request.RefreshTokenRequest;
+import com.dinhbachihi.spring_security.dto.request.SignInRequest;
+import com.dinhbachihi.spring_security.dto.request.SignUpRequest;
+import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,26 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signUp(@RequestBody SignUpRequest request){
-        return ResponseEntity.ok(authenticationService.signUp(request));
+    public ApiResponse<User> signUp(@RequestBody SignUpRequest request){
+        ApiResponse<User> response = new ApiResponse<>();
+        response.setMessage("Sign up Successfully");
+        response.setResult(authenticationService.signUp(request));
+        return response;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest request){
-        return ResponseEntity.ok(authenticationService.signIn(request));
+    public ApiResponse<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest request){
+        ApiResponse<JwtAuthenticationResponse> response = new ApiResponse<>();
+        response.setMessage("Login Successfully");
+        response.setResult(authenticationService.signIn(request));
+        return response;
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<JwtAuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request){
-        return ResponseEntity.ok(authenticationService.refreshToken(request));
+    public ApiResponse<JwtAuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request){
+        ApiResponse<JwtAuthenticationResponse> response = new ApiResponse<>();
+        response.setMessage("Refresh token Successfully");
+        response.setResult(authenticationService.refreshToken(request));
+        return response;
     }
 }
