@@ -1,10 +1,13 @@
 package com.dinhbachihi.spring_security.controller;
 
+import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AdminService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,6 +51,18 @@ public class AdminController {
             , @RequestBody UserUpdateRequest request){
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult(adminService.updateUserByEmail(userEmail, request));
+        return response;
+    }
+    @GetMapping("listmail")
+    public ApiResponse<List<String>> listMail(){
+        ApiResponse<List<String>> response = new ApiResponse<>();
+        response.setResult(adminService.getAllStudentsEmails());
+        return response;
+    }
+    @PostMapping("sendmail")
+    public ApiResponse<String> sendMail(@RequestBody SendMailRequest request) throws MessagingException {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setMessage(adminService.sendEmail(request));
         return response;
     }
 }
