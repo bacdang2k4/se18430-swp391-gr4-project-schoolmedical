@@ -1,7 +1,9 @@
 package com.dinhbachihi.spring_security.service;
 
+import com.dinhbachihi.spring_security.dto.SendMailRequest;
 import com.dinhbachihi.spring_security.dto.UpdateRequest;
 import com.dinhbachihi.spring_security.entity.User;
+import jakarta.mail.MessagingException;
 
 import java.util.List;
 
@@ -11,4 +13,6 @@ public interface AdminService {
     String deleteUserByEmail(String email);
     String updateUserByEmail(UpdateRequest request, String email);
     List<String> getAllStudentsEmails();
+
+    String sendEmail(SendMailRequest request) throws MessagingException;
 }

@@ -1,8 +1,10 @@
 package com.dinhbachihi.spring_security.controller;
 
+import com.dinhbachihi.spring_security.dto.SendMailRequest;
 import com.dinhbachihi.spring_security.dto.UpdateRequest;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AdminService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,9 @@ public class AdminController {
     @GetMapping("listmail")
     public ResponseEntity<List<String>> listMail(){
         return ResponseEntity.ok(adminService.getAllStudentsEmails());
+    }
+    @PostMapping("sendmail")
+    public ResponseEntity<String> sendMail(@RequestBody SendMailRequest request) throws MessagingException {
+        return ResponseEntity.ok(adminService.sendEmail(request));
     }
 }
