@@ -3,6 +3,8 @@ package com.dinhbachihi.spring_security.service.impl;
 import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
 import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.exception.AppException;
+import com.dinhbachihi.spring_security.exception.ErrorCode;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
 import jakarta.mail.MessagingException;
@@ -34,10 +36,12 @@ public class AdminServiceImpl implements AdminService {
 
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
     @Transactional
     public String deleteUserByEmail(String email){
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         userRepository.deleteByEmail(email);
         return "User deleted";
     }
@@ -62,8 +66,8 @@ public class AdminServiceImpl implements AdminService {
         message.setTo(recipients.toArray(new String[0]));
         message.setSubject(request.getSubject());
         message.setText(request.getBody());
-        File file = new File("C:\\Users\\Admin\\Downloads\\giao.lang_User Story Mapping-23.0810.xlsx");
-        message.addAttachment(file.getName(), file);
+//        File file = new File("C:\\Users\\Admin\\Downloads\\giao.lang_User Story Mapping-23.0810.xlsx");
+//        message.addAttachment(file.getName(), file);
         mailSender.send(mimeMessage);
         return "Sending email...";
     }

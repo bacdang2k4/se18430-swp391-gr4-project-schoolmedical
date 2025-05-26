@@ -53,13 +53,13 @@ public class AdminController {
         response.setResult(adminService.updateUserByEmail(userEmail, request));
         return response;
     }
-    @GetMapping("listmail")
+    @GetMapping("list-mail")
     public ApiResponse<List<String>> listMail(){
         ApiResponse<List<String>> response = new ApiResponse<>();
         response.setResult(adminService.getAllStudentsEmails());
         return response;
     }
-    @PostMapping("sendmail")
+    @PostMapping("send-mail")
     public ApiResponse<String> sendMail(@RequestBody SendMailRequest request) throws MessagingException {
         ApiResponse<String> response = new ApiResponse<>();
         response.setMessage(adminService.sendEmail(request));

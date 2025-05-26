@@ -5,6 +5,8 @@ import com.dinhbachihi.spring_security.dto.request.RefreshTokenRequest;
 import com.dinhbachihi.spring_security.dto.request.SignInRequest;
 import com.dinhbachihi.spring_security.dto.request.SignUpRequest;
 import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.exception.AppException;
+import com.dinhbachihi.spring_security.exception.ErrorCode;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AuthenticationService;
 import com.dinhbachihi.spring_security.service.JWTService;
@@ -27,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User signUp(SignUpRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("User already exists");
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
         }
         User user = new User();
         user.setEmail(request.getEmail());
@@ -43,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail()
                 , request.getPassword()));
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(()
-                -> new IllegalArgumentException("Invalid username or password"));
+                -> new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD));
         var jwt = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
