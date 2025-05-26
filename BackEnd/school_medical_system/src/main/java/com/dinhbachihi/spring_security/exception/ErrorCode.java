@@ -8,6 +8,8 @@ public enum ErrorCode {
     UNCAUGHT_EXCEPTION(500, "Uncaught Exception"),
     INVALID_USERNAME_OR_PASSWORD(400, "Invalid User Name or Password"),
     TOKEN_EXPIRED(400, "Token Expired"),
+    INVALID_PASSWORD_FORMAT(400, "Password must be at least 8 characters and contain both letters and numbers"),
+    DONT_LEFT_BLANK(400, "Don't Left Blank"),
     ;
     private int code;
     private String message;

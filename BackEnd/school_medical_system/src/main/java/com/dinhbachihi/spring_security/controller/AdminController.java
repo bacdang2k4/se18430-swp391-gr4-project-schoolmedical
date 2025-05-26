@@ -6,6 +6,7 @@ import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AdminService;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class AdminController {
 
     @PutMapping("/users/{userEmail}")
     public ApiResponse<String> updateUser(@PathVariable("userEmail") String userEmail
-            , @RequestBody UserUpdateRequest request){
+            ,@Valid @RequestBody UserUpdateRequest request){
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult(adminService.updateUserByEmail(userEmail, request));
         return response;

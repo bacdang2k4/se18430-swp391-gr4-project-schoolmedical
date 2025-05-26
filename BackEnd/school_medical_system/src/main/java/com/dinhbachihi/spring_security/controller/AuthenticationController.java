@@ -7,6 +7,7 @@ import com.dinhbachihi.spring_security.dto.request.SignUpRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ApiResponse<User> signUp(@RequestBody SignUpRequest request){
+    public ApiResponse<User> signUp(@Valid @RequestBody SignUpRequest request){
         ApiResponse<User> response = new ApiResponse<>();
         response.setMessage("Sign up Successfully");
         response.setResult(authenticationService.signUp(request));
