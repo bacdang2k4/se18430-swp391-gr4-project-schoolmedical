@@ -1,5 +1,8 @@
 package com.dinhbachihi.spring_security.exception;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorCode {
     USER_NOT_FOUND(404, "User Not Found"),
     USER_ALREADY_EXISTS(409, "User Already Exists"),
@@ -9,21 +12,13 @@ public enum ErrorCode {
     INVALID_USERNAME_OR_PASSWORD(400, "Invalid User Name or Password"),
     TOKEN_EXPIRED(400, "Token Expired"),
     INVALID_PASSWORD_FORMAT(400, "Password must be at least 8 characters and contain both letters and numbers"),
-    DONT_LEFT_BLANK(400, "Don't Left Blank"),
+    DONT_LEFT_BLANK(400, "Don't Left Any Fields Blank"),
     ;
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

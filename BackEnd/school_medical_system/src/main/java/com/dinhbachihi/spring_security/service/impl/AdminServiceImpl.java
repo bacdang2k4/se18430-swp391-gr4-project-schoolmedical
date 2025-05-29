@@ -60,15 +60,29 @@ public class AdminServiceImpl implements AdminService {
     }
     @Override
     public String sendEmail(SendMailRequest request) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
-        List<String > recipients = userRepository.findAll().stream().map(User::getEmail).collect(Collectors.toList());
-        message.setTo(recipients.toArray(new String[0]));
-        message.setSubject(request.getSubject());
-        message.setText(request.getBody());
-//        File file = new File("C:\\Users\\Admin\\Downloads\\giao.lang_User Story Mapping-23.0810.xlsx");
-//        message.addAttachment(file.getName(), file);
-        mailSender.send(mimeMessage);
-        return "Sending email...";
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+            if ("admin@gmail.com".equalsIgnoreCase(user.getEmail())) {
+                continue; // Bỏ qua admin
+            }
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
+
+            message.setTo(user.getEmail());
+            message.setSubject(request.getSubject());
+
+            String body = "Xin chào " + user.getFirstName() + ",\n\n" +
+                    "Username của bạn là: " + user.getEmail() + "\n\n" +
+                    "Mật khẩu mặc định của bạn là: abc12345678\n\n" +
+                    "Trân trọng.";
+            message.setText(body);
+
+            mailSender.send(mimeMessage);
+        }
+
+        return "Đã gửi email cho tất cả người dùng.";
     }
+
 }
