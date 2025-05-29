@@ -11,14 +11,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,20 +32,20 @@ public class AdminServiceImpl implements AdminService {
         return userRepository.findAll();
     }
 
-    public User getUserByEmail(String email){
-        return userRepository.findByEmail(email)
+    public User getUserById(String id){
+        return userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
     @Transactional
-    public String deleteUserByEmail(String email){
-        userRepository.findByEmail(email)
+    public String deleteUserById(String id){
+        userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        userRepository.deleteByEmail(email);
+        userRepository.deleteById(id);
         return "User deleted";
     }
 
-    public String updateUserByEmail(String email, UserUpdateRequest request){
-        User user = getUserByEmail(email);
+    public String updateUserById(String id, UserUpdateRequest request){
+        User user = getUserById(id);
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());

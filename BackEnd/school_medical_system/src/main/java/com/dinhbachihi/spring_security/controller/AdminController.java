@@ -32,25 +32,25 @@ public class AdminController {
         return response;
     }
 
-    @GetMapping("/users/{userEmail}")
-    public ApiResponse<User> user(@PathVariable("userEmail") String userEmail){
+    @GetMapping("/users/{userId}")
+    public ApiResponse<User> user(@PathVariable("userId") String userId){
         ApiResponse<User> response = new ApiResponse<>();
-        response.setResult(adminService.getUserByEmail(userEmail));
+        response.setResult(adminService.getUserById(userId));
         return response;
     }
 
-    @DeleteMapping("/users/{userEmail}")
-    public ApiResponse<String> deleteUser(@PathVariable("userEmail") String userEmail){
+    @DeleteMapping("/users/{userId}")
+    public ApiResponse<String> deleteUser(@PathVariable("userId") String userId){
         ApiResponse<String> response = new ApiResponse<>();
-        response.setResult(adminService.deleteUserByEmail(userEmail));
+        response.setResult(adminService.deleteUserById(userId));
         return response;
     }
 
-    @PutMapping("/users/{userEmail}")
-    public ApiResponse<String> updateUser(@PathVariable("userEmail") String userEmail
+    @PutMapping("/users/{userId}")
+    public ApiResponse<String> updateUser(@PathVariable("userId") String userId
             ,@Valid @RequestBody UserUpdateRequest request){
         ApiResponse<String> response = new ApiResponse<>();
-        response.setResult(adminService.updateUserByEmail(userEmail, request));
+        response.setResult(adminService.updateUserById(userId, request));
         return response;
     }
     @GetMapping("list-mail")
