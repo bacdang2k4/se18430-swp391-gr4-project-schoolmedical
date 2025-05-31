@@ -1,21 +1,21 @@
 package com.dinhbachihi.spring_security.service.impl;
 
-import com.dinhbachihi.spring_security.dto.request.JwtAuthenticationResponse;
-import com.dinhbachihi.spring_security.dto.request.RefreshTokenRequest;
-import com.dinhbachihi.spring_security.dto.request.SignInRequest;
-import com.dinhbachihi.spring_security.dto.request.SignUpRequest;
+import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.exception.AppException;
 import com.dinhbachihi.spring_security.exception.ErrorCode;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AuthenticationService;
 import com.dinhbachihi.spring_security.service.JWTService;
+import com.dinhbachihi.spring_security.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @Service
@@ -25,6 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
+    private final OtpService otpService;
 
     @Override
     public User signUp(SignUpRequest request){
@@ -41,19 +42,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userRepository.save(user);
     }
 
-    public JwtAuthenticationResponse signIn(SignInRequest request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail()
-                , request.getPassword()));
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(()
-                -> new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD));
-        var jwt = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+    @Override
+    public JwtAuthenticationResponse signIn(SignInRequest request) {
 
-        JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-        jwtAuthenticationResponse.setToken(jwt);
-        jwtAuthenticationResponse.setRefreshToken(refreshToken);
-        return jwtAuthenticationResponse;
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD));
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD);
+        }
+
+        if (!user.isEnabled()) {
+            otpService.sendOtp(user);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
+        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        String jwt = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+
+        JwtAuthenticationResponse response = new JwtAuthenticationResponse();
+        response.setToken(jwt);
+        response.setRefreshToken(refreshToken);
+        return response;
     }
+
 
     public JwtAuthenticationResponse refreshToken(RefreshTokenRequest request){
         String userEmail = jwtService.extractUsername(request.getToken());
@@ -67,4 +79,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return null;
     }
+
+    @Override
+    public void verifyAccount(OtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getOtpCode() == null || !user.getOtpCode().equals(request.getOtp()) ||
+                user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
+
+        user.setEnabled(true);
+        user.setOtpCode(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+    }
+
+
 }

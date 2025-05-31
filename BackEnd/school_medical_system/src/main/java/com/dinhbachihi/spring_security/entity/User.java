@@ -34,6 +34,11 @@ public class User implements UserDetails {
     private String password;
     private Role role;
 
+    private boolean enabled = false;
+    private String otpCode;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime otpExpiry;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -69,6 +74,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

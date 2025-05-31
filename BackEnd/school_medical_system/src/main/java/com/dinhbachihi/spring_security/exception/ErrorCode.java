@@ -13,6 +13,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED(400, "Token Expired"),
     INVALID_PASSWORD_FORMAT(400, "Password must be at least 8 characters and contain both letters and numbers"),
     DONT_LEFT_BLANK(400, "Don't Left Any Fields Blank"),
+    ACCOUNT_NOT_ACTIVATED(403, "Account Not Activated"),
+    INVALID_OTP(400, "Invalid OTP"),
     ;
     private final int code;
     private final String message;
