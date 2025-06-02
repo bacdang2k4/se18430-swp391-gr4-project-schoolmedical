@@ -11,7 +11,6 @@ import com.dinhbachihi.spring_security.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!user.isEnabled()) {
             otpService.sendOtp(user);
             throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
+            
         }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -63,6 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         JwtAuthenticationResponse response = new JwtAuthenticationResponse();
         response.setToken(jwt);
         response.setRefreshToken(refreshToken);
+        response.setEnabled(true);
         return response;
     }
 
@@ -95,6 +96,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setOtpExpiry(null);
         userRepository.save(user);
     }
-
-
 }
