@@ -1,3 +1,13 @@
+import HeaderForm from "../components/HeaderForm";
+import FooterForm from "../components/FooterForm";
+import DashboardForm from "../components/DashboardForm";
+
 export default function Dashboard() {
-  return <h1>Welcome to the dashboard!</h1>;
+  return (
+    <>
+      <HeaderForm />
+      <DashboardForm />
+      <FooterForm />
+    </>
+  );
 }
