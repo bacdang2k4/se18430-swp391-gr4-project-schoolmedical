@@ -7,7 +7,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(""); // Thêm state cho thông báo lỗi
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -57,8 +57,8 @@ export default function LoginForm() {
         <div className="max-w-md mx-auto w-full">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl text-center font-serif font-semibold text-gray-800 mb-1">
-              SCHOOL MEDICAL SYSTEM
+            <h1 className="text-2xl text-center font-serif font-semibold text-gray-800 mb-1">
+              SCHOOL MEDICAL MANAGEMENT
             </h1>
             <p className="text-gray-600 text-xl text-center font-serif">
               System

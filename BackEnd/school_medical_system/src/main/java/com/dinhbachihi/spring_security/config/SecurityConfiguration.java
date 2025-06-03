@@ -32,11 +32,11 @@ public class SecurityConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Cho phép tất cả endpoint
-                        .allowedOrigins("http://localhost:5173") // Nơi React frontend chạy
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // Nếu bạn sử dụng Cookie/Auth Header
+                        .allowCredentials(true);
             }
         };
     }
