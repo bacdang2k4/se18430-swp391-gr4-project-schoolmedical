@@ -7,11 +7,13 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(""); // Thêm state cho thông báo lỗi
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg(""); // Reset lỗi trước khi login
     try {
       const response = await api.post("/v1/auth/login", {
         email,
@@ -24,11 +26,15 @@ export default function LoginForm() {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         navigate("/dashboard");
-      } 
+      } else {
+        console.error("Account is not enabled.");
+        navigate("/verify", { state: { email } });
+      }
     } catch (error) {
+      // Lấy message từ API nếu có
+      const apiMsg = error.response?.data?.message || "Login failed. Please try again.";
+      setErrorMsg(apiMsg);
       console.error("Login error:", error.response?.data || error.message);
-      
-      navigate("/verify", { state: { email } });
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +70,13 @@ export default function LoginForm() {
             <h2 className="text-xl font-medium text-center text-blue-600 mb-6">
               Login
             </h2>
+
+            {/* Hiển thị thông báo lỗi nếu có */}
+            {errorMsg && (
+              <div className="mb-4 text-red-600 text-center font-semibold">
+                {errorMsg}
+              </div>
+            )}
 
             <form onSubmit={handleLogin} className="space-y-6">
               {/* Username Field */}

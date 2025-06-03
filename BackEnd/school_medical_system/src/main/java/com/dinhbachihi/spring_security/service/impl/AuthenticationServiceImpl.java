@@ -43,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-
+        JwtAuthenticationResponse response = new JwtAuthenticationResponse();
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD));
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
@@ -51,16 +51,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (!user.isEnabled()) {
+            response.setEnabled(false);
             otpService.sendOtp(user);
-            throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
-            
+            return response;
         }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         String jwt = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
-        JwtAuthenticationResponse response = new JwtAuthenticationResponse();
         response.setToken(jwt);
         response.setRefreshToken(refreshToken);
         response.setEnabled(true);

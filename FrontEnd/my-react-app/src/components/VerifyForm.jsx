@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 function VerifyForm() {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 phút = 300 giây
+  const [timeLeft, setTimeLeft] = useState(60); // 5 phút = 300 giây
 
   useEffect(() => {
     if (timeLeft === 0) return;
