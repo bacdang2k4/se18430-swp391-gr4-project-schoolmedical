@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { BellIcon, UserCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import logo from "../../public/images/logo-removebg.png";
 
@@ -42,48 +42,35 @@ function HeaderForm() {
   const featureDropdownRef = useRef(null);
   const unreadCount = notifications.length;
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-      if (featureDropdownRef.current && !featureDropdownRef.current.contains(event.target)) {
-        setShowFeatureDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Đổi sự kiện của dropdown thông báo (chuông)
+  const handleDropdownToggle = () => setShowDropdown((v) => !v);
 
-  const handleFeatureMouseEnter = () => setShowFeatureDropdown(true);
-  const handleFeatureMouseLeave = () => setShowFeatureDropdown(false);
-  const handleFeatureClick = () => setShowFeatureDropdown((v) => !v);
+  // Đổi sự kiện của dropdown chức năng
+  const handleFeatureDropdownToggle = () => setShowFeatureDropdown((v) => !v);
 
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-200 flex items-center px-4 py-2 z-30 sticky top-0">
       {/* Logo + Tên trường */}
       <div className="flex items-center gap-3 min-w-[220px]">
-        <div className="bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl p-2 flex items-center justify-center">
+        <div className="bg-gradient-to-br from-white-500 to-indigo-200 rounded-xl p-2 flex items-center justify-center">
           <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-xl font-bold text-gray-800 tracking-tight">Y TẾ HỌC</span>
-          <span className="text-xl font-extrabold text-gray-800 tracking-tight">ĐƯỜNG</span>
-          <span className="text-xs text-gray-500 font-medium">Trường THCS Nguyễn Du</span>
+          <span className="text-xl font-bold text-gray-800 tracking-tight">ĐƯỜNG</span>
+          <span className="text-xs text-gray-500 font-medium">FPT University HCM</span>
         </div>
       </div>
       {/* Menu */}
       <nav className="flex-1 flex justify-center gap-8 md:gap-10">
-        <a href="#home" className="text-gray-700 font-semibold hover:text-blue-600 transition">Trang chủ</a>
+        <a href="/home" className="text-gray-700 font-semibold hover:text-blue-600 transition">Trang chủ</a>
         <div
           className="relative"
           ref={featureDropdownRef}
-          onMouseEnter={handleFeatureMouseEnter}
-          onMouseLeave={handleFeatureMouseLeave}
         >
           <button
             className="flex items-center gap-1 text-gray-700 font-semibold hover:text-blue-600 transition focus:outline-none"
-            onClick={handleFeatureClick}
+            onClick={handleFeatureDropdownToggle}
             type="button"
           >
             Chức năng <ChevronDownIcon className="w-4 h-4" />
@@ -110,7 +97,7 @@ function HeaderForm() {
         <div className="relative" ref={dropdownRef}>
           <button
             className="relative focus:outline-none"
-            onClick={() => setShowDropdown((v) => !v)}
+            onClick={handleDropdownToggle}
             aria-label="Thông báo"
           >
             <BellIcon className="w-8 h-8 text-yellow-500" />

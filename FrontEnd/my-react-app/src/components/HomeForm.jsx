@@ -87,7 +87,7 @@ function HomeForm() {
         <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 drop-shadow-lg">Hệ thống quản lý y tế học đường</h1>
         <p className="text-lg md:text-xl text-blue-100 mb-10 font-medium">Chăm sóc sức khỏe toàn diện cho học sinh - Kết nối nhà trường và gia đình</p>
         <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-          <a href="#" className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50 transition text-lg">Đăng nhập</a>
+          <a href="/login" className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50 transition text-lg">Đăng nhập</a>
           
         </div>
       </section>

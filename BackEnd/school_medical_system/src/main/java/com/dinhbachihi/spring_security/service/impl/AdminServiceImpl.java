@@ -28,7 +28,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return userRepository.findAll();
     }
 

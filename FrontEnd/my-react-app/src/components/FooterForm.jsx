@@ -34,7 +34,7 @@ function FooterForm() {
         </div>
       </div>
       <div className="text-center text-gray-400 border-t border-gray-800 pt-6 text-sm">
-        © 2025 Hệ thống quản lý y tế học đường - Trường THCS Nguyễn Du. Tất cả quyền được bảo lưu.
+        © 2025 Hệ thống quản lý y tế học đường - FPT University HCM. Tất cả quyền được bảo lưu.
       </div>
     </footer>
   );

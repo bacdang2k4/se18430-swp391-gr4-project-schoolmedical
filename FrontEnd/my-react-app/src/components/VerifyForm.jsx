@@ -42,7 +42,7 @@ function VerifyForm() {
       )}
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">Verify OTP</h2>
-        <p className="text-center text-gray-600 mb-4">Please enter the OTP sent to your email. <br/> OTP is valid for 5 minutes.</p>
+        <p className="text-center text-gray-600 mb-4">Please enter the OTP sent to your email. <br/> OTP is valid for 1 minutes.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
