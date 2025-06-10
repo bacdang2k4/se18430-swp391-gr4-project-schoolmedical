@@ -1,0 +1,119 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mona Health Design System - Inspired by mona-health.monamedia.net */
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 220 39% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 39% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 39% 11%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 142 86% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 95%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 220 39% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 39% 11%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 95%;
+    --sidebar-accent-foreground: 220 39% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  .dark {
+    --background: 220 39% 11%;
+    --foreground: 210 20% 98%;
+
+    --card: 220 39% 11%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 220 39% 11%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 220 39% 11%;
+
+    --secondary: 142 86% 55%;
+    --secondary-foreground: 220 39% 11%;
+
+    --muted: 215 25% 27%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 220 39% 11%;
+
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 215 25% 27%;
+    --input: 215 25% 27%;
+    --ring: 217 91% 60%;
+
+    --sidebar-background: 215 25% 27%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 220 39% 11%;
+    --sidebar-accent: 220 39% 11%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 220 39% 11%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .mona-gradient {
+    background: linear-gradient(135deg, theme('colors.primary'), theme('colors.secondary'));
+  }
+  
+  .mona-gradient-accent {
+    background: linear-gradient(135deg, theme('colors.secondary'), theme('colors.accent'));
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .banner-gradient {
+    background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+  }
+}
