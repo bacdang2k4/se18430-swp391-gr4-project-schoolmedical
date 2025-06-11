@@ -1,61 +1,73 @@
-# Mona Health Compass
+# Welcome to your Lovable project
 
-A health tracking and management application built with React, TypeScript, and Vite.
+## Project info
 
-## Getting Started
+**URL**: https://lovable.dev/projects/54e8eb20-08e8-4be5-86bf-6c490e4a6c6a
 
-### Prerequisites
+## How can I edit this code?
 
-- Node.js (v16 or higher)
-- npm or yarn
+There are several ways of editing your application.
 
-### Installation
+**Use Lovable**
 
-1. Clone the repository:
+Simply visit the [Lovable Project](https://lovable.dev/projects/54e8eb20-08e8-4be5-86bf-6c490e4a6c6a) and start prompting.
 
-```bash
-git clone [your-repository-url]
-cd mona-health-compass
-```
+Changes made via Lovable will be committed automatically to this repo.
 
-2. Install dependencies:
+**Use your preferred IDE**
 
-```bash
-npm install
-# or
-yarn install
-```
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-3. Start the development server:
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-```bash
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
-# or
-yarn dev
 ```
 
-The application will be available at `http://localhost:8080`
+**Edit a file directly in GitHub**
 
-## Available Scripts
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+**Use GitHub Codespaces**
 
-## Features
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-- Health tracking
-- User management
-- Data visualization
-- Responsive design
+## What technologies are used for this project?
 
-## Tech Stack
+This project is built with:
 
-- React
-- TypeScript
 - Vite
+- TypeScript
+- React
+- shadcn-ui
 - Tailwind CSS
-- Shadcn UI
-- React Router
-- React Query
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/54e8eb20-08e8-4be5-86bf-6c490e4a6c6a) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

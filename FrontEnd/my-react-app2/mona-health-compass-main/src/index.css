@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mona Health Design System - Inspired by mona-health.monamedia.net */
+/* Mona Health Design System - Based on mona-health.monamedia.net */
 
 @layer base {
   :root {
@@ -100,11 +100,11 @@
 
 @layer components {
   .mona-gradient {
-    background: linear-gradient(135deg, theme('colors.primary'), theme('colors.secondary'));
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
   
   .mona-gradient-accent {
-    background: linear-gradient(135deg, theme('colors.secondary'), theme('colors.accent'));
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   }
   
   .glass-effect {
@@ -114,6 +114,14 @@
   }
 
   .banner-gradient {
-    background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .card-gradient {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
   }
 }

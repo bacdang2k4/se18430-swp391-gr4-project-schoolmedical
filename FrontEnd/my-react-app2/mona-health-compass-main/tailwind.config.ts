@@ -4,10 +4,10 @@ import type { Config } from "tailwindcss";
 export default {
 	darkMode: ["class"],
 	content: [
-		"./pages/**/*.{ts,tsx}",
-		"./components/**/*.{ts,tsx}",
-		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
+		"./pages/**/*.{ts,tsx,js,jsx}",
+		"./components/**/*.{ts,tsx,js,jsx}",
+		"./app/**/*.{ts,tsx,js,jsx}",
+		"./src/**/*.{ts,tsx,js,jsx}",
 	],
 	prefix: "",
 	theme: {
@@ -64,13 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				mona: {
-					primary: '#4F46E5',
-					secondary: '#10B981', 
-					accent: '#F59E0B',
-					success: '#059669',
-					warning: '#D97706',
-					surface: '#F8FAFC',
-					'surface-variant': '#F1F5F9'
+					primary: '#667eea',
+					secondary: '#764ba2', 
+					accent: '#f093fb',
+					surface: '#f8fafc',
+					'surface-variant': '#f1f5f9'
 				}
 			},
 			borderRadius: {
