@@ -1,9 +1,13 @@
 package com.dinhbachihi.spring_security.controller;
 
+import com.dinhbachihi.spring_security.dto.request.StudentAddRequest;
 import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
+import com.dinhbachihi.spring_security.dto.request.StudentUpdateRequest;
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
+import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -17,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminService adminService;
+    private final StudentRepository studentRepository;
 
     @GetMapping
     public ApiResponse<String> welcome(){
@@ -63,6 +68,44 @@ public class AdminController {
     public ApiResponse<String> sendMail(@RequestBody SendMailRequest request) throws MessagingException {
         ApiResponse<String> response = new ApiResponse<>();
         response.setMessage(adminService.sendEmail(request));
+        return response;
+    }
+    @GetMapping("/students/get-all-student")
+    public ApiResponse<List<Student>> getStudents(){
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(adminService.getStudents());
+        response.setMessage("get all students successfully");
+        return response;
+    }
+
+    @GetMapping("/students/{studentId}")
+    public ApiResponse<Student> getStudent(@PathVariable("studentId") String studentId){
+        ApiResponse<Student> response = new ApiResponse<>();
+        response.setResult(adminService.getStudentById(studentId));
+        response.setMessage("get student successfully");
+        return response;
+    }
+
+    @PostMapping("/students/add-student")
+    public ApiResponse<Student> addStudent(@RequestBody StudentAddRequest request){
+        ApiResponse<Student> response = new ApiResponse<>();
+        response.setResult(adminService.addStudent(request));
+        response.setMessage("add student successfully");
+        return response;
+    }
+
+    @DeleteMapping("/students/{studentId}")
+    public ApiResponse<String> deleteStudent(@PathVariable("studentId") String studentId){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(adminService.deleteStudentById(studentId));
+        return response;
+    }
+
+    @PutMapping("/students/{studentId}")
+    public ApiResponse<Student> updateStudent(@PathVariable("studentId") String studentId, @RequestBody StudentUpdateRequest request){
+        ApiResponse<Student> response = new ApiResponse<>();
+        response.setResult(adminService.updateStudentById(studentId, request));
+        response.setMessage("update student successfully");
         return response;
     }
 }

@@ -1,10 +1,14 @@
 package com.dinhbachihi.spring_security.service.impl;
 
+import com.dinhbachihi.spring_security.dto.request.StudentAddRequest;
 import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
+import com.dinhbachihi.spring_security.dto.request.StudentUpdateRequest;
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
+import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.exception.AppException;
 import com.dinhbachihi.spring_security.exception.ErrorCode;
+import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
 import jakarta.mail.MessagingException;
@@ -13,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +29,7 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -49,7 +52,7 @@ public class AdminServiceImpl implements AdminService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        
         userRepository.save(user);
         return "User updated";
     }
@@ -83,4 +86,44 @@ public class AdminServiceImpl implements AdminService {
         return "Đã gửi email cho tất cả người dùng.";
     }
 
+    @Override
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
+    }
+
+    @Override
+    public Student getStudentById(String studentId) {
+        return studentRepository.findById(studentId).orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+    }
+
+    @Override
+    public Student addStudent(StudentAddRequest request) {
+        if(studentRepository.existsByStudentId(request.getStudentId())) {
+            throw new AppException(ErrorCode.STUDENT_ALREADY_EXISTS);
+        }
+        Student student = new Student();
+        student.setStudentId(request.getStudentId());
+        student.setFirstName(request.getFirstName());
+        student.setLastName(request.getLastName());
+        student.setGender(request.getGender());
+        student.setDateOfBirth(request.getDateOfBirth());
+        return studentRepository.save(student);
+    }
+
+    @Override
+    public String deleteStudentById(String studentId) {
+        studentRepository.findById(studentId).orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
+        studentRepository.deleteById(studentId);
+        return "student deleted";
+    }
+
+    @Override
+    public Student updateStudentById(String studentId, StudentUpdateRequest request) {
+        Student student = getStudentById(studentId);
+        student.setFirstName(request.getFirstName());
+        student.setLastName(request.getLastName());
+        student.setGender(request.getGender());
+        student.setDateOfBirth(request.getDateOfBirth());
+        return studentRepository.save(student);
+    }
 }

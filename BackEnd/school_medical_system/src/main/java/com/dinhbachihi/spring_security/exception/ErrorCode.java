@@ -15,6 +15,12 @@ public enum ErrorCode {
     DONT_LEFT_BLANK(400, "Don't Left Any Fields Blank"),
     ACCOUNT_NOT_ACTIVATED(403, "Account Not Activated"),
     INVALID_OTP(400, "Invalid OTP"),
+    STUDENT_NOT_FOUND(404, "Student Not Found"),
+    STUDENT_ALREADY_EXISTS(409, "Student Already Exists"),
+    PASSWORD_NOT_MATCH(400, "Password Not Match"),
+    WRONG_PASSWORD(400, "Wrong Password"),
+    HEALTH_RECORD_ALREADY_EXISTS(400, "Health Record Already Exists"),
+    HEALTH_RECORD_NOT_FOUND(400, "Health Record Not Found"),
     ;
     private final int code;
     private final String message;

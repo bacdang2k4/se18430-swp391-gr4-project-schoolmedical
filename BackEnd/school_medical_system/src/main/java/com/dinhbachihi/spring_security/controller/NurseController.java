@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/nurse")
 @RequiredArgsConstructor
 public class NurseController {
+
     @GetMapping
     public ResponseEntity<String> welcome(){
         return ResponseEntity.ok("Hello Nurse");
