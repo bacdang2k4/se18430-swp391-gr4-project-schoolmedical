@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -30,5 +31,11 @@ public class Student {
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference //Để không trùng lặp các thông tin của bảng khi gọi
     private HealthRecord healthRecord;
+
+    @ManyToOne
+    @JoinColumn(name="ClassID")
+    @JsonIgnore
+    private Classes classes;
+
 
 }

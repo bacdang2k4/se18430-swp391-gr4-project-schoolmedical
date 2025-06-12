@@ -1,10 +1,8 @@
 package com.dinhbachihi.spring_security.controller;
 
-import com.dinhbachihi.spring_security.dto.request.StudentAddRequest;
-import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
-import com.dinhbachihi.spring_security.dto.request.StudentUpdateRequest;
-import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
+import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
+import com.dinhbachihi.spring_security.entity.Classes;
 import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
@@ -22,6 +20,7 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private final StudentRepository studentRepository;
+
 
     @GetMapping
     public ApiResponse<String> welcome(){
@@ -108,4 +107,19 @@ public class AdminController {
         response.setMessage("update student successfully");
         return response;
     }
+    @PostMapping("/classes/add")
+    public ApiResponse<Classes> addClass(@RequestBody ClassesAddRequest request){
+        ApiResponse<Classes> response = new ApiResponse<>();
+        response.setResult(adminService.addClass(request));
+        response.setMessage("add class successfully");
+        return response;
+    }
+
+    @GetMapping("/classes/{id}")
+    public ApiResponse<List<Student>> getAllStudentByClass(@PathVariable("id") String id){
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(adminService.getStudentsByClassId(id));
+        return response;
+    }
+
 }

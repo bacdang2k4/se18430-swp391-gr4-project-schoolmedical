@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
     USER_NOT_FOUND(404, "User Not Found"),
+    CLASS_NOT_FOUND(404, "Class Not Found"),
     USER_ALREADY_EXISTS(409, "User Already Exists"),
+    ClASS_ALREADY_EXISTS(409, "Class Already Exists"),
     USERNAME_INVALID(400, "Username at least 3 characters"),
     PASSWORD_INVALID(400, "Password at least 8 characters"),
     UNCAUGHT_EXCEPTION(500, "Uncaught Exception"),

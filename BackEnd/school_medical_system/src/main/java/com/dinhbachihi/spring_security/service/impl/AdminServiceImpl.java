@@ -1,13 +1,12 @@
 package com.dinhbachihi.spring_security.service.impl;
 
-import com.dinhbachihi.spring_security.dto.request.StudentAddRequest;
-import com.dinhbachihi.spring_security.dto.request.SendMailRequest;
-import com.dinhbachihi.spring_security.dto.request.StudentUpdateRequest;
-import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
+import com.dinhbachihi.spring_security.dto.request.*;
+import com.dinhbachihi.spring_security.entity.Classes;
 import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.exception.AppException;
 import com.dinhbachihi.spring_security.exception.ErrorCode;
+import com.dinhbachihi.spring_security.repository.ClassesRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
@@ -20,6 +19,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +30,7 @@ public class AdminServiceImpl implements AdminService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
+    private final ClassesRepository classesRepository;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -101,12 +102,20 @@ public class AdminServiceImpl implements AdminService {
         if(studentRepository.existsByStudentId(request.getStudentId())) {
             throw new AppException(ErrorCode.STUDENT_ALREADY_EXISTS);
         }
-        Student student = new Student();
-        student.setStudentId(request.getStudentId());
-        student.setFirstName(request.getFirstName());
-        student.setLastName(request.getLastName());
-        student.setGender(request.getGender());
-        student.setDateOfBirth(request.getDateOfBirth());
+
+        Classes classes = classesRepository.findClassesById(request.getClassID());
+        if(classes==null){
+            throw new AppException(ErrorCode.CLASS_NOT_FOUND);
+        }
+        Student student = Student.builder()
+                .studentId(request.getStudentId())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .gender(request.getGender())
+                .dateOfBirth(request.getDateOfBirth())
+                .classes(classes)
+                .build();
+        addStudentToClasses(student, classes);
         return studentRepository.save(student);
     }
 
@@ -126,4 +135,29 @@ public class AdminServiceImpl implements AdminService {
         student.setDateOfBirth(request.getDateOfBirth());
         return studentRepository.save(student);
     }
+    public Classes addClass(ClassesAddRequest request) {
+        if(classesRepository.existsById(request.getId())){
+            throw new AppException(ErrorCode.ClASS_ALREADY_EXISTS);
+        }
+        Classes classes = new Classes();
+        classes.setId(request.getId());
+        classes.setName(request.getName());
+        return classesRepository.save(classes);
+    }
+    public void addStudentToClasses(Student student, Classes classes) {
+        if (classes.getStudentList() == null) {
+            classes.setStudentList(new ArrayList<>());
+        }
+        classes.getStudentList().add(student);
+        classesRepository.save(classes);
+    }
+    public List<Student> getStudentsByClassId(String classId) {
+       Classes classes = classesRepository.findClassesById(classId);
+       List<Student> students = classes.getStudentList();
+        return students;
+    }
+
+
+
+
 }
