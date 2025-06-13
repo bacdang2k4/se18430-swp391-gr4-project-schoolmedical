@@ -12,4 +12,5 @@ public class StudentAddRequest {
     private Gender gender;
     private LocalDate dateOfBirth;
     private String classID;
+    private String parentID;
 }

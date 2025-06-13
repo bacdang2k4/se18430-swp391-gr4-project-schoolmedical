@@ -1,5 +1,7 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +24,7 @@ public class Classes {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "classes",cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Student> studentList = new ArrayList<>();
 
 

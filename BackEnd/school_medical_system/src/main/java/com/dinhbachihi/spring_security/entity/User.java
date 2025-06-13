@@ -1,6 +1,8 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -76,5 +78,9 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Student> students =  null;
 
 }

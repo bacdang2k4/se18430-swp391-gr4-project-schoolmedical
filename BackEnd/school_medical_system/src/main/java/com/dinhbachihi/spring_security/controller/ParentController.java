@@ -4,11 +4,15 @@ import com.dinhbachihi.spring_security.dto.request.CreateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
+import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.service.HealthRecordService;
+import com.dinhbachihi.spring_security.service.ParentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ParentController {
     private final HealthRecordService healthRecordService;
+    private final ParentService parentService;
 
     @GetMapping
     public ResponseEntity<String> welcome(){
@@ -35,6 +40,12 @@ public class ParentController {
         ApiResponse<HealthRecord> response = new ApiResponse<>();
         response.setMessage("Update Health Record Success");
         response.setResult(healthRecordService.updateHealthRecord(request));
+        return response;
+    }
+    @GetMapping("/getall/{id}")
+    public ApiResponse<List<Student>> getStudentByParent(@PathVariable("id") String id){
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(parentService.getListChild(id));
         return response;
     }
 }

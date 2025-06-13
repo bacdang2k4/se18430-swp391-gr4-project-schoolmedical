@@ -9,13 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handleRuntimeException(RuntimeException e) {
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(ErrorCode.INVALID_USERNAME_OR_PASSWORD.getCode());
-        apiResponse.setMessage(ErrorCode.INVALID_USERNAME_OR_PASSWORD.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
+
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handleAppException(AppException e) {

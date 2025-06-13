@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -34,8 +35,13 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name="ClassID")
-    @JsonIgnore
+    @JsonBackReference
     private Classes classes;
+
+    @ManyToOne
+    @JoinColumn(name="ParentID")
+    @JsonBackReference
+    private User parent;
 
 
 }

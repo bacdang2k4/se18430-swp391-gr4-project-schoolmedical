@@ -102,7 +102,7 @@ public class AdminServiceImpl implements AdminService {
         if(studentRepository.existsByStudentId(request.getStudentId())) {
             throw new AppException(ErrorCode.STUDENT_ALREADY_EXISTS);
         }
-
+        User user = userRepository.getById(request.getParentID());
         Classes classes = classesRepository.findClassesById(request.getClassID());
         if(classes==null){
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
@@ -114,6 +114,7 @@ public class AdminServiceImpl implements AdminService {
                 .gender(request.getGender())
                 .dateOfBirth(request.getDateOfBirth())
                 .classes(classes)
+                .parent(user)
                 .build();
         addStudentToClasses(student, classes);
         return studentRepository.save(student);
