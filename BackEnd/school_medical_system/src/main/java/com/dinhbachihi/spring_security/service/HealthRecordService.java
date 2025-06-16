@@ -6,5 +6,5 @@ import com.dinhbachihi.spring_security.entity.HealthRecord;
 
 public interface HealthRecordService {
     HealthRecord createHealthRecord(CreateHealthRecordRequest request);
-    HealthRecord updateHealthRecord(UpdateHealthRecordRequest request);
+    HealthRecord updateHealthRecord(UpdateHealthRecordRequest request,Long id);
 }

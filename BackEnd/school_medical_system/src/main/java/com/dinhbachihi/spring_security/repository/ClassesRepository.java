@@ -11,6 +11,4 @@ import java.util.List;
 public interface ClassesRepository extends JpaRepository<Classes, String> {
     boolean existsById(String id);
     Classes findClassesById(String id);
-    List<Student> findClassesWithStudentsById(String id);
-
 }

@@ -80,7 +80,10 @@ public class User implements UserDetails {
     }
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "parent", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("student-user")
     private List<Student> students =  null;
 
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonManagedReference("blog-user")
+    private List<Blog> blogs =  null;
 }

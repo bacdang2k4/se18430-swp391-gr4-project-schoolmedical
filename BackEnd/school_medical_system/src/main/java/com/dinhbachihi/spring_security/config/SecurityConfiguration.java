@@ -57,7 +57,7 @@ public class SecurityConfiguration {
                 ).logout(AbstractHttpConfigurer::disable);
         return http.build();
     }
-
+  
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

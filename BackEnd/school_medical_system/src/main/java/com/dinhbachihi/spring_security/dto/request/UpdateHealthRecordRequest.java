@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UpdateHealthRecordRequest {
-    private Long recordId;
+
 
     private String allergy;
     private String chronic_disease;

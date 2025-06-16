@@ -38,8 +38,8 @@ public class HealthRecordServiceImpl implements HealthRecordService {
         return healthRecordRepository.save(record);
     }
 
-    public HealthRecord updateHealthRecord(UpdateHealthRecordRequest request) {
-        HealthRecord existingRecord = healthRecordRepository.findById(request.getRecordId())
+    public HealthRecord updateHealthRecord(UpdateHealthRecordRequest request , Long id) {
+        HealthRecord existingRecord = healthRecordRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
         // Cập nhật các trường nếu có

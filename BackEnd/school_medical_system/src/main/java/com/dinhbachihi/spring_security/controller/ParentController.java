@@ -35,14 +35,14 @@ public class ParentController {
         return response;
     }
 
-    @PutMapping("/update-health-record")
-    public ApiResponse<HealthRecord> updateHealthRecord(@Valid @RequestBody UpdateHealthRecordRequest request){
+    @PutMapping("/update-health-record/{id}")
+    public ApiResponse<HealthRecord> updateHealthRecord(@Valid @RequestBody UpdateHealthRecordRequest request , @PathVariable("id") Long id){
         ApiResponse<HealthRecord> response = new ApiResponse<>();
         response.setMessage("Update Health Record Success");
-        response.setResult(healthRecordService.updateHealthRecord(request));
+        response.setResult(healthRecordService.updateHealthRecord(request,id));
         return response;
     }
-    @GetMapping("/getall/{id}")
+    @GetMapping("/get-all/{id}")
     public ApiResponse<List<Student>> getStudentByParent(@PathVariable("id") String id){
         ApiResponse<List<Student>> response = new ApiResponse<>();
         response.setResult(parentService.getListChild(id));

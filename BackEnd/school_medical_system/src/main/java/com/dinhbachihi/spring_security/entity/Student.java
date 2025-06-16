@@ -35,12 +35,12 @@ public class Student {
 
     @ManyToOne
     @JoinColumn(name="ClassID")
-    @JsonBackReference
+    @JsonBackReference("student-class")
     private Classes classes;
 
     @ManyToOne
     @JoinColumn(name="ParentID")
-    @JsonBackReference
+    @JsonBackReference("student-user")
     private User parent;
 
 

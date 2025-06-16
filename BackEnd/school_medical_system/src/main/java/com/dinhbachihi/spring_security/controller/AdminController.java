@@ -121,5 +121,4 @@ public class AdminController {
         response.setResult(adminService.getStudentsByClassId(id));
         return response;
     }
-
 }
