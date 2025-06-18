@@ -1,10 +1,13 @@
 package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.CreateBlogRequest;
+import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateBlogRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.Blog;
+import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.service.BlogService;
+import com.dinhbachihi.spring_security.service.MedicineSentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class NurseController {
     private final BlogService blogService;
-
+    private final MedicineSentService medicineSentService;
     @GetMapping
     public ResponseEntity<String> welcome(){
         return ResponseEntity.ok("Hello Nurse");
@@ -34,5 +37,14 @@ public class NurseController {
         response.setResult(blogService.updateBlog(request,blogId));
         response.setMessage("Successfully updated blog");
         return response;
+    }
+
+    @PostMapping("/medicalsent/{id1}/{id2}")
+    public ApiResponse<MedicineSent> creaMedicineSentApiResponse(@RequestBody MedicineSentRequest request, @PathVariable("id1")String id1 , @PathVariable("id2")String id2){
+        ApiResponse<MedicineSent> response = new ApiResponse<>();
+        response.setResult(medicineSentService.createMedicineSent(request,id2,id1));
+        response.setMessage("Successfully created medicine sent");
+        return response;
+
     }
 }
