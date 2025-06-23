@@ -1,12 +1,15 @@
 package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.CreateBlogRequest;
+import com.dinhbachihi.spring_security.dto.request.MedicalEventRequest;
 import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateBlogRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
+import com.dinhbachihi.spring_security.dto.response.MedicalEventResponse;
 import com.dinhbachihi.spring_security.entity.Blog;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.service.BlogService;
+import com.dinhbachihi.spring_security.service.MedicalEventService;
 import com.dinhbachihi.spring_security.service.MedicineSentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class NurseController {
     private final BlogService blogService;
     private final MedicineSentService medicineSentService;
+    private final MedicalEventService medicalEventService;
     @GetMapping
     public ResponseEntity<String> welcome(){
         return ResponseEntity.ok("Hello Nurse");
@@ -46,5 +50,12 @@ public class NurseController {
         response.setMessage("Successfully created medicine sent");
         return response;
 
+    }
+    @PostMapping("/medical-event")
+    public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request){
+        ApiResponse<MedicalEventResponse> response = new ApiResponse<>();
+        response.setResult(medicalEventService.createMedicalEvent(request));
+        response.setMessage("Successfully created medicine event");
+        return response;
     }
 }

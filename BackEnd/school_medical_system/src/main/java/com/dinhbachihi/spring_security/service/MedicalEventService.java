@@ -1,0 +1,8 @@
+package com.dinhbachihi.spring_security.service;
+
+import com.dinhbachihi.spring_security.dto.request.MedicalEventRequest;
+import com.dinhbachihi.spring_security.dto.response.MedicalEventResponse;
+
+public interface MedicalEventService {
+    MedicalEventResponse createMedicalEvent(MedicalEventRequest request);
+}
