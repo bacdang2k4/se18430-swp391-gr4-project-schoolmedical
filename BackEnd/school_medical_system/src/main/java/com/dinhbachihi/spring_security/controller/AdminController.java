@@ -129,5 +129,11 @@ public class AdminController {
         response.setResult(eventService.createEvent(request));
         return response;
     }
+    @PostMapping("/sendNoti/{id}")
+    public ApiResponse<String> sendNotifications (@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(eventService.sendNotification(id));
+        return response;
+    }
 
 }

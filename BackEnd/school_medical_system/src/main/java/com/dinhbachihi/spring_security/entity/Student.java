@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,5 +46,7 @@ public class Student {
     @JsonBackReference("student-user")
     private User parent;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<ConsentForm> forms = null;
 
 }

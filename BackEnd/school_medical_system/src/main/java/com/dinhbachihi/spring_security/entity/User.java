@@ -88,4 +88,7 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "author", cascade = CascadeType.ALL)
     @JsonManagedReference("blog-user")
     private List<Blog> blogs =  null;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<ConsentForm> forms = null;
 }
