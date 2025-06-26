@@ -60,5 +60,13 @@ public class NurseController {
         response.setResult(medicineSentService.getMedicineSents());
         return response;
     }
+    @PutMapping("/medical-sent/{id}")
+    public ApiResponse<MedicineSent> acceptMedicalSent(@PathVariable("id") Long id){
+        ApiResponse<MedicineSent> response = new ApiResponse<>();
+        response.setResult(medicineSentService.acceptMedicineSent(id));
+        response.setMessage("Successfully accepted medicine sent");
+        return response;
+    }
+
 
 }

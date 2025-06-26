@@ -62,4 +62,10 @@ public class MedicineSentServiceImpl implements MedicineSentService {
         }
     return responses;
     }
+
+    public MedicineSent acceptMedicineSent( Long id ){
+        MedicineSent medicineSent = medicineSentRepository.getReferenceById(id);
+        medicineSent.setStatus("accepted");
+        return medicineSentRepository.save(medicineSent);
+    }
 }
