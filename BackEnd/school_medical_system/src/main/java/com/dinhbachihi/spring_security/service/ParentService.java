@@ -5,5 +5,5 @@ import com.dinhbachihi.spring_security.entity.Student;
 import java.util.List;
 
 public interface ParentService {
-    List<Student> getListChild(String id);
+    List<Student> getListChild();
 }

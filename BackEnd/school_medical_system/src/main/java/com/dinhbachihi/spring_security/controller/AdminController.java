@@ -2,11 +2,11 @@ package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
-import com.dinhbachihi.spring_security.entity.Classes;
-import com.dinhbachihi.spring_security.entity.Student;
-import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.entity.*;
+import com.dinhbachihi.spring_security.repository.MedicineSentRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
+import com.dinhbachihi.spring_security.service.MedicineSentService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminService adminService;
-    private final StudentRepository studentRepository;
+
 
 
     @GetMapping
@@ -121,4 +121,5 @@ public class AdminController {
         response.setResult(adminService.getStudentsByClassId(id));
         return response;
     }
+
 }

@@ -50,4 +50,6 @@ public class MedicineSent {
     private User approvedBy;
     @Column(nullable = false)
     private boolean isUse = true;
+
+    private String status = "pending";
 }

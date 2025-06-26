@@ -1,11 +1,14 @@
 package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.CreateHealthRecordRequest;
+import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
+import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.service.HealthRecordService;
+import com.dinhbachihi.spring_security.service.MedicineSentService;
 import com.dinhbachihi.spring_security.service.ParentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import java.util.List;
 public class ParentController {
     private final HealthRecordService healthRecordService;
     private final ParentService parentService;
+    private final MedicineSentService medicineSentService;
 
     @GetMapping
     public ResponseEntity<String> welcome(){
@@ -42,10 +46,18 @@ public class ParentController {
         response.setResult(healthRecordService.updateHealthRecord(request,id));
         return response;
     }
-    @GetMapping("/get-all/{id}")
-    public ApiResponse<List<Student>> getStudentByParent(@PathVariable("id") String id){
+    @GetMapping("/get-all")
+    public ApiResponse<List<Student>> getStudentByParent(){
         ApiResponse<List<Student>> response = new ApiResponse<>();
-        response.setResult(parentService.getListChild(id));
+        response.setResult(parentService.getListChild());
         return response;
+    }
+    @PostMapping("/medicalsent/{id1}")
+    public ApiResponse<MedicineSent> creaMedicineSentApiResponse(@RequestBody MedicineSentRequest request, @PathVariable("id1")String id1 ){
+        ApiResponse<MedicineSent> response = new ApiResponse<>();
+        response.setResult(medicineSentService.createMedicineSent(request,id1));
+        response.setMessage("Successfully created medicine sent");
+        return response;
+
     }
 }
