@@ -6,6 +6,7 @@ import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.repository.MedicineSentRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
+import com.dinhbachihi.spring_security.service.EventService;
 import com.dinhbachihi.spring_security.service.MedicineSentService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminService adminService;
+    private final EventService eventService;
 
 
 
@@ -119,6 +121,12 @@ public class AdminController {
     public ApiResponse<List<Student>> getAllStudentByClass(@PathVariable("id") String id){
         ApiResponse<List<Student>> response = new ApiResponse<>();
         response.setResult(adminService.getStudentsByClassId(id));
+        return response;
+    }
+    @PostMapping("/event")
+    public ApiResponse<Event> createEvent(@RequestBody CreateEventRequest request){
+        ApiResponse<Event> response = new ApiResponse<>();
+        response.setResult(eventService.createEvent(request));
         return response;
     }
 
