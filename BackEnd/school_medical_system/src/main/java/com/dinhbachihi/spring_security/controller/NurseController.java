@@ -9,7 +9,9 @@ import com.dinhbachihi.spring_security.dto.response.MedicalEventResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
 import com.dinhbachihi.spring_security.entity.Blog;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
+import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.service.BlogService;
+import com.dinhbachihi.spring_security.service.EventService;
 import com.dinhbachihi.spring_security.service.MedicalEventService;
 import com.dinhbachihi.spring_security.service.MedicineSentService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ public class NurseController {
     private final BlogService blogService;
     private final MedicalEventService medicalEventService;
     private final MedicineSentService medicineSentService;
+    private final EventService eventService;
+
     @GetMapping
     public ResponseEntity<String> welcome(){
         return ResponseEntity.ok("Hello Nurse");
@@ -65,6 +69,12 @@ public class NurseController {
         ApiResponse<MedicineSent> response = new ApiResponse<>();
         response.setResult(medicineSentService.acceptMedicineSent(id));
         response.setMessage("Successfully accepted medicine sent");
+        return response;
+    }
+    @GetMapping("/event/parti/{id}")
+    public ApiResponse<List<Student>> getListParticipant(@PathVariable("id") Long id){
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(eventService.getStudentAccept(id));
         return response;
     }
 

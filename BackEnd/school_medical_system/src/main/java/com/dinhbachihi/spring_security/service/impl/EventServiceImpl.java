@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,22 +58,26 @@ public class EventServiceImpl implements EventService {
 
     public ConsentFormReviewResponse acceptConsent(Long id) {
         ConsentForm cf = consentFormRepository.getReferenceById(id);
+        cf.setConsent("Accepted");
+        consentFormRepository.save(cf);
         ConsentFormReviewResponse response = new ConsentFormReviewResponse();
         response.setType(cf.getEvent().getType());
         response.setDescription(cf.getEvent().getDescription());
-        response.setEventDate();
-        response.setStatus("Accepted");
+        response.setEventDate(cf.getEvent().getEventDate());
+        response.setStatus(cf.getConsent());
         response.setStudentName(cf.getStudent().getLastName()+cf.getStudent().getFirstName());
         response.setEventName(cf.getEvent().getName());
         return response;
     }
     public ConsentFormReviewResponse rejectConsent(Long id) {
         ConsentForm cf = consentFormRepository.getReferenceById(id);
+        cf.setConsent("Rejected");
+        consentFormRepository.save(cf);
         ConsentFormReviewResponse response = new ConsentFormReviewResponse();
         response.setType(cf.getEvent().getType());
         response.setDescription(cf.getEvent().getDescription());
         response.setEventDate(cf.getEvent().getEventDate());
-        response.setStatus("Rejected");
+        response.setStatus(cf.getConsent());
         response.setStudentName(cf.getStudent().getLastName()+cf.getStudent().getFirstName());
         response.setEventName(cf.getEvent().getName());
         return response;
@@ -83,6 +88,13 @@ public class EventServiceImpl implements EventService {
         String email = auth.getName();
         User parent = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return parent.getForms();
+    }
+    public List<Student> getStudentAccept(Long id) {
+        List<Student> students = consentFormRepository.findByConsent("accepted")
+                .stream()
+                .map(ConsentForm::getStudent)
+                .collect(Collectors.toList());
+        return students;
     }
 
 

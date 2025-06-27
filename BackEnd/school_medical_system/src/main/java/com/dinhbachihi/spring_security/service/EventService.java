@@ -4,6 +4,7 @@ import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.entity.ConsentForm;
 import com.dinhbachihi.spring_security.entity.Event;
+import com.dinhbachihi.spring_security.entity.Student;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface EventService {
     ConsentFormReviewResponse acceptConsent(Long id);
     ConsentFormReviewResponse rejectConsent(Long id);
     List<ConsentForm> getConsentForms();
+    List<Student> getStudentAccept(Long id);
 }
