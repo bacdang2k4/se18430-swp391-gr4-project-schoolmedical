@@ -4,9 +4,12 @@ import com.dinhbachihi.spring_security.dto.request.CreateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
+import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
+import com.dinhbachihi.spring_security.entity.ConsentForm;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.entity.Student;
+import com.dinhbachihi.spring_security.service.EventService;
 import com.dinhbachihi.spring_security.service.HealthRecordService;
 import com.dinhbachihi.spring_security.service.MedicineSentService;
 import com.dinhbachihi.spring_security.service.ParentService;
@@ -25,6 +28,7 @@ public class ParentController {
     private final HealthRecordService healthRecordService;
     private final ParentService parentService;
     private final MedicineSentService medicineSentService;
+    private final EventService eventService;
 
     @GetMapping
     public ResponseEntity<String> welcome(){
@@ -59,5 +63,25 @@ public class ParentController {
         response.setMessage("Successfully created medicine sent");
         return response;
 
+    }
+    @PutMapping("/event/accept/{id}")
+    public ApiResponse<ConsentFormReviewResponse> acceptConsent(@PathVariable("id") Long id){
+        ApiResponse<ConsentFormReviewResponse> response = new ApiResponse<>();
+        response.setMessage("Accept Consent Success");
+        response.setResult(eventService.acceptConsent(id));
+        return response;
+    }
+    @PutMapping("/event/reject/{id}")
+    public ApiResponse<ConsentFormReviewResponse> rejectConsent(@PathVariable("id") Long id){
+        ApiResponse<ConsentFormReviewResponse> response = new ApiResponse<>();
+        response.setMessage("Reject Consent Success");
+        response.setResult(eventService.rejectConsent(id));
+        return response;
+    }
+    @GetMapping("/event/listforms")
+    public ApiResponse<List<ConsentForm>> getConsentForms(){
+        ApiResponse<List<ConsentForm>> response = new ApiResponse<>();
+        response.setResult(eventService.getConsentForms());
+        return response;
     }
 }

@@ -1,15 +1,22 @@
 package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
+import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.entity.ConsentForm;
 import com.dinhbachihi.spring_security.entity.Event;
 import com.dinhbachihi.spring_security.entity.Student;
+import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.exception.AppException;
+import com.dinhbachihi.spring_security.exception.ErrorCode;
 import com.dinhbachihi.spring_security.repository.ConsentFormRepository;
 import com.dinhbachihi.spring_security.repository.EventRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
+import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.EmailService;
 import com.dinhbachihi.spring_security.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +29,7 @@ public class EventServiceImpl implements EventService {
     private final StudentRepository studentRepository;
     private final ConsentFormRepository consentFormRepository;
     private final EmailService emailService;
+    private final UserRepository userRepository;
 
 
     public Event createEvent(CreateEventRequest request) {
@@ -45,6 +53,36 @@ public class EventServiceImpl implements EventService {
             consentFormRepository.save(cf);}
         }
         return "Successfully sent notification";
+    }
+
+    public ConsentFormReviewResponse acceptConsent(Long id) {
+        ConsentForm cf = consentFormRepository.getReferenceById(id);
+        ConsentFormReviewResponse response = new ConsentFormReviewResponse();
+        response.setType(cf.getEvent().getType());
+        response.setDescription(cf.getEvent().getDescription());
+        response.setEventDate();
+        response.setStatus("Accepted");
+        response.setStudentName(cf.getStudent().getLastName()+cf.getStudent().getFirstName());
+        response.setEventName(cf.getEvent().getName());
+        return response;
+    }
+    public ConsentFormReviewResponse rejectConsent(Long id) {
+        ConsentForm cf = consentFormRepository.getReferenceById(id);
+        ConsentFormReviewResponse response = new ConsentFormReviewResponse();
+        response.setType(cf.getEvent().getType());
+        response.setDescription(cf.getEvent().getDescription());
+        response.setEventDate(cf.getEvent().getEventDate());
+        response.setStatus("Rejected");
+        response.setStudentName(cf.getStudent().getLastName()+cf.getStudent().getFirstName());
+        response.setEventName(cf.getEvent().getName());
+        return response;
+    }
+    public List<ConsentForm> getConsentForms() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User parent = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return parent.getForms();
     }
 
 
