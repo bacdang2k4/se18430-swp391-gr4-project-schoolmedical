@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
     private final OtpService otpService;
+    
+    // In-memory blacklist for logged out tokens
+    private static final Set<String> blacklistedTokens = new HashSet<>();
 
     @Override
     public User signUp(SignUpRequest request){
@@ -63,6 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         response.setToken(jwt);
         response.setRefreshToken(refreshToken);
         response.setEnabled(true);
+        response.setRole(user.getRole());
         return response;
     }
 
@@ -75,6 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
             jwtAuthenticationResponse.setToken(jwt);
             jwtAuthenticationResponse.setRefreshToken(request.getToken());
+            jwtAuthenticationResponse.setRole(user.getRole());
             return jwtAuthenticationResponse;
         }
         return null;

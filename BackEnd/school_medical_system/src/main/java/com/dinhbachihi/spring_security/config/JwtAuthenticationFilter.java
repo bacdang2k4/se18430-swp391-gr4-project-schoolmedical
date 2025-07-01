@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.config;
 
 import com.dinhbachihi.spring_security.service.JWTService;
 import com.dinhbachihi.spring_security.service.UserService;
+import com.dinhbachihi.spring_security.service.impl.AuthenticationServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

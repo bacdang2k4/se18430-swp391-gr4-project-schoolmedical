@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
-import { BellIcon, UserCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import logo from "../../public/images/logo-removebg.png";
+import { BellIcon, UserCircleIcon, ChevronDownIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
+import logo from "../../images/logo-removebg.png";
+import { logout } from "../utils/auth";
+import { getProfile } from "../api/axios";
 
 const FEATURES = [
   { icon: "👨‍👩‍👧‍👦", title: "Hồ sơ sức khỏe" },
@@ -41,6 +43,34 @@ function HeaderForm() {
   const dropdownRef = useRef(null);
   const featureDropdownRef = useRef(null);
   const unreadCount = notifications.length;
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const accountDropdownRef = useRef(null);
+
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile();
+        setFirstName(data.result.firstName || "");
+        setLastName(data.result.lastName || "");
+      } catch {
+        setFirstName("");
+        setLastName("");
+      }
+    };
+    fetchProfile();
+    // Đóng dropdown khi click ra ngoài
+    const handleClickOutside = (event) => {
+      if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target)) {
+        setShowAccountDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Đổi sự kiện của dropdown thông báo (chuông)
   const handleDropdownToggle = () => setShowDropdown((v) => !v);
@@ -133,11 +163,44 @@ function HeaderForm() {
           )}
         </div>
         {/* User */}
-        <div className="flex items-center bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl px-4 py-2 gap-2 shadow-md">
-          <UserCircleIcon className="w-8 h-8 text-white" />
-          <div className="flex flex-col text-white font-semibold text-base leading-tight">
-            <span>Acount</span>
-          </div>
+        <div className="relative" ref={accountDropdownRef}>
+          <button
+            className="flex items-center bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl px-4 py-2 gap-2 shadow-md focus:outline-none"
+            onClick={() => setShowAccountDropdown((v) => !v)}
+            type="button"
+          >
+            <UserCircleIcon className="w-8 h-8 text-white" />
+            <div className="flex flex-col text-white font-semibold text-base leading-tight">
+              <span>{lastName + " " + firstName || "Account"}</span>
+            </div>
+            <ChevronDownIcon className="w-4 h-4 text-white" />
+          </button>
+          {showAccountDropdown && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 animate-fade-in">
+              <ul className="py-2">
+                {(lastName || firstName) ? (
+                  <>
+                    <li>
+                      <a href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium">Xem profile</a>
+                    </li>
+                    <li>
+                      <a href="/change-password" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium">Đổi mật khẩu</a>
+                    </li>
+                    <li>
+                      <button
+                        onClick={logout}
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium"
+                      >Đăng xuất</button>
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <a href="/login" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium">Đăng nhập</a>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </header>

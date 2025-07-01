@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bg from "../../public/images/background-login.png";
+import bg from "../../images/background-login.png";
 import api from "../api/axios";
+import { setTokens } from "../utils/auth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -20,12 +21,15 @@ export default function LoginForm() {
         password,
       });
 
-      const { token, refreshToken, enabled } = response.data.result;
+      const { token, refreshToken, enabled, role } = response.data.result;
 
       if (enabled === true) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        navigate("/dashboard");
+        setTokens(token, refreshToken);
+        if (role === "ADMIN") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
         console.error("Account is not enabled.");
         navigate("/verify", { state: { email } });

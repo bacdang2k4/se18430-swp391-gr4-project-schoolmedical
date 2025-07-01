@@ -56,7 +56,7 @@ public class ParentController {
         response.setResult(parentService.getListChild());
         return response;
     }
-    @PostMapping("/medicalsent/{id1}")
+    @PostMapping("/medical-sent/{id1}")
     public ApiResponse<MedicineSent> creaMedicineSentApiResponse(@RequestBody MedicineSentRequest request, @PathVariable("id1")String id1 ){
         ApiResponse<MedicineSent> response = new ApiResponse<>();
         response.setResult(medicineSentService.createMedicineSent(request,id1));
@@ -78,7 +78,7 @@ public class ParentController {
         response.setResult(eventService.rejectConsent(id));
         return response;
     }
-    @GetMapping("/event/listforms")
+    @GetMapping("/event/list-forms")
     public ApiResponse<List<ConsentForm>> getConsentForms(){
         ApiResponse<List<ConsentForm>> response = new ApiResponse<>();
         response.setResult(eventService.getConsentForms());
