@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -47,6 +46,8 @@ public class Student {
     private User parent;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<ConsentForm> forms = null;
+    private List<VaccinationConsent> forms = null;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<VaccinationResult> results = null;
 }

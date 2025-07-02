@@ -2,16 +2,10 @@ package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
-import com.dinhbachihi.spring_security.entity.ConsentForm;
-import com.dinhbachihi.spring_security.entity.Event;
-import com.dinhbachihi.spring_security.entity.Student;
-import com.dinhbachihi.spring_security.entity.User;
+import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.exception.AppException;
 import com.dinhbachihi.spring_security.exception.ErrorCode;
-import com.dinhbachihi.spring_security.repository.ConsentFormRepository;
-import com.dinhbachihi.spring_security.repository.EventRepository;
-import com.dinhbachihi.spring_security.repository.StudentRepository;
-import com.dinhbachihi.spring_security.repository.UserRepository;
+import com.dinhbachihi.spring_security.repository.*;
 import com.dinhbachihi.spring_security.service.EmailService;
 import com.dinhbachihi.spring_security.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +22,10 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final StudentRepository studentRepository;
-    private final ConsentFormRepository consentFormRepository;
+    private final VaccinationConsentRepository vaccinationConsentRepository;
     private final EmailService emailService;
     private final UserRepository userRepository;
-
+    private final VaccinationResultRepository vaccinationResultRepository;
 
     public Event createEvent(CreateEventRequest request) {
         Event event = new Event();
@@ -46,20 +40,20 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.getReferenceById(id);
         for(Student student : students) {
             if(student.getParent()!=null){
-            ConsentForm cf = new ConsentForm();
+            VaccinationConsent cf = new VaccinationConsent();
             emailService.sendEmail(student.getParent().getEmail(),event.getName(),event.getDescription());
             cf.setEvent(event);
             cf.setStudent(student);
             cf.setParent(student.getParent());
-            consentFormRepository.save(cf);}
+            vaccinationConsentRepository.save(cf);}
         }
         return "Successfully sent notification";
     }
 
     public ConsentFormReviewResponse acceptConsent(Long id) {
-        ConsentForm cf = consentFormRepository.getReferenceById(id);
+        VaccinationConsent cf = vaccinationConsentRepository.getReferenceById(id);
         cf.setConsent("Accepted");
-        consentFormRepository.save(cf);
+        vaccinationConsentRepository.save(cf);
         ConsentFormReviewResponse response = new ConsentFormReviewResponse();
         response.setType(cf.getEvent().getType());
         response.setDescription(cf.getEvent().getDescription());
@@ -70,9 +64,9 @@ public class EventServiceImpl implements EventService {
         return response;
     }
     public ConsentFormReviewResponse rejectConsent(Long id) {
-        ConsentForm cf = consentFormRepository.getReferenceById(id);
+        VaccinationConsent cf = vaccinationConsentRepository.getReferenceById(id);
         cf.setConsent("Rejected");
-        consentFormRepository.save(cf);
+        vaccinationConsentRepository.save(cf);
         ConsentFormReviewResponse response = new ConsentFormReviewResponse();
         response.setType(cf.getEvent().getType());
         response.setDescription(cf.getEvent().getDescription());
@@ -82,7 +76,7 @@ public class EventServiceImpl implements EventService {
         response.setEventName(cf.getEvent().getName());
         return response;
     }
-    public List<ConsentForm> getConsentForms() {
+    public List<VaccinationConsent> getConsentForms() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -90,10 +84,17 @@ public class EventServiceImpl implements EventService {
         return parent.getForms();
     }
     public List<Student> getStudentAccept(Long id) {
-        List<Student> students = consentFormRepository.findByConsent("accepted")
+        List<Student> students = vaccinationConsentRepository.findByConsent("Accepted")
                 .stream()
-                .map(ConsentForm::getStudent)
+                .map(VaccinationConsent::getStudent)
                 .collect(Collectors.toList());
+        for(Student student : students) {
+            VaccinationResult vr = new VaccinationResult();
+            vr.setStudent(student);
+            vr.setEvent(vaccinationConsentRepository.getReferenceById(id).getEvent());
+            vr.setVaccinationDate(vaccinationConsentRepository.getReferenceById(id).getEvent().getEventDate());
+            vaccinationResultRepository.save(vr);
+        }
         return students;
     }
 

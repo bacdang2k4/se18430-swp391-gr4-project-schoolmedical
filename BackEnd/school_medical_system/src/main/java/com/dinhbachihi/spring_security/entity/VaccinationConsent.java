@@ -3,13 +3,12 @@ package com.dinhbachihi.spring_security.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 
 @Entity
 @Data
-public class ConsentForm {
+public class VaccinationConsent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

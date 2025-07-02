@@ -20,6 +20,9 @@ public class Event {
     private String description;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<ConsentForm> forms = null;
+    private List<VaccinationConsent> forms = null;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<VaccinationResult> results = null;
 }
 

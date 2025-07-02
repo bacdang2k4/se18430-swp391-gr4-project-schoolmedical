@@ -5,7 +5,7 @@ import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
-import com.dinhbachihi.spring_security.entity.ConsentForm;
+import com.dinhbachihi.spring_security.entity.VaccinationConsent;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.entity.Student;
@@ -79,8 +79,8 @@ public class ParentController {
         return response;
     }
     @GetMapping("/event/list-forms")
-    public ApiResponse<List<ConsentForm>> getConsentForms(){
-        ApiResponse<List<ConsentForm>> response = new ApiResponse<>();
+    public ApiResponse<List<VaccinationConsent>> getConsentForms(){
+        ApiResponse<List<VaccinationConsent>> response = new ApiResponse<>();
         response.setResult(eventService.getConsentForms());
         return response;
     }
