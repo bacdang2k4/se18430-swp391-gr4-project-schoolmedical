@@ -1,10 +1,12 @@
 package com.dinhbachihi.spring_security.service;
 
 import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
+import com.dinhbachihi.spring_security.dto.request.RecordVaccinationResult;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.entity.VaccinationConsent;
 import com.dinhbachihi.spring_security.entity.Event;
 import com.dinhbachihi.spring_security.entity.Student;
+import com.dinhbachihi.spring_security.entity.VaccinationResult;
 
 import java.util.List;
 
@@ -15,4 +17,5 @@ public interface EventService {
     ConsentFormReviewResponse rejectConsent(Long id);
     List<VaccinationConsent> getConsentForms();
     List<Student> getStudentAccept(Long id);
+    VaccinationResult recordVaccinationResult(Long Id , RecordVaccinationResult request);
 }

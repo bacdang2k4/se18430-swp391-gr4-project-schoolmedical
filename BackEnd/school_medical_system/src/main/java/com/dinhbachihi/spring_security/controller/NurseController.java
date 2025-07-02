@@ -1,15 +1,13 @@
 package com.dinhbachihi.spring_security.controller;
 
-import com.dinhbachihi.spring_security.dto.request.CreateBlogRequest;
-import com.dinhbachihi.spring_security.dto.request.MedicalEventRequest;
-import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
-import com.dinhbachihi.spring_security.dto.request.UpdateBlogRequest;
+import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicalEventResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
 import com.dinhbachihi.spring_security.entity.Blog;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
 import com.dinhbachihi.spring_security.entity.Student;
+import com.dinhbachihi.spring_security.entity.VaccinationResult;
 import com.dinhbachihi.spring_security.service.BlogService;
 import com.dinhbachihi.spring_security.service.EventService;
 import com.dinhbachihi.spring_security.service.MedicalEventService;
@@ -28,6 +26,7 @@ public class NurseController {
     private final MedicalEventService medicalEventService;
     private final MedicineSentService medicineSentService;
     private final EventService eventService;
+
 
     @GetMapping
     public ResponseEntity<String> welcome(){
@@ -75,6 +74,13 @@ public class NurseController {
     public ApiResponse<List<Student>> getListParticipant(@PathVariable("id") Long id){
         ApiResponse<List<Student>> response = new ApiResponse<>();
         response.setResult(eventService.getStudentAccept(id));
+        return response;
+    }
+    @PutMapping("/event/record/{id}")
+    public ApiResponse<VaccinationResult> recordVaccination(@PathVariable("id") Long id, @RequestBody RecordVaccinationResult request) {
+        ApiResponse<VaccinationResult> response = new ApiResponse<>();
+        response.setResult(eventService.recordVaccinationResult(id,request));
+        response.setMessage("Successfully record vaccination");
         return response;
     }
 

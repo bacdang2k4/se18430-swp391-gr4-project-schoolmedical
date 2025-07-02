@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
+import com.dinhbachihi.spring_security.dto.request.RecordVaccinationResult;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.exception.AppException;
@@ -96,6 +97,16 @@ public class EventServiceImpl implements EventService {
             vaccinationResultRepository.save(vr);
         }
         return students;
+    }
+    public VaccinationResult recordVaccinationResult(Long Id , RecordVaccinationResult request) {
+        VaccinationResult vr = vaccinationResultRepository.findById(Id).orElseThrow(() -> new AppException(ErrorCode.VR_NOT_FOUND));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User nurse = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        vr.setNote(request.getNote());
+        vr.setVaccine(request.getVaccine());
+        vr.setNurse(nurse);
+        return vaccinationResultRepository.save(vr);
     }
 
 
