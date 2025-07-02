@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bg from "../../images/background-login.png";
 import api from "../api/axios";
-import { setTokens } from "../utils/auth";
+import { setTokens, removeTokens } from "../utils/auth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -13,6 +13,8 @@ export default function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    // Xóa token cũ trước khi đăng nhập mới
+    removeTokens();
     setIsLoading(true);
     setErrorMsg(""); // Reset lỗi trước khi login
     try {

@@ -10,6 +10,14 @@ import Home from "../pages/Home"
 import ChangePassword from "../pages/ChangePassword"
 import UserManagement from "../pages/admin/UserManagement"
 import HealthRecords from "../pages/admin/HealthRecords"
+import ContentManagement from "../pages/admin/ContentManagement"
+import MedicineManagement from "../pages/admin/MedicineManagement"
+import MedicalEvents from "../pages/admin/MedicalEvents"
+import VaccinationManagement from "../pages/admin/VaccinationManagement"
+import MedicalCheckups from "../pages/admin/MedicalCheckups"
+import MedicalHistory from "../pages/admin/MedicalHistory"
+import SystemManagement from "../pages/admin/SystemManagement"
+import Reports from "../pages/admin/Reports"
 import api from "../api/axios"
 import { getToken, removeTokens } from "../utils/auth"
 import LoadingSpinner from "../components/LoadingSpinner"
@@ -98,6 +106,70 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <HealthRecords />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/content"
+          element={
+            <PrivateRoute>
+              <ContentManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/medicines"
+          element={
+            <PrivateRoute>
+              <MedicineManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/medical-events"
+          element={
+            <PrivateRoute>
+              <MedicalEvents />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/vaccinations"
+          element={
+            <PrivateRoute>
+              <VaccinationManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/medical-checkups"
+          element={
+            <PrivateRoute>
+              <MedicalCheckups />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/medical-history"
+          element={
+            <PrivateRoute>
+              <MedicalHistory />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/system"
+          element={
+            <PrivateRoute>
+              <SystemManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <PrivateRoute>
+              <Reports />
             </PrivateRoute>
           }
         />
