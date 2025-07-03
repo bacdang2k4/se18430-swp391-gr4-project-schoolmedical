@@ -21,6 +21,9 @@ import Reports from "../components/admin/Reports"
 import api from "../api/axios"
 import { getToken, removeTokens } from "../utils/auth"
 import LoadingSpinner from "../components/LoadingSpinner"
+import Blog from "../pages/Blog"
+import Contact from "../pages/Contact"
+import Documents from "../pages/Documents"
 
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
@@ -67,6 +70,9 @@ export default function AppRoutes() {
         <Route path="/verify" element={<Verify />} />
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/documents" element={<Documents />} />
         <Route
           path="/dashboard"
           element={

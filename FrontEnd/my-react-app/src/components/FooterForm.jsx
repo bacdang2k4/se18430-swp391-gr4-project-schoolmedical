@@ -2,7 +2,7 @@ import React from "react";
 
 function FooterForm() {
   return (
-    <footer className="bg-gray-900 text-white pt-10 pb-6 px-4 mt-10 rounded-t-3xl shadow-lg">
+    <footer className="bg-gray-900 text-white pt-10 pb-6 px-4 mt-10 shadow-lg">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div>
           <h4 className="text-blue-400 font-bold mb-4">Thông tin trường học</h4>
