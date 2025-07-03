@@ -17,9 +17,11 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline"
 import logo from "../../images/logo-removebg.png"
 import { getProfile } from "../api/axios"
+import { logout } from "../utils/auth"
 
 const menuItems = [
   {
@@ -118,6 +120,10 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
     setIsMobileOpen(!isMobileOpen)
   }
 
+  const handleLogout = () => {
+    logout()
+  }
+
   return (
     <>
       {/* Mobile menu button */}
@@ -201,7 +207,7 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 p-4 space-y-3">
           {!isCollapsed ? (
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -226,6 +232,20 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
               </div>
             </div>
           )}
+          
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className={`
+              w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+              text-red-600 hover:bg-red-50 hover:text-red-700
+              ${isCollapsed ? "justify-center" : ""}
+            `}
+            title={isCollapsed ? "Đăng xuất" : ""}
+          >
+            <ArrowRightOnRectangleIcon className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span className="font-medium text-sm">Đăng xuất</span>}
+          </button>
         </div>
       </div>
     </>

@@ -12,7 +12,7 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline"
-import AdminLayout from "../../components/AdminLayout"
+import AdminLayout from "../AdminLayout"
 
 const systemStats = {
   totalUsers: 1247,

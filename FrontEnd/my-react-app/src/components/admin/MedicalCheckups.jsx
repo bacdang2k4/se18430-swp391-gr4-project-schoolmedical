@@ -11,7 +11,7 @@ import {
   ClockIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline"
-import AdminLayout from "../../components/AdminLayout"
+import AdminLayout from "../AdminLayout"
 
 const checkupCampaigns = [
   {
