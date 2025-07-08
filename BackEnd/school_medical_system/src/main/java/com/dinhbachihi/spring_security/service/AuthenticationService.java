@@ -8,5 +8,5 @@ public interface AuthenticationService {
     JwtAuthenticationResponse signIn(SignInRequest request);
     JwtAuthenticationResponse refreshToken(RefreshTokenRequest request);
     void verifyAccount(OtpRequest request);
-
+    void sendOtp(SendOtpRequest request);
 }

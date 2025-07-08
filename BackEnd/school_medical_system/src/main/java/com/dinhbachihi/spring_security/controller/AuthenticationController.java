@@ -45,4 +45,12 @@ public class AuthenticationController {
         response.setMessage("Account verified");
         return response;
     }
+
+    @PostMapping("/send-otp")
+    public ApiResponse<String> sendOtp(@Valid @RequestBody SendOtpRequest request) {
+        ApiResponse<String> response = new ApiResponse<>();
+        authenticationService.sendOtp(request);
+        response.setMessage("OTP sent successfully");
+        return response;
+    }
 }

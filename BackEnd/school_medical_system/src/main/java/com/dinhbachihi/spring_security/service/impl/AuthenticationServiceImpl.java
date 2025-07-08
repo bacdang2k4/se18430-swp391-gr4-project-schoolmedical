@@ -57,7 +57,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (!user.isEnabled()) {
             response.setEnabled(false);
-            otpService.sendOtp(user);
             return response;
         }
         authenticationManager.authenticate(
@@ -101,5 +100,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setOtpCode(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
+    }
+
+    @Override
+    public void sendOtp(SendOtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        
+        otpService.sendOtp(user);
     }
 }
