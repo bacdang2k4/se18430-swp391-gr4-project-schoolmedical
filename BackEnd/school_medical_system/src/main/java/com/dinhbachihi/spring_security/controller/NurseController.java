@@ -3,15 +3,10 @@ package com.dinhbachihi.spring_security.controller;
 import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicalEventResponse;
+import com.dinhbachihi.spring_security.dto.response.MedicineResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
-import com.dinhbachihi.spring_security.entity.Blog;
-import com.dinhbachihi.spring_security.entity.MedicineSent;
-import com.dinhbachihi.spring_security.entity.Student;
-import com.dinhbachihi.spring_security.entity.VaccinationResult;
-import com.dinhbachihi.spring_security.service.BlogService;
-import com.dinhbachihi.spring_security.service.EventService;
-import com.dinhbachihi.spring_security.service.MedicalEventService;
-import com.dinhbachihi.spring_security.service.MedicineSentService;
+import com.dinhbachihi.spring_security.entity.*;
+import com.dinhbachihi.spring_security.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +21,7 @@ public class NurseController {
     private final MedicalEventService medicalEventService;
     private final MedicineSentService medicineSentService;
     private final EventService eventService;
+    private final MedicineService medicineService;
 
 
     @GetMapping
@@ -83,6 +79,17 @@ public class NurseController {
         response.setMessage("Successfully record vaccination");
         return response;
     }
+
+    @GetMapping("/medicine/list")
+    public ApiResponse<List<MedicineResponse>> getAllMedicines() {
+        ApiResponse<List<MedicineResponse>> response = new ApiResponse<>();
+        response.setResult(medicineService.getAllMedicines());
+        response.setMessage("Fetched medicine list successfully");
+        return response;
+    }
+
+
+
 
 
 }

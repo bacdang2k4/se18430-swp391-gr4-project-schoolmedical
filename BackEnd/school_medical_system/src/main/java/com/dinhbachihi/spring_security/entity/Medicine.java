@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class Medicine {
 
 
     @OneToMany(mappedBy = "medicine", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<UsedMedicine> usedMedicines;
 
 
