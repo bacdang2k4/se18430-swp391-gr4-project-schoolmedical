@@ -1,9 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { sendOtp, verifyOtp } from "../api/axios";
 
 function VerifyForm() {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 5 phút = 300 giây
+  const [timeLeft, setTimeLeft] = useState(60); // 1 phút = 60 giây
+  const [resendLoading, setResendLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const email = location.state?.email;
+  const sentRef = useRef(false);
+
+  // Gửi OTP khi vào form
+  useEffect(() => {
+    if (!email) {
+      navigate("/login");
+      return;
+    }
+    if (!sentRef.current) {
+      sentRef.current = true;
+      sendOtp(email);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     if (timeLeft === 0) return;
@@ -22,11 +43,28 @@ function VerifyForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Gọi API xác thực OTP ở đây
-    setTimeout(() => {
+    setErrorMsg("");
+    try {
+      await verifyOtp(email, otp);
+      navigate("/login", { state: { verified: true } });
+    } catch {
+      setErrorMsg("OTP không đúng");
+    } finally {
       setIsLoading(false);
-      alert("OTP submitted: " + otp);
-    }, 1500);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!email) return;
+    setResendLoading(true);
+    try {
+      await sendOtp(email);
+      setTimeLeft(60); // Reset lại thời gian
+    } catch {
+      alert("Gửi lại OTP thất bại. Vui lòng thử lại.");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   return (
@@ -44,6 +82,9 @@ function VerifyForm() {
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">Verify OTP</h2>
         <p className="text-center text-gray-600 mb-4">Please enter the OTP sent to your email. <br/> OTP is valid for 1 minutes.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {errorMsg && (
+            <div className="text-red-600 text-center font-semibold mb-2">{errorMsg}</div>
+          )}
           <input
             type="text"
             value={otp}
@@ -62,6 +103,15 @@ function VerifyForm() {
         </form>
         <div className="text-center mt-4 text-gray-500">
           Time left: <span className="font-mono text-blue-600">{formatTime(timeLeft)}</span>
+        </div>
+        <div className="text-center mt-2">
+          <button
+            onClick={handleResendOtp}
+            className="text-blue-600 hover:underline disabled:text-gray-400"
+            disabled={timeLeft > 0 || resendLoading}
+          >
+            {resendLoading ? "Sending..." : "Resend OTP"}
+          </button>
         </div>
       </div>
     </div>

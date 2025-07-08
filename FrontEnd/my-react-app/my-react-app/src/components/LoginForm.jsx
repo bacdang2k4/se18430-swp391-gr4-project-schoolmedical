@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import bg from "../../images/background-login.png";
 import api from "../api/axios";
 import { setTokens, removeTokens } from "../utils/auth";
@@ -10,6 +10,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -77,6 +78,12 @@ export default function LoginForm() {
               Login
             </h2>
 
+            {/* Thông báo xác thực thành công */}
+            {location.state?.verified && (
+              <div className="mb-4 text-green-600 text-center font-semibold">
+                Đã xác thực thành công, vui lòng đăng nhập lại.
+              </div>
+            )}
             {/* Hiển thị thông báo lỗi nếu có */}
             {errorMsg && (
               <div className="mb-4 text-red-600 text-center font-semibold">

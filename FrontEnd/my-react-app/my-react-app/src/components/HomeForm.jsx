@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from "react"
 import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon, UserIcon, ArrowRightIcon } from "@heroicons/react/24/outline"
+import banner1 from "../../images/banner1.jpg"
 
 const bannerSlides = [
   {
     id: 1,
-    image: "/placeholder.svg?height=400&width=1400",
-    title: "Chiến dịch tiêm chủng 2025",
-    description:
-      "Đăng ký ngay để bảo vệ con bạn khỏi các bệnh truyền nhiễm nguy hiểm. Chương trình tiêm chủng toàn diện với vaccine chất lượng cao.",
-    ctaText: "Đăng ký ngay",
-    ctaLink: "/vaccination",
-    bgColor: "from-blue-600 to-indigo-700",
+    image: banner1,
+    title: "FPT University",
+    description: "D1 Long Thạnh Mỹ, Khu công nghệ cao, TP. Thủ Đức, TP.HCM",
+    ctaText: "Thông tin chi tiết",
+    ctaLink: "/infomation",
+    // Đổi gradient nền cho dịu và hợp ảnh trường
+    bgColor: "from-blue-400 via-green-200 to-white",
   },
   {
     id: 2,
@@ -226,14 +227,6 @@ function HomeForm() {
     return () => clearInterval(interval)
   }, [isNewsAutoPlay])
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length)
-  }
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length)
-  }
-
   const goToSlide = (index) => {
     setCurrentSlide(index)
   }
@@ -309,23 +302,6 @@ function HomeForm() {
           ))}
         </div>
 
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 md:p-5 rounded-full hover:bg-opacity-70 transition-all duration-200 z-10 backdrop-blur-sm"
-          title="Slide trước"
-        >
-          <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8" />
-        </button>
-
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 md:p-5 rounded-full hover:bg-opacity-70 transition-all duration-200 z-10 backdrop-blur-sm"
-          title="Slide tiếp theo"
-        >
-          <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8" />
-        </button>
-
         {/* Dots Indicator */}
         <div className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 md:space-x-4 z-10">
           {bannerSlides.map((_, index) => (
@@ -343,11 +319,11 @@ function HomeForm() {
         </div>
 
         {/* Auto-play indicator */}
-        <div className="absolute top-6 left-6 z-10">
+        {/* <div className="absolute top-6 left-6 z-10">
           <div
             className={`w-3 h-3 rounded-full ${isAutoPlay ? "bg-green-400" : "bg-red-400"} animate-pulse shadow-lg`}
           />
-        </div>
+        </div> */}
 
         {/* Slide counter */}
         <div className="absolute top-6 right-6 z-10 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
