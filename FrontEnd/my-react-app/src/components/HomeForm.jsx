@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon, UserIcon, ArrowRightIcon } from "@heroicons/react/24/outline"
-import banner1 from "../../images/banner1.jpeg"
+import { useNavigate } from "react-router-dom"
+import banner1 from "../../images/banner1.jpg"
 
 const bannerSlides = [
   {
@@ -22,7 +23,7 @@ const bannerSlides = [
     description:
       "Lịch kiểm tra sức khỏe học kỳ 2 cho tất cả học sinh từ ngày 15/01/2025. Đảm bảo sức khỏe toàn diện cho con em.",
     ctaText: "Xem lịch",
-    ctaLink: "/health-checkup",
+    ctaLink: "/medical-checkup",
     bgColor: "from-green-600 to-emerald-700",
   },
   {
@@ -200,6 +201,7 @@ const stats = [
 ]
 
 function HomeForm() {
+  const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlay, setIsAutoPlay] = useState(true)
   const [currentNewsSlide, setCurrentNewsSlide] = useState(0)
@@ -341,7 +343,12 @@ function HomeForm() {
           {features.map((f, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-3xl shadow-xl p-10 text-center border border-gray-100 hover:shadow-2xl transition-all duration-300 group hover:-translate-y-2"
+              className="bg-white rounded-3xl shadow-xl p-10 text-center border border-gray-100 hover:shadow-2xl transition-all duration-300 group hover:-translate-y-2 cursor-pointer"
+              onClick={() => {
+                if (f.title === "Hồ sơ sức khỏe") {
+                  navigate("/health-record")
+                }
+              }}
             >
               <div
                 className={`w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center text-4xl text-white ${f.color} shadow-lg`}
