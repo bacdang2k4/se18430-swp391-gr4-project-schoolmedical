@@ -42,7 +42,13 @@ public class ParentController {
         response.setResult(healthRecordService.createHealthRecord(request));
         return response;
     }
-
+    @GetMapping("/get-health-record/{id}")
+    public ApiResponse<HealthRecord> getHealthRecord(@PathVariable Long id){
+        ApiResponse<HealthRecord> response = new ApiResponse<>();
+        response.setMessage("Get Health Record Success");
+        response.setResult(healthRecordService.getHealthRecord(id));
+        return response;
+    }
     @PutMapping("/update-health-record/{id}")
     public ApiResponse<HealthRecord> updateHealthRecord(@Valid @RequestBody UpdateHealthRecordRequest request , @PathVariable("id") Long id){
         ApiResponse<HealthRecord> response = new ApiResponse<>();

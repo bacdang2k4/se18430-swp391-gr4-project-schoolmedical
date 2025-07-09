@@ -51,4 +51,10 @@ public class HealthRecordServiceImpl implements HealthRecordService {
 
         return healthRecordRepository.save(existingRecord);
     }
+
+    public HealthRecord getHealthRecord(Long id) {
+        HealthRecord existingRecord = healthRecordRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
+        return existingRecord;
+    }
 }
