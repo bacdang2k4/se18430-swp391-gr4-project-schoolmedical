@@ -35,13 +35,7 @@ public class ParentController {
         return ResponseEntity.ok("Hello Parent");
     }
 
-    @PostMapping("/create-health-record")
-    public ApiResponse<HealthRecord> createHealthRecord(@Valid @RequestBody CreateHealthRecordRequest request){
-        ApiResponse<HealthRecord> response = new ApiResponse<>();
-        response.setMessage("Create Health Record Success");
-        response.setResult(healthRecordService.createHealthRecord(request));
-        return response;
-    }
+
     @GetMapping("/get-health-record/{id}")
     public ApiResponse<HealthRecord> getHealthRecord(@PathVariable Long id){
         ApiResponse<HealthRecord> response = new ApiResponse<>();
