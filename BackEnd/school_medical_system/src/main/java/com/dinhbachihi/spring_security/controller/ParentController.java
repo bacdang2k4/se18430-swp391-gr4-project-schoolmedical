@@ -5,6 +5,7 @@ import com.dinhbachihi.spring_security.dto.request.MedicineSentRequest;
 import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
+import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
 import com.dinhbachihi.spring_security.entity.VaccinationConsent;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
@@ -35,7 +36,13 @@ public class ParentController {
         return ResponseEntity.ok("Hello Parent");
     }
 
-
+    @PostMapping("/create-health-record")
+    public ApiResponse<HealthRecord> createHealthRecord(@Valid @RequestBody CreateHealthRecordRequest request){
+        ApiResponse<HealthRecord> response = new ApiResponse<>();
+        response.setMessage("Create Health Record Success");
+        response.setResult(healthRecordService.createHealthRecord(request));
+        return response;
+    }
     @GetMapping("/get-health-record/{id}")
     public ApiResponse<HealthRecord> getHealthRecord(@PathVariable Long id){
         ApiResponse<HealthRecord> response = new ApiResponse<>();
@@ -62,7 +69,6 @@ public class ParentController {
         response.setResult(medicineSentService.createMedicineSent(request,id1));
         response.setMessage("Successfully created medicine sent");
         return response;
-
     }
     @PutMapping("/event/accept/{id}")
     public ApiResponse<ConsentFormReviewResponse> acceptConsent(@PathVariable("id") Long id){
@@ -82,6 +88,13 @@ public class ParentController {
     public ApiResponse<List<VaccinationConsent>> getConsentForms(){
         ApiResponse<List<VaccinationConsent>> response = new ApiResponse<>();
         response.setResult(eventService.getConsentForms());
+        return response;
+    }
+    @GetMapping("/medical-sent/history")
+    public ApiResponse<List<MedicineSentResponse>> getMedicineSentHistoryForParent() {
+        ApiResponse<List<MedicineSentResponse>> response = new ApiResponse<>();
+        response.setResult(medicineSentService.getMedicineSentsByCurrentParent());
+        response.setMessage("Fetched medicine sent history for current parent");
         return response;
     }
 }

@@ -10,4 +10,5 @@ public interface MedicineSentService {
     MedicineSent createMedicineSent(MedicineSentRequest request, String stdId);
     List<MedicineSentResponse> getMedicineSents();
     MedicineSent acceptMedicineSent( Long id );
+    List<MedicineSentResponse> getMedicineSentsByCurrentParent();
 }

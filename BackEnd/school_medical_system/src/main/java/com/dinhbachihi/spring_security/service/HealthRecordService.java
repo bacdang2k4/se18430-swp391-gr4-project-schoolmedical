@@ -5,7 +5,7 @@ import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.entity.HealthRecord;
 
 public interface HealthRecordService {
-    HealthRecord createHealthRecord(String id);
+    HealthRecord createHealthRecord(CreateHealthRecordRequest request);
     HealthRecord updateHealthRecord(UpdateHealthRecordRequest request,Long id);
     HealthRecord getHealthRecord(Long id);
 }

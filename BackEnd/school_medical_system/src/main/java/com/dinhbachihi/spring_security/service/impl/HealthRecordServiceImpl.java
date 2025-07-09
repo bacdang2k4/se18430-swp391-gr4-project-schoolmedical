@@ -19,11 +19,19 @@ public class HealthRecordServiceImpl implements HealthRecordService {
     private final StudentRepository studentRepository;
 
     @Override
-    public HealthRecord createHealthRecord(String id) {
-        Student student = studentRepository.findById(id)
+    public HealthRecord createHealthRecord(CreateHealthRecordRequest request) {
+        Student student = studentRepository.findById(request.getStudentId())
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
-        HealthRecord record = HealthRecord.builder()
+        if(student.getHealthRecord() != null) {
+            throw new AppException(ErrorCode.HEALTH_RECORD_ALREADY_EXISTS);
+        }
 
+        HealthRecord record = HealthRecord.builder()
+                .allergy(request.getAllergy())
+                .chronic_disease(request.getChronic_disease())
+                .vision(request.getVision())
+                .hearing(request.getHearing())
+                .medical_history(request.getMedical_history())
                 .student(student)
                 .build();
 

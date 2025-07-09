@@ -10,7 +10,6 @@ import com.dinhbachihi.spring_security.repository.ClassesRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.repository.UserRepository;
 import com.dinhbachihi.spring_security.service.AdminService;
-import com.dinhbachihi.spring_security.service.HealthRecordService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final ClassesRepository classesRepository;
-    private final HealthRecordService healthRecordService;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -119,9 +117,7 @@ public class AdminServiceImpl implements AdminService {
                 .parent(user)
                 .build();
         addStudentToClasses(student, classes);
-        studentRepository.save(student);
-        healthRecordService.createHealthRecord(student.getStudentId());
-        return student;
+        return studentRepository.save(student);
     }
 
     @Override

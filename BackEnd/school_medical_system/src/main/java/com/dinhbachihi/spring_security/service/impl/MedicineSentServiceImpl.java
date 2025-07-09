@@ -63,6 +63,32 @@ public class MedicineSentServiceImpl implements MedicineSentService {
     return responses;
     }
 
+    @Override
+    public List<MedicineSentResponse> getMedicineSentsByCurrentParent() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User parent = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        List<MedicineSent> list = medicineSentRepository.findByParent(parent);
+        List<MedicineSentResponse> responses = new ArrayList<>();
+        for (MedicineSent medicineSent : list) {
+            MedicineSentResponse response = new MedicineSentResponse();
+            response.setId(medicineSent.getId());
+            response.setStudentId(String.valueOf(medicineSent.getStudent().getStudentId()));
+            response.setParentId(String.valueOf(medicineSent.getParent().getId()));
+            response.setApprovedBy(medicineSent.getApprovedBy() != null ?
+                    String.valueOf(medicineSent.getApprovedBy().getId()) : null);
+            response.setMedicineName(medicineSent.getMedicineName());
+            response.setDescription(medicineSent.getUsageInstructions());
+            response.setNote(medicineSent.getNotes());
+            response.setSendDate(medicineSent.getSendDate());
+            response.setStatus(medicineSent.getStatus());
+            response.setUse(medicineSent.isUse());
+            responses.add(response);
+        }
+        return responses;
+    }
+
     public MedicineSent acceptMedicineSent( Long id ){
         MedicineSent medicineSent = medicineSentRepository.getReferenceById(id);
         medicineSent.setStatus("accepted");
