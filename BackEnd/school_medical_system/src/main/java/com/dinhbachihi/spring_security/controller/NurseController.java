@@ -23,6 +23,7 @@ public class NurseController {
     private final EventService eventService;
     private final MedicineService medicineService;
     private final HealthRecordService healthRecordService;
+    private final AdminService adminService;
 
 
     @GetMapping
@@ -122,6 +123,12 @@ public class NurseController {
         ApiResponse<List<Student>> response = new ApiResponse<>();
         response.setResult(healthRecordService.getAllHealthRecord());
         response.setMessage("Fetched health record list successfully");
+        return response;
+    }
+    @GetMapping("/student/list")
+    public ApiResponse<List<Student>> getAllStudents() {
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(adminService.getStudents());
         return response;
     }
 
