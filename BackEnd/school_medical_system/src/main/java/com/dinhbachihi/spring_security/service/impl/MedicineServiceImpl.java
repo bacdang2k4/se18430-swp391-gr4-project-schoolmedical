@@ -1,5 +1,7 @@
 package com.dinhbachihi.spring_security.service.impl;
 
+import com.dinhbachihi.spring_security.dto.request.MedicineAddRequest;
+import com.dinhbachihi.spring_security.dto.request.MedicineUpdateRequest;
 import com.dinhbachihi.spring_security.dto.response.MedicineResponse;
 import com.dinhbachihi.spring_security.entity.Medicine;
 import com.dinhbachihi.spring_security.repository.MedicineRepository;
@@ -24,5 +26,17 @@ public class MedicineServiceImpl implements MedicineService {
                 .map(m -> new MedicineResponse(m.getId(), m.getName(), m.getQuantity(), m.getType(), m.getUnit()))
                 .collect(Collectors.toList());
     }
-
+    public Medicine addMedicine(MedicineAddRequest request) {
+        Medicine medicine = new Medicine();
+        medicine.setName(request.getName());
+        medicine.setType(request.getType());
+        medicine.setQuantity(request.getQuantity());
+        medicine.setUnit(request.getUnit());
+        return medicineRepository.save(medicine);
+    }
+    public Medicine updateMedicine(MedicineUpdateRequest request,Long id) {
+        Medicine medicine = medicineRepository.getReferenceById(id);
+        medicine.setQuantity(request.getQuantity());
+        return medicineRepository.save(medicine);
+    }
 }

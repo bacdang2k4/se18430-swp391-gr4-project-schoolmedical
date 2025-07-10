@@ -48,7 +48,7 @@ public class NurseController {
 
 
     @PostMapping("/medical-event/{id}")
-    public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request, @PathVariable("id") String id{
+    public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request, @PathVariable("id") String id){
         ApiResponse<MedicalEventResponse> response = new ApiResponse<>();
         response.setResult(medicalEventService.createMedicalEvent(request,id));
         response.setMessage("Successfully created medicine event");
@@ -101,6 +101,20 @@ public class NurseController {
         ApiResponse<List<MedicineResponse>> response = new ApiResponse<>();
         response.setResult(medicineService.getAllMedicines());
         response.setMessage("Fetched medicine list successfully");
+        return response;
+    }
+    @PostMapping("/medicine")
+    public ApiResponse<Medicine> addMedicine(@RequestBody MedicineAddRequest request){
+        ApiResponse<Medicine> response = new ApiResponse<>();
+        response.setResult(medicineService.addMedicine(request));
+        response.setMessage("Successfully created medicine");
+        return response;
+    }
+    @PutMapping("/medicine/{id}")
+    public ApiResponse<Medicine> updateMedicine(@PathVariable("id") Long id, @RequestBody MedicineUpdateRequest request){
+        ApiResponse<Medicine> response = new ApiResponse<>();
+        response.setResult(medicineService.updateMedicine(request,id));
+        response.setMessage("Successfully updated medicine");
         return response;
     }
     @GetMapping("/health-record/list")
