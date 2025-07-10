@@ -54,6 +54,12 @@ public class NurseController {
         response.setMessage("Successfully created medicine event");
         return response;
     }
+    @GetMapping("/medical-event/list")
+    public ApiResponse<List<MedicalEvent>> getMedicalEventList(){
+        ApiResponse<List<MedicalEvent>> response = new ApiResponse<>();
+        response.setResult(medicalEventService.getMedicalEvents());
+        return response;
+    }
     @GetMapping("/medical-sent/list")
     public ApiResponse<List<MedicineSentResponse>> getMedicalSents(){
         ApiResponse<List<MedicineSentResponse>> response = new ApiResponse<>();

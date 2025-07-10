@@ -94,4 +94,7 @@ public class MedicalEventServiceImpl implements MedicalEventService {
 
         return response;
     }
+    public List<MedicalEvent> getMedicalEvents (){
+        return medicalEventRepository.findAll();
+    }
 }
