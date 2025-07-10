@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,11 +15,13 @@ public class UsedMedicine {
     @ManyToOne
     @MapsId("medicalEventId")
     @JoinColumn(name = "medical_event_id")
+    @JsonBackReference
     private MedicalEvent medicalEvent;
 
     @ManyToOne
     @MapsId("medicineId")
     @JoinColumn(name = "medicine_id")
+
     private Medicine medicine;
 
     private int quantityUsed;

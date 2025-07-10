@@ -48,4 +48,7 @@ public class Student {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<VaccinationResult> results = null;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<MedicalEvent> eventList = null;
 }

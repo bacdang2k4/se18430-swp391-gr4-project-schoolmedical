@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,10 +24,11 @@ public class MedicalEvent {
     @ManyToOne
 
     @JoinColumn(name="student_id")
+    @JsonBackReference
     private Student student;
+
     @ManyToOne
     @JoinColumn(name="handle_by")
-
     private  User nurse;
 
     @OneToMany(mappedBy = "medicalEvent", cascade = CascadeType.ALL)
