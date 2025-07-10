@@ -91,7 +91,7 @@ public class MedicineSentServiceImpl implements MedicineSentService {
 
     public MedicineSent acceptMedicineSent( Long id ){
         MedicineSent medicineSent = medicineSentRepository.getReferenceById(id);
-        medicineSent.setStatus("accepted");
+        medicineSent.setStatus("received");
         return medicineSentRepository.save(medicineSent);
     }
 }

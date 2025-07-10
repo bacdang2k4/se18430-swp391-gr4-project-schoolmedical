@@ -148,27 +148,32 @@ function HeaderForm() {
                     onClick={() => {
                       //Parent features
                       if (f.title === "Hồ sơ sức khỏe") {
-                        navigate("/health-record")
+                        navigate("/parent/health-record")
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Gửi thuốc") {
-                        navigate("/medical-send")
+                        navigate("/parent/medical-send-history")
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Xem sự kiện y tế") {
-                        navigate("/medical-event")
+                        navigate("/parent/medical-event")
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Xem lịch tiêm chủng") {
-                        navigate("/medical-vaccine")
+                        navigate("/parent/medical-vaccine")
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Lịch kiểm tra y tế định kỳ") {
-                        navigate("/medical-checkup")
+                        navigate("/parent/medical-checkup")
                         setShowFeatureDropdown(false)
                       }
 
                       //Nurse features
+                      if (f.title === "Quản lý thuốc gửi thuốc từ phụ huynh") {
+                        navigate("/nurse/medical-send-history")
+                        setShowFeatureDropdown(false)
+                      }
+                      
                     }}
                   >
                     <span className="text-lg">{f.icon}</span> {f.title}

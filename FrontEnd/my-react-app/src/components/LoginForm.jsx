@@ -29,7 +29,7 @@ export default function LoginForm() {
       if (enabled === true) {
         setTokens(token, refreshToken);
         if (role === "ADMIN") {
-          navigate("/dashboard");
+          navigate("/admin/dashboard");
         } else {
           navigate("/");
         }

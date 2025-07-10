@@ -24,7 +24,8 @@ import LoadingSpinner from "../components/LoadingSpinner"
 import Blog from "../pages/Blog"
 import Contact from "../pages/Contact"
 import Documents from "../pages/Documents"
-import HealthRecord from "../pages/HealthRecord"
+import HealthRecord from "../pages/parent/HealthRecord"
+import MedicalSend from "../pages/MedicalSend"
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -74,22 +75,8 @@ export default function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/documents" element={<Documents />} />
 
-        <Route
-          path="/health-record"
-          element={
-            <PrivateRoute>
-              <HealthRecord />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
+        
+        
         <Route
           path="/profile"
           element={
@@ -108,6 +95,14 @@ export default function AppRoutes() {
         />
 
         {/* Admin Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/admin/users"
           element={
@@ -188,6 +183,25 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
+        {/* Parent Routes */}
+        <Route
+          path="/parent/health-record"
+          element={
+            <PrivateRoute>
+              <HealthRecord />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/parent/medical-send-history"
+          element={
+            <PrivateRoute>
+              <MedicalSend />
+            </PrivateRoute>
+          }
+        />
+        
+        {/* Nurse Routes */}
       </Routes>
     </Router>
   )
