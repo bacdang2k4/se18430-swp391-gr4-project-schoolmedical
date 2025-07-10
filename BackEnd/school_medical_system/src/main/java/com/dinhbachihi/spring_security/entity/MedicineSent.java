@@ -49,7 +49,7 @@ public class MedicineSent {
     @JoinColumn(name = "Nurse_Id")
     private User approvedBy;
     @Column(nullable = false)
-    private boolean isUse = true;
+    private boolean isUse = false;
 
     private String status = "pending";
 }

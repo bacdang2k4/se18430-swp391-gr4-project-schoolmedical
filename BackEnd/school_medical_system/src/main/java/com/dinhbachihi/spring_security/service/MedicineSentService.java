@@ -11,4 +11,5 @@ public interface MedicineSentService {
     List<MedicineSentResponse> getMedicineSents();
     MedicineSent acceptMedicineSent( Long id );
     List<MedicineSentResponse> getMedicineSentsByCurrentParent();
+    MedicineSent setUse( Long id );
 }

@@ -12,6 +12,8 @@ import com.dinhbachihi.spring_security.service.HealthRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class HealthRecordServiceImpl implements HealthRecordService {
@@ -48,5 +50,8 @@ public class HealthRecordServiceImpl implements HealthRecordService {
         HealthRecord existingRecord = healthRecordRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
         return existingRecord;
+    }
+    public List<Student> getAllHealthRecord() {
+        return studentRepository.findAll();
     }
 }

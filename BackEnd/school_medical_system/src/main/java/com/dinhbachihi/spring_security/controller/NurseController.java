@@ -22,6 +22,7 @@ public class NurseController {
     private final MedicineSentService medicineSentService;
     private final EventService eventService;
     private final MedicineService medicineService;
+    private final HealthRecordService healthRecordService;
 
 
     @GetMapping
@@ -66,6 +67,15 @@ public class NurseController {
         response.setMessage("Successfully accepted medicine sent");
         return response;
     }
+
+    @PutMapping("/set-use/{id}")
+    public ApiResponse<MedicineSent> setUse(@PathVariable("id") Long id){
+        ApiResponse<MedicineSent> response = new ApiResponse<>();
+        response.setResult(medicineSentService.setUse(id));
+        response.setMessage("Successfully set use");
+        return response;
+    }
+
     @GetMapping("/event/parti/{id}")
     public ApiResponse<List<Student>> getListParticipant(@PathVariable("id") Long id){
         ApiResponse<List<Student>> response = new ApiResponse<>();
@@ -85,6 +95,13 @@ public class NurseController {
         ApiResponse<List<MedicineResponse>> response = new ApiResponse<>();
         response.setResult(medicineService.getAllMedicines());
         response.setMessage("Fetched medicine list successfully");
+        return response;
+    }
+    @GetMapping("/health-record/list")
+    public ApiResponse<List<Student>> getAllHealthRecords() {
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(healthRecordService.getAllHealthRecord());
+        response.setMessage("Fetched health record list successfully");
         return response;
     }
 

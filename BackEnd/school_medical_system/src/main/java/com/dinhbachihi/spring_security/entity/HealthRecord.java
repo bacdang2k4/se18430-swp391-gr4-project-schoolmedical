@@ -23,6 +23,6 @@ public class HealthRecord {
 
     @OneToOne
     @JoinColumn(name = "student_id", nullable = false, unique = true)
-    @JsonBackReference //Để không trùng lặp các thông tin của bảng khi gọi
+    @JsonBackReference//Để không trùng lặp các thông tin của bảng khi gọi
     private Student student;
 }

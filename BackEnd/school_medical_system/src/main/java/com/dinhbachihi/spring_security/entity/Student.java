@@ -32,12 +32,10 @@ public class Student {
     private LocalDate dateOfBirth;
 
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference //Để không trùng lặp các thông tin của bảng khi gọi
     private HealthRecord healthRecord;
 
     @ManyToOne
     @JoinColumn(name="ClassID")
-    @JsonBackReference("student-class")
     private Classes classes;
 
     @ManyToOne
