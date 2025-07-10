@@ -10,7 +10,6 @@ public class MedicalEventRequest {
     private String medicalEventName;
     private String medicalEventDescription;
     private String type;
-    private String studentId;
     private List<UsedMedicineRequest> medicineList;
 
 

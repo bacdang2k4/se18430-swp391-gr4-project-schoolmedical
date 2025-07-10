@@ -7,6 +7,6 @@ import com.dinhbachihi.spring_security.entity.MedicalEvent;
 import java.util.List;
 
 public interface MedicalEventService {
-    MedicalEventResponse createMedicalEvent(MedicalEventRequest request);
+    MedicalEventResponse createMedicalEvent(MedicalEventRequest request, String id );
     List<MedicalEvent> getMedicalEvents ();
 }

@@ -38,8 +38,8 @@ public class MedicalEventServiceImpl implements MedicalEventService {
     @Autowired
     private JWTService jwtService;
 
-    public MedicalEventResponse createMedicalEvent(MedicalEventRequest request) {
-        Student student = studentRepository.getReferenceById(request.getStudentId());
+    public MedicalEventResponse createMedicalEvent(MedicalEventRequest request ,String id) {
+        Student student = studentRepository.getReferenceById(id);
 
         MedicalEvent medicalEvent = new MedicalEvent();
         medicalEvent.setStudent(student);

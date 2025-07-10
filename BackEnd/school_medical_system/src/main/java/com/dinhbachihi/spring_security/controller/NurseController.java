@@ -47,10 +47,10 @@ public class NurseController {
     }
 
 
-    @PostMapping("/medical-event")
-    public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request){
+    @PostMapping("/medical-event/{id}")
+    public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request, @PathVariable("id") String id{
         ApiResponse<MedicalEventResponse> response = new ApiResponse<>();
-        response.setResult(medicalEventService.createMedicalEvent(request));
+        response.setResult(medicalEventService.createMedicalEvent(request,id));
         response.setMessage("Successfully created medicine event");
         return response;
     }
