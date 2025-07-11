@@ -150,7 +150,7 @@ function EventInSchoolForm() {
   const handleMedicineSelect = (medicine, index) => {
     const updatedMedicineList = [...addForm.medicineList];
     updatedMedicineList[index] = { 
-      medicineId: medicine.medicineId, 
+      medicineId: medicine.id, 
       quantityUsed: updatedMedicineList[index]?.quantityUsed || '',
       medicineName: medicine.name,
       medicineData: medicine
@@ -241,8 +241,8 @@ function EventInSchoolForm() {
       medicineList: addForm.medicineList
         .filter(med => med.medicineId && med.quantityUsed)
         .map(med => ({
-          medicineId: med.medicineId,
-          quantityUsed: med.quantityUsed
+          medicineId: Number(med.medicineId),
+          quantityUsed: Number(med.quantityUsed)
         }))
     };
     try {

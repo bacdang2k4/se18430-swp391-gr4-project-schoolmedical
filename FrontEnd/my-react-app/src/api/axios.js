@@ -167,5 +167,14 @@ export const getNurseStudentList = async () => {
   return response.data;
 };
 
+export const updateNurseMedicine = async (id, data) => {
+  const response = await api.put(`/v1/nurse/medicine/${id}`, data);
+  return response.data;
+};
+
+export const medicineHistoryUsed = async () => {
+  const response = await api.put('/v1/nurse/medicine/history');
+  return response.data;
+};
 
 export default api;

@@ -30,6 +30,7 @@ import ListMedicalSend from "../pages/nurse/ListMedicalSend"
 import ListHealthRecord from "../pages/nurse/ListHealthRecord"
 import EventInSchool from "../pages/nurse/EventInSchool"
 import EventInSchoolForm from "../pages/parent/EventInSchool"
+import Warehouse from "../pages/nurse/WareHouse"
 
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
@@ -235,6 +236,14 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <EventInSchool />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/nurse/warehouse"
+          element={
+            <PrivateRoute>
+              <Warehouse />
             </PrivateRoute>
           }
         />
