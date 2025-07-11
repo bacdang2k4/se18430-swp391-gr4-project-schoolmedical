@@ -131,5 +131,11 @@ public class NurseController {
         response.setResult(adminService.getStudents());
         return response;
     }
+    @GetMapping("/medicine/history")
+    public ApiResponse<List<UsedMedicine>> getMedicineHistory(){
+        ApiResponse<List<UsedMedicine>> response = new ApiResponse<>();
+        response.setResult(medicineService.getUsedMedicines());
+        return response;
+    }
 
 }

@@ -4,7 +4,9 @@ import com.dinhbachihi.spring_security.dto.request.MedicineAddRequest;
 import com.dinhbachihi.spring_security.dto.request.MedicineUpdateRequest;
 import com.dinhbachihi.spring_security.dto.response.MedicineResponse;
 import com.dinhbachihi.spring_security.entity.Medicine;
+import com.dinhbachihi.spring_security.entity.UsedMedicine;
 import com.dinhbachihi.spring_security.repository.MedicineRepository;
+import com.dinhbachihi.spring_security.repository.UsedMedicineRepository;
 import com.dinhbachihi.spring_security.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ public class MedicineServiceImpl implements MedicineService {
 
     @Autowired
     private MedicineRepository medicineRepository;
+    @Autowired
+    private UsedMedicineRepository usedMedicineRepository;
 
     @Override
     public List<MedicineResponse> getAllMedicines() {
@@ -36,7 +40,10 @@ public class MedicineServiceImpl implements MedicineService {
     }
     public Medicine updateMedicine(MedicineUpdateRequest request,Long id) {
         Medicine medicine = medicineRepository.getReferenceById(id);
-        medicine.setQuantity(request.getQuantity());
+        medicine.setQuantity(medicine.getQuantity()+request.getQuantity());
         return medicineRepository.save(medicine);
+    }
+    public List<UsedMedicine> getUsedMedicines(){
+        return usedMedicineRepository.findAll();
     }
 }
