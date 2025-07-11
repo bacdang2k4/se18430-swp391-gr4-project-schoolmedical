@@ -27,7 +27,7 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: HomeIcon,
-    path: "/dashboard",
+    path: "/admin/dashboard",
     color: "text-blue-600",
   },
   {
@@ -234,6 +234,20 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
           )}
           
           {/* Logout Button */}
+          {/* Home Button */}
+          <Link
+            to="/"
+            className={`
+              w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+              text-green-600 hover:bg-green-50 hover:text-green-700
+              ${isCollapsed ? "justify-center" : ""}
+            `}
+            title={isCollapsed ? "Về trang chủ" : ""}
+            style={{ marginBottom: '0.5rem' }}
+          >
+            <HomeIcon className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span className="font-medium text-sm">Về trang chủ</span>}
+          </Link>
           <button
             onClick={handleLogout}
             className={`
