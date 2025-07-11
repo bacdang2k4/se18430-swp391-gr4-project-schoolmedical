@@ -11,6 +11,7 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
+import { createAdminVaccinationEvent } from "../../api/axios";
 
 const vaccinationData = [
   {
@@ -129,6 +130,31 @@ function VaccinationManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
+  const [form, setForm] = useState({
+    name: "",
+    type: "",
+    eventDate: "",
+    description: "",
+  });
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await createAdminVaccinationEvent(form);
+      setShowAddModal(false);
+      // TODO: reload data or show success message
+    } catch {
+      alert("Tạo chiến dịch thất bại!");
+    }
+  };
 
   const filteredCampaigns = vaccinationData.filter((campaign) => {
     const matchesSearch = campaign.campaignName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -476,82 +502,56 @@ function VaccinationManagement() {
         </div>
       </div>
 
-      {/* Add Campaign Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Tạo chiến dịch tiêm chủng mới</h3>
-            <form className="space-y-4">
+            <h3 className="text-lg font-semibold mb-4">Tạo sự kiện mới</h3>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tên chiến dịch</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tên sự kiện</label>
                 <input
                   type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                  placeholder="Nhập tên chiến dịch"
+                  placeholder="Nhập tên sự kiện"
+                  required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Loại vaccine</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                    <option value="vaccine_cum">Vaccine cúm</option>
-                    <option value="vaccine_hpv">Vaccine HPV</option>
-                    <option value="vaccine_dpt">Vaccine DPT</option>
-                    <option value="vaccine_bcg">Vaccine BCG</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ngày tiêm dự kiến</label>
-                  <input
-                    type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Loại sự kiện</label>
+                <input
+                  type="text"
+                  name="type"
+                  value={form.type}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  placeholder="Nhập loại sự kiện"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Khối lớp đối tượng</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {["6", "7", "8", "9"].map((grade) => (
-                    <label key={grade} className="flex items-center">
-                      <input type="checkbox" className="mr-2" value={grade} />
-                      Khối {grade}
-                    </label>
-                  ))}
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày diễn ra</label>
+                <input
+                  type="date"
+                  name="eventDate"
+                  value={form.eventDate}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
                 <textarea
+                  name="description"
                   rows={3}
+                  value={form.description}
+                  onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                  placeholder="Mô tả về chiến dịch tiêm chủng"
+                  placeholder="Mô tả sự kiện"
                 ></textarea>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Yêu cầu</label>
-                <textarea
-                  rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                  placeholder="Các yêu cầu về sức khỏe, điều kiện tiêm chủng"
-                ></textarea>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Địa điểm</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                    placeholder="Địa điểm tiêm chủng"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nhân viên y tế</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                    placeholder="Danh sách nhân viên y tế"
-                  />
-                </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
                 <button
@@ -562,7 +562,7 @@ function VaccinationManagement() {
                   Hủy
                 </button>
                 <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                  Tạo chiến dịch
+                  Tạo sự kiện
                 </button>
               </div>
             </form>

@@ -177,4 +177,10 @@ export const medicineHistoryUsed = async () => {
   return response.data;
 };
 
+// Tạo sự kiện mới (Admin)
+export const createAdminVaccinationEvent = async (eventData) => {
+  const response = await api.post('/v1/admin/vaccination-event', eventData);
+  return response.data;
+};
+
 export default api;

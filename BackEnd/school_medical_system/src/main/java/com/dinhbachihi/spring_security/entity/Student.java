@@ -44,6 +44,7 @@ public class Student {
     private User parent;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)

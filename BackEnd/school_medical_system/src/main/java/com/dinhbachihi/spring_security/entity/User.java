@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -85,12 +86,17 @@ public class User implements UserDetails {
     private List<Student> students =  null;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "author", cascade = CascadeType.ALL)
-    @JsonManagedReference("blog-user")
+    @JsonBackReference
     private List<Blog> blogs =  null;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "nurse", cascade = CascadeType.ALL)
     private List<VaccinationResult> results = null;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<MedicineSent> medicineSent = null;
 }

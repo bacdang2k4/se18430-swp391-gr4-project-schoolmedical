@@ -147,6 +147,12 @@ function HeaderForm() {
                     key={idx}
                     className="px-4 py-2 hover:bg-blue-50 flex items-center gap-2 cursor-pointer text-gray-700 font-medium"
                     onClick={() => {
+                      // Admin features
+                      if (f.title === "Báo cáo & Thống kê") {
+                        navigate("/admin/dashboard")
+                        setShowFeatureDropdown(false)
+                      }
+                      
                       //Parent features
                       if (f.title === "Hồ sơ sức khỏe") {
                         navigate("/parent/health-record")

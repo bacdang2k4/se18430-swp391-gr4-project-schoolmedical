@@ -123,7 +123,7 @@ public class AdminController {
         response.setResult(adminService.getStudentsByClassId(id));
         return response;
     }
-    @PostMapping("/event")
+    @PostMapping("/vaccination-event")
     public ApiResponse<Event> createEvent(@RequestBody CreateEventRequest request){
         ApiResponse<Event> response = new ApiResponse<>();
         response.setResult(eventService.createEvent(request));
