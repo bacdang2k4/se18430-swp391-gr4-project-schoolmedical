@@ -129,6 +129,31 @@ public class AdminController {
         response.setResult(eventService.createEvent(request));
         return response;
     }
+    @GetMapping("/vaccination")
+    public ApiResponse<List<Event>> getAllEvent(){
+        ApiResponse<List<Event>> response = new ApiResponse<>();
+        response.setResult(eventService.getAllEvents());
+        return response;
+    }
+    @PutMapping("/vaccination/edit/{id}")
+    public ApiResponse<Event> updateEvent(@PathVariable("id") Long id,@RequestBody UpdateVaccinationRequest request){
+        ApiResponse<Event> response = new ApiResponse<>();
+        response.setResult(eventService.updateEvent(request,id));
+        return response;
+    }
+    @PutMapping("/vaccination/finish/{id}")
+    public ApiResponse<Event> updateEvent(@PathVariable("id") Long id){
+        ApiResponse<Event> response = new ApiResponse<>();
+        response.setResult(eventService.updateEvent(id));
+        return response;
+    }
+    @DeleteMapping("/vaccination/{id}")
+    public ApiResponse<String> deleteEvent(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(eventService.deleteEvent(id));
+        return response;
+    }
+
     @PostMapping("/sendNoti/{id}")
     public ApiResponse<String> sendNotifications (@PathVariable("id") Long id){
         ApiResponse<String> response = new ApiResponse<>();
