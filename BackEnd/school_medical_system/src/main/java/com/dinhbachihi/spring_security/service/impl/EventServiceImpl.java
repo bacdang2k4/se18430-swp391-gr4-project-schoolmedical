@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.CreateEventRequest;
 import com.dinhbachihi.spring_security.dto.request.RecordVaccinationResult;
+import com.dinhbachihi.spring_security.dto.request.UpdateVaccinationRequest;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.exception.AppException;
@@ -36,9 +37,30 @@ public class EventServiceImpl implements EventService {
         event.setDescription(request.getDescription());
         return eventRepository.save(event);
     }
+    public Event updateEvent(UpdateVaccinationRequest request , Long id) {
+        Event event = eventRepository.getReferenceById(id);
+        event.setDescription(request.getDescription());
+        event.setEventDate(request.getEventDate());
+        return eventRepository.save(event);
+    }
+    public Event updateEvent( Long id) {
+        Event event = eventRepository.getReferenceById(id);
+        event.setStatus("finished");
+        return eventRepository.save(event);
+    }
+    public String deleteEvent(Long id) {
+        Event event = eventRepository.getReferenceById(id);
+        eventRepository.delete(event);
+        return "Event deleted";
+    }
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
     public String sendNotification(Long id) {
         List<Student> students = studentRepository.findAll();
         Event event = eventRepository.getReferenceById(id);
+        event.setStatus("isgoing");
         for(Student student : students) {
             if(student.getParent()!=null){
             VaccinationConsent cf = new VaccinationConsent();

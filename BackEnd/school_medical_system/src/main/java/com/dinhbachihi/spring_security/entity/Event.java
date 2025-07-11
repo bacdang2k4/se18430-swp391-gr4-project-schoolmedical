@@ -18,6 +18,7 @@ public class Event {
     private String type; // Ví dụ: "TIEM_CHUNG", "KHAM_SUC_KHOE", "TU_VAN" (dùng Enum nếu muốn chặt chẽ hơn)
     private LocalDate eventDate;
     private String description;
+    private String status ="setup";
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<VaccinationConsent> forms = null;
