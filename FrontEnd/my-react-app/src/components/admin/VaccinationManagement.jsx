@@ -11,55 +11,9 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
-import { createAdminVaccinationEvent } from "../../api/axios";
+import { createAdminVaccinationEvent, getAdminVaccinationList, sendAdminNotification, finishAdminVaccination, editAdminVaccination, deleteAdminVaccination } from "../../api/axios";
 
-const vaccinationData = [
-  {
-    id: 1,
-    campaignName: "Tiêm chủng vaccine cúm mùa 2024-2025",
-    vaccineType: "Vaccine cúm",
-    targetGrades: ["6", "7", "8", "9"],
-    scheduledDate: "2025-01-15",
-    status: "scheduled",
-    totalStudents: 450,
-    registeredStudents: 380,
-    completedStudents: 0,
-    description: "Chiến dịch tiêm chủng vaccine cúm cho tất cả học sinh",
-    requirements: "Học sinh khỏe mạnh, không sốt, không dị ứng vaccine",
-    location: "Phòng y tế trường",
-    medicalStaff: "BS. Nguyễn Văn A, Y tá Trần Thị B",
-  },
-  {
-    id: 2,
-    campaignName: "Tiêm vaccine HPV cho nữ sinh",
-    vaccineType: "Vaccine HPV",
-    targetGrades: ["8", "9"],
-    scheduledDate: "2025-01-20",
-    status: "in_progress",
-    totalStudents: 120,
-    registeredStudents: 95,
-    completedStudents: 45,
-    description: "Tiêm vaccine HPV phòng chống ung thư cổ tử cung",
-    requirements: "Học sinh nữ, độ tuổi 13-15, có đồng ý của phụ huynh",
-    location: "Phòng y tế trường",
-    medicalStaff: "BS. Lê Thị C, Y tá Phạm Văn D",
-  },
-  {
-    id: 3,
-    campaignName: "Tiêm bổ sung vaccine DPT",
-    vaccineType: "Vaccine DPT",
-    targetGrades: ["6"],
-    scheduledDate: "2024-12-20",
-    status: "completed",
-    totalStudents: 150,
-    registeredStudents: 140,
-    completedStudents: 135,
-    description: "Tiêm bổ sung vaccine DPT cho học sinh lớp 6",
-    requirements: "Học sinh thiếu mũi tiêm theo lịch tiêm chủng",
-    location: "Phòng y tế trường",
-    medicalStaff: "BS. Hoàng Văn E, Y tá Nguyễn Thị F",
-  },
-]
+import { useEffect } from "react";
 
 const studentVaccinations = [
   {
@@ -104,13 +58,6 @@ const statusLabels = {
   cancelled: "Đã hủy",
 }
 
-const statusColors = {
-  scheduled: "bg-blue-100 text-blue-800",
-  in_progress: "bg-yellow-100 text-yellow-800",
-  completed: "bg-green-100 text-green-800",
-  cancelled: "bg-red-100 text-red-800",
-}
-
 const studentStatusLabels = {
   registered: "Đã đăng ký",
   completed: "Đã tiêm",
@@ -126,16 +73,39 @@ const studentStatusColors = {
 }
 
 function VaccinationManagement() {
-  const [activeTab, setActiveTab] = useState("campaigns")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [showAddModal, setShowAddModal] = useState(false)
+  const [activeTab, setActiveTab] = useState("campaigns");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
   const [form, setForm] = useState({
     name: "",
     type: "",
     eventDate: "",
     description: "",
   });
+  const [vaccinationList, setVaccinationList] = useState([]);
+  const [editModal, setEditModal] = useState({ open: false, id: null, eventDate: '', description: '' });
+
+  useEffect(() => {
+    const fetchVaccinations = async () => {
+      try {
+        const data = await getAdminVaccinationList();
+        setVaccinationList(Array.isArray(data.result) ? data.result : data);
+      } catch {
+        setVaccinationList([]);
+      }
+    };
+    fetchVaccinations();
+  }, []);
+
+  const reloadVaccinations = async () => {
+    try {
+      const data = await getAdminVaccinationList();
+      setVaccinationList(Array.isArray(data.result) ? data.result : data);
+    } catch {
+      setVaccinationList([]);
+    }
+  };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -150,18 +120,82 @@ function VaccinationManagement() {
     try {
       await createAdminVaccinationEvent(form);
       setShowAddModal(false);
+      reloadVaccinations();
       // TODO: reload data or show success message
     } catch {
       alert("Tạo chiến dịch thất bại!");
     }
   };
 
-  const filteredCampaigns = vaccinationData.filter((campaign) => {
-    const matchesSearch = campaign.campaignName.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = !selectedStatus || campaign.status === selectedStatus
+  const handleSendNotification = async (id) => {
+    try {
+      await sendAdminNotification(id);
+      alert("Gửi thông báo thành công!");
+    } catch {
+      alert("Gửi thông báo thất bại!");
+    }
+  };
 
-    return matchesSearch && matchesStatus
-  })
+  const handleFinishVaccination = async (id) => {
+    try {
+      await finishAdminVaccination(id);
+      alert("Đã chuyển trạng thái sự kiện thành 'Kết thúc'!");
+      reloadVaccinations();
+    } catch {
+      alert("Chuyển trạng thái thất bại!");
+    }
+  };
+
+  const openEditModal = (campaign) => {
+    setEditModal({
+      open: true,
+      id: campaign.id,
+      eventDate: campaign.eventDate || '',
+      description: campaign.description || '',
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditModal({ open: false, id: null, eventDate: '', description: '' });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditModal((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await editAdminVaccination(editModal.id, {
+        eventDate: editModal.eventDate,
+        description: editModal.description,
+      });
+      alert('Cập nhật sự kiện thành công!');
+      closeEditModal();
+      reloadVaccinations();
+    } catch {
+      alert('Cập nhật sự kiện thất bại!');
+    }
+  };
+
+  const handleDeleteVaccination = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa sự kiện này?")) {
+      try {
+        await deleteAdminVaccination(id);
+        alert("Xóa sự kiện thành công!");
+        reloadVaccinations();
+      } catch {
+        alert("Xóa sự kiện thất bại!");
+      }
+    }
+  };
+
+  const filteredCampaigns = vaccinationList.filter((campaign) => {
+    const matchesSearch = (campaign.name || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !selectedStatus || campaign.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const filteredStudents = studentVaccinations.filter((student) => {
     const matchesSearch = student.studentName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -174,9 +208,33 @@ function VaccinationManagement() {
     console.log("View campaign detail:", campaign)
   }
 
-  const handleUpdateStatus = (campaignId, newStatus) => {
-    console.log("Update campaign status:", campaignId, newStatus)
-  }
+  // Thêm hàm map status
+  const mapStatusLabel = (status) => {
+    switch (status) {
+      case "setup":
+        return "Đã lên lịch";
+      case "isgoing":
+        return "Đang tiến hành";
+      case "finished":
+        return "Kết thúc";
+      default:
+        return status;
+    }
+  };
+
+  // Thêm hàm lấy class màu cho trạng thái
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "setup":
+        return "bg-blue-100 text-blue-800";
+      case "isgoing":
+        return "bg-yellow-100 text-yellow-800";
+      case "finished":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
     <AdminLayout>
@@ -208,7 +266,7 @@ function VaccinationManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Tổng chiến dịch</p>
-                  <p className="text-2xl font-bold text-gray-900">{vaccinationData.length}</p>
+                  <p className="text-2xl font-bold text-gray-900">{vaccinationList.length}</p>
                 </div>
                 <ShieldCheckIcon className="w-8 h-8 text-purple-500" />
               </div>
@@ -218,7 +276,7 @@ function VaccinationManagement() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Đang tiến hành</p>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {vaccinationData.filter((v) => v.status === "in_progress").length}
+                    {vaccinationList.filter((v) => v.status === "in_progress").length}
                   </p>
                 </div>
                 <ClockIcon className="w-8 h-8 text-yellow-500" />
@@ -229,7 +287,7 @@ function VaccinationManagement() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Hoàn thành</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {vaccinationData.filter((v) => v.status === "completed").length}
+                    {vaccinationList.filter((v) => v.status === "completed").length}
                   </p>
                 </div>
                 <CheckCircleIcon className="w-8 h-8 text-green-500" />
@@ -241,8 +299,8 @@ function VaccinationManagement() {
                   <p className="text-sm font-medium text-gray-600">Tỷ lệ tiêm chủng</p>
                   <p className="text-2xl font-bold text-blue-600">
                     {Math.round(
-                      (vaccinationData.reduce((sum, v) => sum + v.completedStudents, 0) /
-                        vaccinationData.reduce((sum, v) => sum + v.totalStudents, 0)) *
+                      (vaccinationList.reduce((sum, v) => sum + v.completedStudents, 0) /
+                        vaccinationList.reduce((sum, v) => sum + v.totalStudents, 0)) *
                         100,
                     )}
                     %
@@ -330,16 +388,16 @@ function VaccinationManagement() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Chiến dịch
+                        Tên sự kiện
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Loại vaccine
+                        Loại sự kiện
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ngày tiêm
+                        Ngày diễn ra
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Tiến độ
+                        Mô tả
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Trạng thái
@@ -353,35 +411,18 @@ function VaccinationManagement() {
                     {filteredCampaigns.map((campaign) => (
                       <tr key={campaign.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{campaign.campaignName}</div>
-                            <div className="text-sm text-gray-500">Khối: {campaign.targetGrades.join(", ")}</div>
-                          </div>
+                          <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {campaign.vaccineType}
+                            {campaign.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.scheduledDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.eventDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.description}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {campaign.completedStudents}/{campaign.registeredStudents} học sinh
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div
-                              className="bg-purple-600 h-2 rounded-full"
-                              style={{
-                                width: `${(campaign.completedStudents / campaign.registeredStudents) * 100}%`,
-                              }}
-                            ></div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[campaign.status]}`}
-                          >
-                            {statusLabels[campaign.status]}
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status)}`}>
+                            {mapStatusLabel(campaign.status) || "-"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -393,22 +434,40 @@ function VaccinationManagement() {
                             >
                               <EyeIcon className="w-4 h-4" />
                             </button>
-                            {campaign.status === "scheduled" && (
+                            <button
+                              onClick={() => handleSendNotification(campaign.id)}
+                              className="text-green-600 hover:text-green-900 p-1"
+                              title="Gửi thông báo"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6 4.5A9 9 0 11.75 12a9 9 0 0117.25 6.5z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => openEditModal(campaign)}
+                              className="text-yellow-600 hover:text-yellow-900 p-1"
+                              title="Sửa sự kiện"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.1 2.1 0 113.02 2.92L7.5 18.793 3 19.5l.707-4.5L16.862 3.487z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteVaccination(campaign.id)}
+                              className="text-red-600 hover:text-red-900 p-1"
+                              title="Xóa sự kiện"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                            {campaign.status !== "finished" && (
                               <button
-                                onClick={() => handleUpdateStatus(campaign.id, "in_progress")}
-                                className="text-yellow-600 hover:text-yellow-900 p-1"
-                                title="Bắt đầu tiêm"
+                                onClick={() => handleFinishVaccination(campaign.id)}
+                                className="text-gray-600 hover:text-gray-900 p-1 border border-gray-300 rounded"
+                                title="Chuyển trạng thái thành 'Kết thúc'"
                               >
-                                <ClockIcon className="w-4 h-4" />
-                              </button>
-                            )}
-                            {campaign.status === "in_progress" && (
-                              <button
-                                onClick={() => handleUpdateStatus(campaign.id, "completed")}
-                                className="text-green-600 hover:text-green-900 p-1"
-                                title="Hoàn thành"
-                              >
-                                <CheckCircleIcon className="w-4 h-4" />
+                                <CheckCircleIcon className="w-5 h-5" />
                               </button>
                             )}
                           </div>
@@ -448,7 +507,7 @@ function VaccinationManagement() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredStudents.map((student) => {
-                      const campaign = vaccinationData.find((c) => c.id === student.campaignId)
+                      const campaign = vaccinationList.find((c) => c.id === student.campaignId)
                       return (
                         <tr key={student.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -458,7 +517,7 @@ function VaccinationManagement() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{campaign?.campaignName}</div>
+                            <div className="text-sm text-gray-900">{campaign?.name}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
@@ -503,7 +562,7 @@ function VaccinationManagement() {
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Tạo sự kiện mới</h3>
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -563,6 +622,50 @@ function VaccinationManagement() {
                 </button>
                 <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                   Tạo sự kiện
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Modal */}
+      {editModal.open && (
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Sửa sự kiện</h3>
+            <form className="space-y-4" onSubmit={handleEditSubmit}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày diễn ra</label>
+                <input
+                  type="date"
+                  name="eventDate"
+                  value={editModal.eventDate}
+                  onChange={handleEditChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  value={editModal.description}
+                  onChange={handleEditChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  required
+                ></textarea>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Hủy
+                </button>
+                <button type="submit" className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                  Lưu
                 </button>
               </div>
             </form>

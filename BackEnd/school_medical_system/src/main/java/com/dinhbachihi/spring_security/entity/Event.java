@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class Event {
     private String status ="setup";
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)

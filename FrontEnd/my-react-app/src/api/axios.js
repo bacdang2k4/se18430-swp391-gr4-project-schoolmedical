@@ -183,4 +183,40 @@ export const createAdminVaccinationEvent = async (eventData) => {
   return response.data;
 };
 
+// Lấy danh sách vaccination (Admin)
+export const getAdminVaccinationList = async () => {
+  const response = await api.get('/v1/admin/vaccination');
+  return response.data;
+};
+
+// Lấy danh sách health record (Admin)
+export const getAdminHealthRecordList = async () => {
+  const response = await api.get('/v1/admin/health-record/list');
+  return response.data;
+};
+
+// Gửi thông báo (Admin)
+export const sendAdminNotification = async (id) => {
+  const response = await api.post(`/v1/admin/sendNoti/${id}`);
+  return response.data;
+};
+
+// Kết thúc sự kiện tiêm chủng (Admin)
+export const finishAdminVaccination = async (id) => {
+  const response = await api.put(`/v1/admin/vaccination/finish/${id}`);
+  return response.data;
+};
+
+// Sửa sự kiện tiêm chủng (Admin)
+export const editAdminVaccination = async (id, data) => {
+  const response = await api.put(`/v1/admin/vaccination/edit/${id}`, data);
+  return response.data;
+};
+
+// Xóa sự kiện tiêm chủng (Admin)
+export const deleteAdminVaccination = async (id) => {
+  const response = await api.delete(`/v1/admin/vaccination/${id}`);
+  return response.data;
+};
+
 export default api;
