@@ -5,9 +5,7 @@ import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.repository.MedicineSentRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
-import com.dinhbachihi.spring_security.service.AdminService;
-import com.dinhbachihi.spring_security.service.EventService;
-import com.dinhbachihi.spring_security.service.MedicineSentService;
+import com.dinhbachihi.spring_security.service.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +19,8 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private final EventService eventService;
+    private final HealthRecordService healthRecordService;
+    private  final MedicalEventService medicalEventService;
 
 
 
@@ -135,5 +135,19 @@ public class AdminController {
         response.setResult(eventService.sendNotification(id));
         return response;
     }
+    @GetMapping("/health-record/list")
+    public ApiResponse<List<Student>> getAllHealthRecords() {
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(healthRecordService.getAllHealthRecord());
+        response.setMessage("Fetched health record list successfully");
+        return response;
+    }
+    @GetMapping("/medical-event/list")
+    public ApiResponse<List<MedicalEvent>> getMedicalEventList(){
+        ApiResponse<List<MedicalEvent>> response = new ApiResponse<>();
+        response.setResult(medicalEventService.getMedicalEvents());
+        return response;
+    }
+
 
 }
