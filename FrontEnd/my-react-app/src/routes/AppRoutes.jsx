@@ -29,6 +29,7 @@ import MedicalSend from "../pages/parent/MedicalSend"
 import ListMedicalSend from "../pages/nurse/ListMedicalSend"
 import ListHealthRecord from "../pages/nurse/ListHealthRecord"
 import EventInSchool from "../pages/nurse/EventInSchool"
+import EventInSchoolForm from "../pages/parent/EventInSchool"
 
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
@@ -204,7 +205,14 @@ export default function AppRoutes() {
             </PrivateRoute>
           }
         />
-        
+        <Route
+          path="/parent/event-in-school"
+          element={
+            <PrivateRoute>
+              <EventInSchoolForm />
+            </PrivateRoute>
+          }
+        />
         {/* Nurse Routes */}
         <Route
           path="/nurse/list-medical-send"

@@ -43,7 +43,7 @@ function ListHealthRecordForm() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            🩺 Danh sách hồ sơ sức khỏe
+          👨‍👩‍👧‍👦 Danh sách hồ sơ sức khỏe
           </h1>
           <p className="text-gray-600 mt-1">Lịch sử hồ sơ sức khỏe của học sinh</p>
         </div>

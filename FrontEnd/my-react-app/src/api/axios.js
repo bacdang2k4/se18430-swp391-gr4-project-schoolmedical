@@ -146,5 +146,26 @@ export const getNurseHealthRecordList = async () => {
   return response.data;
 };
 
+export const getNurseMedicalEventList = async () => {
+  const response = await api.get('/v1/nurse/medical-event/list');
+  return response.data;
+};
+
+// Medical Event
+export const createNurseMedicalEvent = async (studentId, data) => {
+  const response = await api.post(`/v1/nurse/medical-event/${studentId}`, data);
+  return response.data;
+};
+
+export const getNurseMedicineList = async () => {
+  const response = await api.get('/v1/nurse/medicine/list');
+  return response.data;
+};
+
+export const getNurseStudentList = async () => {
+  const response = await api.get('/v1/nurse/student/list');
+  return response.data;
+};
+
 
 export default api;

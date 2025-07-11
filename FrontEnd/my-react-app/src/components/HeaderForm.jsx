@@ -156,7 +156,7 @@ function HeaderForm() {
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Xem sự kiện y tế") {
-                        navigate("/parent/medical-event")
+                        navigate("/parent/event-in-school")
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Xem lịch tiêm chủng") {
