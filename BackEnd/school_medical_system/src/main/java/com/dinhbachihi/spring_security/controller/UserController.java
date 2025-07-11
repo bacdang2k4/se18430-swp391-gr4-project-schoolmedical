@@ -1,9 +1,12 @@
 package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.ChangPasswordRequest;
+import com.dinhbachihi.spring_security.dto.request.ViewBlogRequest;
+import com.dinhbachihi.spring_security.entity.Blog;
+import com.dinhbachihi.spring_security.service.BlogService;
 import com.dinhbachihi.spring_security.service.ChangPasswordService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.FutureOrPresent;
+import org.springframework.web.bind.annotation.*;
 
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
@@ -15,9 +18,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 
 @RestController
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
     private final UserService userService;
     private final ChangPasswordService changPasswordService;
+    private final BlogService blogService;
 
     @GetMapping("/profile")
     public ApiResponse<User> getProfile() {
@@ -53,6 +56,20 @@ public class UserController {
     public ApiResponse<String> changePassword(@RequestBody ChangPasswordRequest request) {
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult(changPasswordService.changePassword(request.getOldPassword(), request.getNewPassword(), request.getConfirmPassword()));
+        return response;
+    }
+
+    @GetMapping("/blog")
+    public ApiResponse<List<Blog>> getAllBlogs() {
+        ApiResponse<List<Blog>> response = new ApiResponse<>();
+        response.setResult(blogService.getAllBlogs());
+        return response;
+    }
+
+    @GetMapping("/blog/{blogId}")
+    public ApiResponse<ViewBlogRequest> getAllBlogs(@PathVariable Long blogId) {
+        ApiResponse<ViewBlogRequest> response = new ApiResponse<>();
+        response.setResult(blogService.getBlogById(blogId));
         return response;
     }
 }

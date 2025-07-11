@@ -1,11 +1,12 @@
 package com.dinhbachihi.spring_security.dto.request;
 
-import com.dinhbachihi.spring_security.entity.User;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-public class CreateBlogRequest {
+public class ViewBlogRequest {
     private String title;
     private String content;
-    private String type;
+    private LocalDateTime updatedAt;
 }

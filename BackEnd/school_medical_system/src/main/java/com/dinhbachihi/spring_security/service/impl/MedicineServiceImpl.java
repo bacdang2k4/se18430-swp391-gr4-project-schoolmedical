@@ -40,7 +40,7 @@ public class MedicineServiceImpl implements MedicineService {
     }
     public Medicine updateMedicine(MedicineUpdateRequest request,Long id) {
         Medicine medicine = medicineRepository.getReferenceById(id);
-        medicine.setQuantity(medicine.getQuantity()+request.getQuantity());
+        medicine.setQuantity(request.getQuantity());
         return medicineRepository.save(medicine);
     }
     public List<UsedMedicine> getUsedMedicines(){

@@ -58,7 +58,7 @@ public class MedicalEventServiceImpl implements MedicalEventService {
 
         for (UsedMedicineRequest medRequest : request.getMedicineList()) {
             Medicine medicine = medicineRepository.getReferenceById(medRequest.getMedicineId());
-
+            medicine.setQuantity(medicine.getQuantity()-medRequest.getQuantityUsed());
             UsedMedicineKey key = new UsedMedicineKey();
             key.setMedicalEventId(savedEvent.getMedicalEventId());
             key.setMedicineId(medicine.getId());

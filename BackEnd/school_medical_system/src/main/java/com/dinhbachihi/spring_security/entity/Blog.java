@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class Blog {
     private Long post_id;
     private String title;
     private String content;
+    private String type;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
@@ -36,6 +38,6 @@ public class Blog {
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    @JsonBackReference("blog-user")
+    @JsonBackReference
     private User author;
 }
