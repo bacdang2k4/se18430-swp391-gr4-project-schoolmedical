@@ -24,5 +24,5 @@ export const isAuthenticated = () => {
 
 export const logout = () => {
   removeTokens();
-  window.location.href = '/login';
+  window.location.href = '/';
 }; 

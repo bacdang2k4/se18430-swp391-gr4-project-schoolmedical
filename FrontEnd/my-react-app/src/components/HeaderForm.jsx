@@ -22,6 +22,7 @@ const FEATURES_BY_ROLE = {
     { icon: "🚨", title: "Xử lý sự kiện y tế" },
     { icon: "💉", title: "Quản lý tiêm chủng" },
     { icon: "🩺", title: "Quản lý kiểm tra y tế định kỳ" },
+    { icon: "📦", title: "Quản lý vật tư" },
   ],
   // Thêm các role khác nếu cần
 };
@@ -181,7 +182,10 @@ function HeaderForm() {
                         navigate("/nurse/event-in-school")
                         setShowFeatureDropdown(false)
                       }
-                      
+                      if (f.title === "Quản lý vật tư") {
+                        navigate("/nurse/warehouse")
+                        setShowFeatureDropdown(false)
+                      }
                     }}
                   >
                     <span className="text-lg">{f.icon}</span> {f.title}
