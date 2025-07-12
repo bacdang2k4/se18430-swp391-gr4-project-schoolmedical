@@ -12,7 +12,6 @@ public class CheckUpEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private String type;
     private LocalDate eventDate;
@@ -21,8 +20,7 @@ public class CheckUpEvent {
 
     @OneToMany(mappedBy = "checkUp", cascade = CascadeType.ALL)
     @JsonBackReference
-    private List<VaccinationConsent> forms = null;
+    private List<CheckUpEventConsent> forms = null;
 
-    @OneToMany(mappedBy = "checkUp", cascade = CascadeType.ALL)
-    private List<VaccinationResult> results = null;
+
 }
