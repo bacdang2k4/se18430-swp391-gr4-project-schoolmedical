@@ -90,6 +90,12 @@ public class NurseController {
         response.setResult(eventService.getStudentAccept(id));
         return response;
     }
+    @GetMapping("/event/record/list")
+    public ApiResponse<List<VaccinationResult>> getListRecord(){
+        ApiResponse<List<VaccinationResult>> response = new ApiResponse<>();
+        response.setResult(eventService.getVaccinationResultList());
+        return response;
+    }
     @PutMapping("/event/record/{id}")
     public ApiResponse<VaccinationResult> recordVaccination(@PathVariable("id") Long id, @RequestBody RecordVaccinationResult request) {
         ApiResponse<VaccinationResult> response = new ApiResponse<>();
@@ -152,6 +158,12 @@ public class NurseController {
         ApiResponse<CheckUpEventResult> response = new ApiResponse<>();
         response.setResult(checkUpEventService.recordCheckupEventResult(id,request));
         response.setMessage("Successfully record checkup");
+        return response;
+    }
+    @GetMapping("checkup/list")
+    public ApiResponse<List<CheckUpEventResult>> getCheckUpEventResult(){
+        ApiResponse<List<CheckUpEventResult>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getCheckUpEventResults());
         return response;
     }
 

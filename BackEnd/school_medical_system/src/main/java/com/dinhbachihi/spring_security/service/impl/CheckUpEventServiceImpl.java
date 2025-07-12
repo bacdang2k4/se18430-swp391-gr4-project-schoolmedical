@@ -109,5 +109,8 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
          checkupr.setNurse(nurse);
          return  checkUpEventResultRepository.save(checkupr);
     }
+    public List<CheckUpEventResult> getCheckUpEventResults() {
+        return checkUpEventResultRepository.findAll();
+    }
 
 }
