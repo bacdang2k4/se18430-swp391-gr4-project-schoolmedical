@@ -48,6 +48,7 @@ public class Student {
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationResult> results = null;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)

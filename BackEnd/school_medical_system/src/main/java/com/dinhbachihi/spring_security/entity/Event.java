@@ -21,11 +21,13 @@ public class Event {
     private String description;
     private String status ="setup";
 
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationResult> results = null;
 }
 
