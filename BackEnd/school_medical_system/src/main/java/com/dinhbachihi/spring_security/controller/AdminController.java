@@ -24,7 +24,7 @@ public class AdminController {
     private  final MedicalEventService medicalEventService;
     private final MedicineService medicineService;
     private final CheckUpEventService checkUpEventService;
-    
+
     @GetMapping
     public ApiResponse<String> welcome(){
         ApiResponse<String> response = new ApiResponse<>();
@@ -214,6 +214,18 @@ public class AdminController {
     public ApiResponse<CheckUpEvent> createCheckUpEvent(@RequestBody CreateCheckUpEventRequest request){
         ApiResponse<CheckUpEvent> response = new ApiResponse<>();
         response.setResult(checkUpEventService.addCheckUpEvent(request));
+        return response;
+    }
+    @PutMapping("/checkup-event/{id}")
+    public ApiResponse<CheckUpEvent> updateCheckUpEvent(@RequestBody UpdateCheckUpRequest request, @PathVariable("id") Long id){
+        ApiResponse<CheckUpEvent> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.updateCheckUpEvent(request,id));
+        return response;
+    }
+    @DeleteMapping("/checkip-event/{id}")
+    public ApiResponse<String> deleteCheckIpEvent(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.deleteCheckUpEvent(id));
         return response;
     }
 }

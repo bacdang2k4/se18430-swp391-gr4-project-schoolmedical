@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.CreateCheckUpEventRequest;
+import com.dinhbachihi.spring_security.dto.request.UpdateCheckUpRequest;
 import com.dinhbachihi.spring_security.entity.CheckUpEvent;
 import com.dinhbachihi.spring_security.repository.CheckUpEventRepository;
 import com.dinhbachihi.spring_security.service.CheckUpEventService;
@@ -18,5 +19,17 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
         checkUpEvent.setName(request.getName());
         checkUpEvent.setType(request.getType());
         return checkUpEventRepository.save(checkUpEvent);
+    }
+    public CheckUpEvent updateCheckUpEvent(UpdateCheckUpRequest request , Long id) {
+        CheckUpEvent checkUpEvent = checkUpEventRepository.findById(id).get();
+        checkUpEvent.setEventDate(request.getEventDate());
+        checkUpEvent.setDescription(request.getDescription());
+        return checkUpEventRepository.save(checkUpEvent);
+    }
+    public String deleteCheckUpEvent(Long id) {
+        CheckUpEvent checkUpEvent = checkUpEventRepository.findById(id).get();
+        checkUpEventRepository.delete(checkUpEvent);
+        String message = "Event deleted successfully";
+        return message;
     }
 }
