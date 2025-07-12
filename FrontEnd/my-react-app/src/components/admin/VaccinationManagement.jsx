@@ -51,13 +51,6 @@ const studentVaccinations = [
   },
 ]
 
-const statusLabels = {
-  scheduled: "Đã lên lịch",
-  in_progress: "Đang tiến hành",
-  completed: "Hoàn thành",
-  cancelled: "Đã hủy",
-}
-
 const studentStatusLabels = {
   registered: "Đã đăng ký",
   completed: "Đã tiêm",
@@ -359,7 +352,7 @@ function VaccinationManagement() {
               >
                 <option value="">Tất cả trạng thái</option>
                 {activeTab === "campaigns"
-                  ? Object.entries(statusLabels).map(([key, label]) => (
+                  ? Object.entries({ setup: 'Đã lên lịch', isgoing: 'Đang tiến hành', finished: 'Kết thúc' }).map(([key, label]) => (
                       <option key={key} value={key}>
                         {label}
                       </option>
