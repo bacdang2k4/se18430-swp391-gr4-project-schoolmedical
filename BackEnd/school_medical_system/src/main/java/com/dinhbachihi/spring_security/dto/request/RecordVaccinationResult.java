@@ -6,5 +6,4 @@ import lombok.Data;
 public class RecordVaccinationResult {
     private String note;
     private String vaccine;
-
 }

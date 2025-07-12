@@ -13,9 +13,12 @@ public class CheckUpEventResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String checkup;
     private String result = "Not yet";
     private String note;
+    private String height;
+    private String weight;
+    private String vision;
+    private String hearing;
     private LocalDate checkupDate;
 
     @ManyToOne
@@ -32,11 +35,15 @@ public class CheckUpEventResult {
 
     public CheckUpEventResult() {
     }
-    public CheckUpEventResult(Long id, String checkup, String result, String note, LocalDate checkupDate) {
+
+    public CheckUpEventResult(Long id, String result, String note, String height, String weight, String vision, String hearing, LocalDate checkupDate) {
         this.id = id;
-        this.checkup = checkup;
         this.result = result;
         this.note = note;
+        this.height = height;
+        this.weight = weight;
+        this.vision = vision;
+        this.hearing = hearing;
         this.checkupDate = checkupDate;
     }
 }

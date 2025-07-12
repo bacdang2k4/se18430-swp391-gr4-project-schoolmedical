@@ -29,6 +29,7 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
     private final CheckUpEventConsentRepository checkUpEventConsentRepository;
     private final CheckUpEventResultRepository checkUpEventResultRepository;
     private  final UserRepository userRepository;
+    private final HealthRecordRepository healthRecordRepository;
 
 
     public CheckUpEvent addCheckUpEvent(CreateCheckUpEventRequest request) {
@@ -99,15 +100,27 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
     }
 
     public CheckUpEventResult recordCheckupEventResult(Long Id , RecordCheckUpEventRequest request) {
-         CheckUpEventResult checkupr = checkUpEventResultRepository.findById(Id).orElseThrow( () -> new AppException(ErrorCode.CR_NOT_FOUND));
+         CheckUpEventResult result = checkUpEventResultRepository.findById(Id).orElseThrow( () -> new AppException(ErrorCode.CR_NOT_FOUND));
          Authentication auth = SecurityContextHolder.getContext().getAuthentication();
          String email = auth.getName();
          User nurse = userRepository.findByEmail(email).orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
-         checkupr.setCheckupDate(checkUpEventResultRepository.getReferenceById(Id).getCheckupDate());
-         checkupr.setCheckUpEvent(checkUpEventResultRepository.getReferenceById(Id).getCheckUpEvent());
-         checkupr.setCheckup(checkUpEventResultRepository.getReferenceById(Id).getCheckup());
-         checkupr.setNurse(nurse);
-         return  checkUpEventResultRepository.save(checkupr);
+        result.setNote(request.getNote());
+        result.setHearing(request.getHearing());
+        result.setHeight(request.getHeight());
+        result.setWeight(request.getWeight());
+        result.setNurse(nurse);
+        result.setResult("Completed");
+        result.setVision(request.getVision());
+        checkUpEventResultRepository.save(result);
+
+        Student student = studentRepository.getReferenceById(result.getStudent().getStudentId());
+        HealthRecord healthRecord = student.getHealthRecord();
+        healthRecord.setHeight(result.getHeight());
+        healthRecord.setWeight(result.getWeight());
+        healthRecord.setVision(result.getVision());
+        healthRecord.setHearing(result.getHearing());
+        healthRecordRepository.save(healthRecord);
+        return result;
     }
     public List<CheckUpEventResult> getCheckUpEventResults() {
         return checkUpEventResultRepository.findAll();
