@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   ExclamationTriangleIcon,
   PlusIcon,
@@ -11,73 +11,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
-
-const medicalEvents = [
-  {
-    id: 1,
-    studentName: "Nguyễn Văn A",
-    class: "6A1",
-    eventType: "accident",
-    title: "Té ngã trong sân chơi",
-    description: "Học sinh bị té ngã khi chơi bóng đá, có vết thương nhỏ ở đầu gối",
-    severity: "minor",
-    status: "resolved",
-    reportedBy: "Cô Lan - Giáo viên",
-    handledBy: "Y tá Hoa",
-    reportedAt: "2025-01-07 10:30",
-    resolvedAt: "2025-01-07 11:00",
-    treatment: "Rửa vết thương, băng bó, theo dõi",
-    parentNotified: true,
-  },
-  {
-    id: 2,
-    studentName: "Trần Thị B",
-    class: "7B2",
-    eventType: "illness",
-    title: "Sốt cao đột ngột",
-    description: "Học sinh có biểu hiện sốt cao 39°C, đau đầu, mệt mỏi",
-    severity: "moderate",
-    status: "in_progress",
-    reportedBy: "Thầy Nam - Giáo viên",
-    handledBy: "Y tá Hoa",
-    reportedAt: "2025-01-07 14:15",
-    resolvedAt: null,
-    treatment: "Đo nhiệt độ, cho uống thuốc hạ sốt, liên hệ phụ huynh",
-    parentNotified: true,
-  },
-  {
-    id: 3,
-    studentName: "Lê Văn C",
-    class: "8C1",
-    eventType: "allergy",
-    title: "Phản ứng dị ứng thực phẩm",
-    description: "Học sinh có biểu hiện ngứa, nổi mẩn đỏ sau khi ăn trưa",
-    severity: "moderate",
-    status: "pending",
-    reportedBy: "Cô Mai - Giáo viên",
-    handledBy: null,
-    reportedAt: "2025-01-07 13:45",
-    resolvedAt: null,
-    treatment: null,
-    parentNotified: false,
-  },
-  {
-    id: 4,
-    studentName: "Phạm Thị D",
-    class: "9A3",
-    eventType: "emergency",
-    title: "Khó thở do hen suyễn",
-    description: "Học sinh có cơn hen suyễn cấp tính, khó thở, cần xử lý khẩn cấp",
-    severity: "severe",
-    status: "resolved",
-    reportedBy: "Thầy Tùng - Giáo viên",
-    handledBy: "Y tá Hoa",
-    reportedAt: "2025-01-06 15:20",
-    resolvedAt: "2025-01-06 16:30",
-    treatment: "Sử dụng thuốc xịt, gọi cấp cứu, chuyển viện",
-    parentNotified: true,
-  },
-]
+import { getAdminMedicalEventList, getAllAdminStudents, deleteAdminMedicalEvent } from "../../api/axios"
 
 const eventTypes = {
   accident: "Tai nạn",
@@ -87,50 +21,85 @@ const eventTypes = {
   other: "Khác",
 }
 
-const severityLabels = {
-  minor: "Nhẹ",
-  moderate: "Trung bình",
-  severe: "Nặng",
-}
+// Thêm map type -> label
+const eventTypeLabels = {
+  accident: 'Tai nạn',
+  illness: 'Ốm đau',
+  allergy: 'Dị ứng',
+  emergency: 'Khẩn cấp',
+  other: 'Khác',
+};
 
-const severityColors = {
-  minor: "bg-green-100 text-green-800",
-  moderate: "bg-yellow-100 text-yellow-800",
-  severe: "bg-red-100 text-red-800",
-}
-
-const statusLabels = {
-  pending: "Chờ xử lý",
-  in_progress: "Đang xử lý",
-  resolved: "Đã xử lý",
-  referred: "Chuyển viện",
-}
-
-const statusColors = {
-  pending: "bg-gray-100 text-gray-800",
-  in_progress: "bg-blue-100 text-blue-800",
-  resolved: "bg-green-100 text-green-800",
-  referred: "bg-purple-100 text-purple-800",
-}
+// Thêm map type -> màu sắc
+const eventTypeColors = {
+  accident: 'bg-orange-100 text-orange-800',
+  illness: 'bg-green-100 text-green-800',
+  allergy: 'bg-yellow-100 text-yellow-800',
+  emergency: 'bg-red-100 text-red-800',
+  other: 'bg-gray-100 text-gray-800',
+};
 
 function MedicalEvents() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedType, setSelectedType] = useState("")
-  const [selectedSeverity, setSelectedSeverity] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
-  const [showAddModal, setShowAddModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const [medicalEvents, setMedicalEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        // Gọi song song 2 API
+        const [eventRes, studentRes] = await Promise.all([
+          getAdminMedicalEventList(),
+          getAllAdminStudents()
+        ])
+        // Tạo map medicalEventId -> {studentName, className}
+        const eventIdToStudent = {}
+        ;(studentRes.result || []).forEach(student => {
+          const studentName = `${student.lastName} ${student.firstName}`
+          const className = student.classes?.name || ''
+          ;(student.eventList || []).forEach(ev => {
+            if (ev.medicalEventId) {
+              eventIdToStudent[ev.medicalEventId] = {
+                studentName,
+                className
+              }
+            }
+          })
+        })
+        // Map lại dữ liệu cho phù hợp với API mới và bổ sung tên học sinh, lớp
+        const events = (eventRes.result || []).map(event => ({
+          id: event.medicalEventId,
+          title: event.medicalEventName,
+          description: event.medicalEventDescription,
+          reportedAt: event.medicalEventTime,
+          eventType: event.type,
+          nurseName: event.nurse ? `${event.nurse.lastName} ${event.nurse.firstName}` : '',
+          usedMedicines: event.usedMedicines || [],
+          studentName: eventIdToStudent[event.medicalEventId]?.studentName || '',
+          className: eventIdToStudent[event.medicalEventId]?.className || '',
+        }))
+        setMedicalEvents(events)
+      } catch {
+        setError("Không thể tải danh sách sự kiện.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [])
 
   const filteredEvents = medicalEvents.filter((event) => {
     const matchesSearch =
-      event.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.title.toLowerCase().includes(searchTerm.toLowerCase())
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.nurseName.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = !selectedType || event.eventType === selectedType
-    const matchesSeverity = !selectedSeverity || event.severity === selectedSeverity
-    const matchesStatus = !selectedStatus || event.status === selectedStatus
-
-    return matchesSearch && matchesType && matchesSeverity && matchesStatus
+    return matchesSearch && matchesType
   })
 
   const handleViewDetail = (event) => {
@@ -138,8 +107,17 @@ function MedicalEvents() {
     setShowDetailModal(true)
   }
 
-  const handleUpdateStatus = (eventId, newStatus) => {
-    console.log("Update status:", eventId, newStatus)
+  // Xóa sự kiện y tế
+  const handleDeleteEvent = async (eventId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa sự kiện này?")) {
+      try {
+        await deleteAdminMedicalEvent(eventId);
+        // Reload danh sách
+        setMedicalEvents(events => events.filter(e => e.id !== eventId));
+      } catch {
+        alert("Xóa sự kiện thất bại!");
+      }
+    }
   }
 
   return (
@@ -156,13 +134,6 @@ function MedicalEvents() {
                 </h1>
                 <p className="text-gray-600 mt-1">Theo dõi và xử lý các sự kiện y tế trong trường</p>
               </div>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center gap-2"
-              >
-                <PlusIcon className="w-5 h-5" />
-                Ghi nhận sự kiện
-              </button>
             </div>
           </div>
 
@@ -237,30 +208,6 @@ function MedicalEvents() {
                   </option>
                 ))}
               </select>
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                value={selectedSeverity}
-                onChange={(e) => setSelectedSeverity(e.target.value)}
-              >
-                <option value="">Tất cả mức độ</option>
-                {Object.entries(severityLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-              >
-                <option value="">Tất cả trạng thái</option>
-                {Object.entries(statusLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
               <div className="flex items-center text-sm text-gray-600">
                 <FunnelIcon className="w-4 h-4 mr-2" />
                 Tìm thấy {filteredEvents.length} sự kiện
@@ -275,19 +222,22 @@ function MedicalEvents() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tên sự kiện
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Học sinh
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sự kiện
+                      Lớp
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Mức độ
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Trạng thái
+                      Loại
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Thời gian
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Người ghi nhận
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Hành động
@@ -295,41 +245,43 @@ function MedicalEvents() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                  {loading && (
+                    <tr>
+                      <td colSpan="7" className="text-center py-8">Đang tải dữ liệu...</td>
+                    </tr>
+                  )}
+                  {error && (
+                    <tr>
+                      <td colSpan="7" className="text-center text-red-500 py-8">{error}</td>
+                    </tr>
+                  )}
+                  {filteredEvents.length === 0 && !loading && !error && (
+                    <tr>
+                      <td colSpan="7" className="text-center py-8">Không có sự kiện nào</td>
+                    </tr>
+                  )}
                   {filteredEvents.map((event) => (
                     <tr key={event.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{event.studentName}</div>
-                          <div className="text-sm text-gray-500">Lớp {event.class}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                          <div className="text-sm text-gray-500">
-                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                              {eventTypes[event.eventType]}
-                            </span>
-                          </div>
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
+                        <div className="text-sm text-gray-500">{event.description}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${severityColors[event.severity]}`}
-                        >
-                          {severityLabels[event.severity]}
-                        </span>
+                        <div className="text-sm text-gray-900">{event.studentName}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[event.status]}`}
-                        >
-                          {statusLabels[event.status]}
+                        <div className="text-sm text-gray-900">{event.className}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${eventTypeColors[event.eventType] || 'bg-gray-100 text-gray-800'}`}>
+                          {eventTypeLabels[event.eventType] || event.eventType}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{event.reportedAt}</div>
-                        {event.resolvedAt && <div className="text-xs text-gray-500">Xử lý: {event.resolvedAt}</div>}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{event.nurseName}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
@@ -340,24 +292,15 @@ function MedicalEvents() {
                           >
                             <EyeIcon className="w-4 h-4" />
                           </button>
-                          {event.status === "pending" && (
-                            <button
-                              onClick={() => handleUpdateStatus(event.id, "in_progress")}
-                              className="text-orange-600 hover:text-orange-900 p-1"
-                              title="Bắt đầu xử lý"
-                            >
-                              <ExclamationTriangleIcon className="w-4 h-4" />
-                            </button>
-                          )}
-                          {event.status === "in_progress" && (
-                            <button
-                              onClick={() => handleUpdateStatus(event.id, "resolved")}
-                              className="text-green-600 hover:text-green-900 p-1"
-                              title="Hoàn thành"
-                            >
-                              <CheckCircleIcon className="w-4 h-4" />
-                            </button>
-                          )}
+                         <button
+                           onClick={() => handleDeleteEvent(event.id)}
+                           className="text-red-600 hover:text-red-900 p-1"
+                           title="Xóa sự kiện"
+                         >
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                           </svg>
+                         </button>
                         </div>
                       </td>
                     </tr>
@@ -369,174 +312,57 @@ function MedicalEvents() {
         </div>
       </div>
 
-      {/* Add Event Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Ghi nhận sự kiện y tế</h3>
-            <form className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tên học sinh</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    placeholder="Nhập tên học sinh"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Lớp</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    placeholder="Ví dụ: 6A1"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Loại sự kiện</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-                    {Object.entries(eventTypes).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mức độ nghiêm trọng</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-                    {Object.entries(severityLabels).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề sự kiện</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  placeholder="Mô tả ngắn gọn sự kiện"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả chi tiết</label>
-                <textarea
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  placeholder="Mô tả chi tiết về sự kiện, triệu chứng, hoàn cảnh xảy ra..."
-                ></textarea>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Người báo cáo</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  placeholder="Tên và chức vụ người báo cáo"
-                />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Hủy
-                </button>
-                <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-                  Ghi nhận sự kiện
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* Detail Modal */}
       {showDetailModal && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Chi tiết sự kiện y tế</h3>
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Học sinh</label>
-                  <p className="text-sm text-gray-900">
-                    {selectedEvent.studentName} - Lớp {selectedEvent.class}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Loại sự kiện</label>
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                    {eventTypes[selectedEvent.eventType]}
-                  </span>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tên sự kiện</label>
+                <p className="text-sm text-gray-900">{selectedEvent.title}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
-                <p className="text-sm text-gray-900">{selectedEvent.title}</p>
+                <label className="block text-sm font-medium text-gray-700">Học sinh</label>
+                <p className="text-sm text-gray-900">{selectedEvent.studentName}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Lớp</label>
+                <p className="text-sm text-gray-900">{selectedEvent.className}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Mô tả</label>
                 <p className="text-sm text-gray-900">{selectedEvent.description}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Mức độ nghiêm trọng</label>
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${severityColors[selectedEvent.severity]}`}
-                  >
-                    {severityLabels[selectedEvent.severity]}
-                  </span>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[selectedEvent.status]}`}
-                  >
-                    {statusLabels[selectedEvent.status]}
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Người báo cáo</label>
-                  <p className="text-sm text-gray-900">{selectedEvent.reportedBy}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Người xử lý</label>
-                  <p className="text-sm text-gray-900">{selectedEvent.handledBy || "Chưa có"}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Thời gian báo cáo</label>
-                  <p className="text-sm text-gray-900">{selectedEvent.reportedAt}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Thời gian xử lý</label>
-                  <p className="text-sm text-gray-900">{selectedEvent.resolvedAt || "Chưa xử lý"}</p>
-                </div>
-              </div>
-              {selectedEvent.treatment && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Cách xử lý</label>
-                  <p className="text-sm text-gray-900">{selectedEvent.treatment}</p>
-                </div>
-              )}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Thông báo phụ huynh</label>
-                <span
-                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    selectedEvent.parentNotified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {selectedEvent.parentNotified ? "Đã thông báo" : "Chưa thông báo"}
+                <label className="block text-sm font-medium text-gray-700">Loại</label>
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${eventTypeColors[selectedEvent.eventType] || 'bg-gray-100 text-gray-800'}`}>
+                  {eventTypeLabels[selectedEvent.eventType] || selectedEvent.eventType}
                 </span>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Thời gian</label>
+                <p className="text-sm text-gray-900">{selectedEvent.reportedAt}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Người ghi nhận</label>
+                <p className="text-sm text-gray-900">{selectedEvent.nurseName}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Thuốc đã sử dụng</label>
+                {selectedEvent.usedMedicines && selectedEvent.usedMedicines.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedEvent.usedMedicines.map((um, i) => (
+                      <div key={i} className="bg-white p-3 rounded border">
+                        <div><b>Tên thuốc:</b> {um.medicine?.name || 'Không rõ'}</div>
+                        <div><b>Loại:</b> {um.medicine?.type || 'Không rõ'}</div>
+                        <div><b>Số lượng:</b> {um.quantityUsed || 0} {um.medicine?.unit || ''}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">Không có thuốc nào được sử dụng</p>
+                )}
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
@@ -546,28 +372,6 @@ function MedicalEvents() {
               >
                 Đóng
               </button>
-              {selectedEvent.status === "pending" && (
-                <button
-                  onClick={() => {
-                    handleUpdateStatus(selectedEvent.id, "in_progress")
-                    setShowDetailModal(false)
-                  }}
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-                >
-                  Bắt đầu xử lý
-                </button>
-              )}
-              {selectedEvent.status === "in_progress" && (
-                <button
-                  onClick={() => {
-                    handleUpdateStatus(selectedEvent.id, "resolved")
-                    setShowDetailModal(false)
-                  }}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  Hoàn thành
-                </button>
-              )}
             </div>
           </div>
         </div>

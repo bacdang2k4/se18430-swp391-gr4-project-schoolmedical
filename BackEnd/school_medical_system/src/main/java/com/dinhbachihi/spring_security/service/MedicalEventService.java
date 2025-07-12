@@ -9,4 +9,5 @@ import java.util.List;
 public interface MedicalEventService {
     MedicalEventResponse createMedicalEvent(MedicalEventRequest request, String id );
     List<MedicalEvent> getMedicalEvents ();
+    String deleteMedicalEventById(Long medicalEventId);
 }

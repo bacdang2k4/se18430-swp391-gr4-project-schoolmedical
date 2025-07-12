@@ -195,6 +195,18 @@ export const getAdminHealthRecordList = async () => {
   return response.data;
 };
 
+// Lấy danh sách sự kiện y tế (Admin)
+export const getAdminMedicalEventList = async () => {
+  const response = await api.get('/v1/admin/medical-event/list');
+  return response.data;
+};
+
+// Lấy danh sách tất cả học sinh (Admin)
+export const getAllAdminStudents = async () => {
+  const response = await api.get('/v1/admin/students/get-all-student');
+  return response.data;
+};
+
 // Gửi thông báo (Admin)
 export const sendAdminNotification = async (id) => {
   const response = await api.post(`/v1/admin/sendNoti/${id}`);
@@ -216,6 +228,12 @@ export const editAdminVaccination = async (id, data) => {
 // Xóa sự kiện tiêm chủng (Admin)
 export const deleteAdminVaccination = async (id) => {
   const response = await api.delete(`/v1/admin/vaccination/${id}`);
+  return response.data;
+};
+
+// Xóa sự kiện y tế (Admin)
+export const deleteAdminMedicalEvent = async (id) => {
+  const response = await api.delete(`/v1/admin/medical-event/${id}`);
   return response.data;
 };
 

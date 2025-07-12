@@ -29,6 +29,15 @@ function EventInSchoolForm() {
     return name.includes(searchText) || id.includes(searchText);
   });
 
+  // Thêm map type -> label
+  const eventTypeLabels = {
+    accident: 'Tai nạn',
+    illness: 'Ốm đau',
+    allergy: 'Dị ứng',
+    emergency: 'Khẩn cấp',
+    other: 'Khác',
+  };
+
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto">
@@ -115,7 +124,7 @@ function EventInSchoolForm() {
                               <td className="px-3 py-2 border">{event.medicalEventName || 'Không có'}</td>
                               <td className="px-3 py-2 border">{event.medicalEventDescription || 'Không có'}</td>
                               <td className="px-3 py-2 border">{event.medicalEventTime || 'Không có'}</td>
-                              <td className="px-3 py-2 border">{event.type || 'Không có'}</td>
+                              <td className="px-3 py-2 border">{eventTypeLabels[event.type] || event.type || 'Không có'}</td>
                               <td className="px-3 py-2 border">
                                 <ul className="list-disc pl-4">
                                   {(event.usedMedicines && event.usedMedicines.length > 0) ? event.usedMedicines.map((um, i) => (

@@ -275,6 +275,24 @@ function EventInSchoolForm() {
     };
   }, [showStudentDropdown, showMedicineDropdown]);
 
+  // Thêm constant cho loại sự kiện
+  const eventTypes = [
+    { key: 'accident', label: 'Tai nạn' },
+    { key: 'illness', label: 'Ốm đau' },
+    { key: 'allergy', label: 'Dị ứng' },
+    { key: 'emergency', label: 'Khẩn cấp' },
+    { key: 'other', label: 'Khác' },
+  ];
+
+  // Thêm map type -> label
+  const eventTypeLabels = {
+    accident: 'Tai nạn',
+    illness: 'Ốm đau',
+    allergy: 'Dị ứng',
+    emergency: 'Khẩn cấp',
+    other: 'Khác',
+  };
+
     return (
     <div className="p-6">
       {/* Header section with icon, title, subtitle */}
@@ -413,7 +431,7 @@ function EventInSchoolForm() {
                 <h3 className="text-lg font-semibold mb-3 text-gray-800">Thông tin sự kiện</h3>
                 <div className="space-y-2">
                   <div><b>Tên sự kiện:</b> {selectedEvent.medicalEventName || 'Không có'}</div>
-                  <div><b>Loại:</b> {selectedEvent.type || 'Không có'}</div>
+                  <div><b>Loại:</b> {eventTypeLabels[selectedEvent.type] || selectedEvent.type || 'Không có'}</div>
                   <div><b>Thời gian:</b> {selectedEvent.medicalEventTime || 'Không có'}</div>
                   <div><b>Người ghi nhận:</b> {selectedEvent.nurse ? `${selectedEvent.nurse.lastName || ''} ${selectedEvent.nurse.firstName || ''}`.trim() || 'Không có' : 'Không có'}</div>
                 </div>
@@ -514,7 +532,17 @@ function EventInSchoolForm() {
               </div>
               <div className="mb-4">
                 <label className="block font-semibold mb-1">Loại sự kiện</label>
-                <input type="text" className="w-full border rounded px-3 py-2" value={addForm.type} onChange={e => setAddForm(f => ({...f, type: e.target.value}))} />
+                <select
+                  className="w-full border rounded px-3 py-2"
+                  value={addForm.type}
+                  onChange={e => setAddForm(f => ({...f, type: e.target.value}))}
+                  required
+                >
+                  <option value="">Chọn loại sự kiện</option>
+                  {eventTypes.map(ev => (
+                    <option key={ev.key} value={ev.key}>{ev.label}</option>
+                  ))}
+                </select>
               </div>
               <div className="mb-4">
                 <label className="block font-semibold mb-1">Thuốc đã sử dụng</label>

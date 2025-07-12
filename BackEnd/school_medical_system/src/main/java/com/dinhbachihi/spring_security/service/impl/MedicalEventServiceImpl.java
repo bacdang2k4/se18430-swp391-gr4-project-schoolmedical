@@ -97,4 +97,10 @@ public class MedicalEventServiceImpl implements MedicalEventService {
     public List<MedicalEvent> getMedicalEvents (){
         return medicalEventRepository.findAll();
     }
+
+    public String deleteMedicalEventById(Long medicalEventId) {
+        medicalEventRepository.findById(medicalEventId).orElseThrow(() -> new AppException(ErrorCode.MEDICAL_EVENT_NOT_FOUND));
+        medicalEventRepository.deleteById(medicalEventId);
+        return "medical event deleted";
+    }
 }

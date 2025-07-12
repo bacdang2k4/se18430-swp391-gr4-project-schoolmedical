@@ -174,5 +174,10 @@ public class AdminController {
         return response;
     }
 
-
+    @DeleteMapping("/medical-event/{id}")
+    public ApiResponse<String> deleteMedicalEvent(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(medicalEventService.deleteMedicalEventById(id));
+        return response;
+    }
 }
