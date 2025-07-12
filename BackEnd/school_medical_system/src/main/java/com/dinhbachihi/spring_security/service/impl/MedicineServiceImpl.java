@@ -46,4 +46,10 @@ public class MedicineServiceImpl implements MedicineService {
     public List<UsedMedicine> getUsedMedicines(){
         return usedMedicineRepository.findAll();
     }
+
+    public String deleteMedicine(Long id) {
+        Medicine medicine = medicineRepository.getReferenceById(id);
+        medicineRepository.delete(medicine);
+        return "Medicine deleted";
+    }
 }
