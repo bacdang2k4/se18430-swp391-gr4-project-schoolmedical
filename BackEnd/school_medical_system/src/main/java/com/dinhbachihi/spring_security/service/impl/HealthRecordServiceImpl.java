@@ -41,6 +41,8 @@ public class HealthRecordServiceImpl implements HealthRecordService {
         existingRecord.setChronic_disease(request.getChronic_disease());
         existingRecord.setVision(request.getVision());
         existingRecord.setHearing(request.getHearing());
+        existingRecord.setWeight(request.getWeight());
+        existingRecord.setHeight(request.getHeight());
         existingRecord.setMedical_history(request.getMedical_history());
 
         return healthRecordRepository.save(existingRecord);

@@ -89,7 +89,7 @@ public class AdminController {
     }
 
     @PostMapping("/students/add-student")
-    public ApiResponse<Student> addStudent(@RequestBody StudentAddRequest request){
+    public ApiResponse<Student> addStudent(@RequestBody StudentAddRequest request ){
         ApiResponse<Student> response = new ApiResponse<>();
         response.setResult(adminService.addStudent(request));
         response.setMessage("add student successfully");
