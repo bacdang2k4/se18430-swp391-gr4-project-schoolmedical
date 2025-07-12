@@ -21,7 +21,7 @@ public class CheckUpEventConsent {
 
     @ManyToOne
     @JoinColumn(name="checkUp")
-    private CheckUpEvent checkUpEvent;
+    private CheckUpEvent checkUp;
 
     @ManyToOne
     @JoinColumn(name="parent")
