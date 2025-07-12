@@ -237,4 +237,23 @@ export const deleteAdminMedicalEvent = async (id) => {
   return response.data;
 };
 
+// Lấy danh sách thuốc (Admin)
+export const getAdminMedicineList = async () => {
+  const response = await api.get('/v1/admin/medicine/list');
+  return response.data;
+};
+
+// Thêm mới thuốc (Admin)
+export const createAdminMedicine = async (medicineData) => {
+  // medicineData: { name, type, quantity, unit }
+  const response = await api.post('/v1/admin/medicine', medicineData);
+  return response.data;
+};
+
+// Xóa thuốc (Admin)
+export const deleteAdminMedicine = async (id) => {
+  const response = await api.delete(`/v1/admin/medicine/${id}`);
+  return response.data;
+};
+
 export default api;
