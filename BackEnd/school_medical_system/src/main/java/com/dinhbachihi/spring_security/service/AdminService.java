@@ -17,7 +17,7 @@ public interface AdminService {
     String sendEmail(SendMailRequest request) throws MessagingException;
     List<Student> getStudents();
     Student getStudentById(String studentId);
-    Student addStudent(StudentAddRequest request, String id);
+    Student addStudent(StudentAddRequest request);
     String deleteStudentById(String studentId);
     Student updateStudentById(String studentId, StudentUpdateRequest request);
     Classes addClass(ClassesAddRequest request);

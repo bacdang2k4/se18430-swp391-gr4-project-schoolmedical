@@ -88,10 +88,10 @@ public class AdminController {
         return response;
     }
 
-    @PostMapping("/students/add-student/{id}")
-    public ApiResponse<Student> addStudent(@RequestBody StudentAddRequest request , @PathVariable String id){
+    @PostMapping("/students/add-student")
+    public ApiResponse<Student> addStudent(@RequestBody StudentAddRequest request ){
         ApiResponse<Student> response = new ApiResponse<>();
-        response.setResult(adminService.addStudent(request,id));
+        response.setResult(adminService.addStudent(request));
         response.setMessage("add student successfully");
         return response;
     }

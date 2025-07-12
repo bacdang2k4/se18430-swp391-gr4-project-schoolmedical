@@ -100,11 +100,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Student addStudent(StudentAddRequest request , String id) {
+    public Student addStudent(StudentAddRequest request) {
         if(studentRepository.existsByStudentId(request.getStudentId())) {
             throw new AppException(ErrorCode.STUDENT_ALREADY_EXISTS);
         }
-        User user = userRepository.getById(id);
+        User user = userRepository.getById(request.getParentID());
         Classes classes = classesRepository.findClassesById(request.getClassID());
         if(classes==null){
             throw new AppException(ErrorCode.CLASS_NOT_FOUND);
