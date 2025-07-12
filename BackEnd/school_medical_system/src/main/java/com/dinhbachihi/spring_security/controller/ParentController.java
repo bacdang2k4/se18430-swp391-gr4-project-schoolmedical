@@ -6,14 +6,8 @@ import com.dinhbachihi.spring_security.dto.request.UpdateHealthRecordRequest;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
-import com.dinhbachihi.spring_security.entity.VaccinationConsent;
-import com.dinhbachihi.spring_security.entity.HealthRecord;
-import com.dinhbachihi.spring_security.entity.MedicineSent;
-import com.dinhbachihi.spring_security.entity.Student;
-import com.dinhbachihi.spring_security.service.EventService;
-import com.dinhbachihi.spring_security.service.HealthRecordService;
-import com.dinhbachihi.spring_security.service.MedicineSentService;
-import com.dinhbachihi.spring_security.service.ParentService;
+import com.dinhbachihi.spring_security.entity.*;
+import com.dinhbachihi.spring_security.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +24,7 @@ public class ParentController {
     private final ParentService parentService;
     private final MedicineSentService medicineSentService;
     private final EventService eventService;
+    private final CheckUpEventService checkUpEventService;
 
     @GetMapping
     public ResponseEntity<String> welcome(){
@@ -88,6 +83,21 @@ public class ParentController {
         ApiResponse<List<MedicineSentResponse>> response = new ApiResponse<>();
         response.setResult(medicineSentService.getMedicineSentsByCurrentParent());
         response.setMessage("Fetched medicine sent history for current parent");
+        return response;
+    }
+
+    @PutMapping("/checkup/accept/{id}")
+    public ApiResponse<CheckUpEventConsent> acceptCheckUpEventConsent(@PathVariable("id") Long id){
+        ApiResponse<CheckUpEventConsent> response = new ApiResponse<>();
+        response.setMessage("Accept Consent Success");
+        response.setResult(checkUpEventService.acceptCheckUpEventConsent(id));
+        return response;
+    }
+    @PutMapping("/checkup/reject/{id}")
+    public ApiResponse<CheckUpEventConsent> rejectCheckUpEventConsent(@PathVariable("id") Long id){
+        ApiResponse<CheckUpEventConsent> response = new ApiResponse<>();
+        response.setMessage("Reject Consent Success");
+        response.setResult(checkUpEventService.rejectCheckUpEventConsent(id));
         return response;
     }
 }

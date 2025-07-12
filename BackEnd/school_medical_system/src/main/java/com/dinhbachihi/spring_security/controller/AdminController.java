@@ -222,10 +222,23 @@ public class AdminController {
         response.setResult(checkUpEventService.updateCheckUpEvent(request,id));
         return response;
     }
-    @DeleteMapping("/checkip-event/{id}")
-    public ApiResponse<String> deleteCheckIpEvent(@PathVariable("id") Long id){
+    @DeleteMapping("/checkup-event/{id}")
+    public ApiResponse<String> deleteCheckUpEvent(@PathVariable("id") Long id){
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult(checkUpEventService.deleteCheckUpEvent(id));
         return response;
     }
+    @PostMapping("/checkup/sendNoti/{id}")
+    public ApiResponse<String> sendNotificationsCheckUp(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.sendNotification(id));
+        return response;
+    }
+    @GetMapping("/checkupEvent")
+    public ApiResponse<List<CheckUpEvent>>getAllCheckUpEvents(){
+        ApiResponse<List<CheckUpEvent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getAllCheckUpEvents());
+        return response;
+    }
+
 }

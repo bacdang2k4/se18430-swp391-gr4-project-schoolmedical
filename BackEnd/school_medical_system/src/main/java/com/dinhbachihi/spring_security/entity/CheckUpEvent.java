@@ -23,4 +23,9 @@ public class CheckUpEvent {
     private List<CheckUpEventConsent> forms = null;
 
 
+    @OneToMany(mappedBy = "checkUpEvent", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<CheckUpEventResult> list = null;
+
+
 }

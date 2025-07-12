@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ErrorCode {
     USER_NOT_FOUND(404, "User Not Found"),
     VR_NOT_FOUND(404, "Vaccination Result Not Found"),
+    CR_NOT_FOUND(404, "CheckupEvent Result Not Found"),
     BLOG_NOT_FOUND(404, "Blog Not Found"),
     CLASS_NOT_FOUND(404, "Class Not Found"),
     USER_ALREADY_EXISTS(409, "User Already Exists"),
