@@ -130,6 +130,9 @@ public class EventServiceImpl implements EventService {
         vr.setNurse(nurse);
         return vaccinationResultRepository.save(vr);
     }
+    public List<VaccinationResult> getVaccinationResultList(){
+        return vaccinationResultRepository.findAll();
+    }
 
 
 }

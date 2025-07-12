@@ -24,6 +24,7 @@ public class NurseController {
     private final MedicineService medicineService;
     private final HealthRecordService healthRecordService;
     private final AdminService adminService;
+    private final CheckUpEventService checkUpEventService;
 
 
     @GetMapping
@@ -89,6 +90,12 @@ public class NurseController {
         response.setResult(eventService.getStudentAccept(id));
         return response;
     }
+    @GetMapping("/event/record/list")
+    public ApiResponse<List<VaccinationResult>> getListRecord(){
+        ApiResponse<List<VaccinationResult>> response = new ApiResponse<>();
+        response.setResult(eventService.getVaccinationResultList());
+        return response;
+    }
     @PutMapping("/event/record/{id}")
     public ApiResponse<VaccinationResult> recordVaccination(@PathVariable("id") Long id, @RequestBody RecordVaccinationResult request) {
         ApiResponse<VaccinationResult> response = new ApiResponse<>();
@@ -137,5 +144,29 @@ public class NurseController {
         response.setResult(medicineService.getUsedMedicines());
         return response;
     }
+
+    @GetMapping("/checkup/parti/{id}")
+    public ApiResponse<List<Student>> getStudentAccept(@PathVariable("id") Long id){
+        ApiResponse<List<Student>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getStudentAccept(id));
+        return response;
+    }
+
+
+    @PutMapping("/checkup/record/{id}")
+    public ApiResponse<CheckUpEventResult> recordCheckupEventResult(@PathVariable("id") Long id, @RequestBody RecordCheckUpEventRequest request) {
+        ApiResponse<CheckUpEventResult> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.recordCheckupEventResult(id,request));
+        response.setMessage("Successfully record checkup");
+        return response;
+    }
+    @GetMapping("checkup/list")
+    public ApiResponse<List<CheckUpEventResult>> getCheckUpEventResult(){
+        ApiResponse<List<CheckUpEventResult>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getCheckUpEventResults());
+        return response;
+    }
+
+
 
 }

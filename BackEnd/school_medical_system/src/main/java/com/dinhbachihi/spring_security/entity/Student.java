@@ -52,4 +52,9 @@ public class Student {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<MedicalEvent> eventList = null;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<CheckUpEventConsent> list = null;
+
 }

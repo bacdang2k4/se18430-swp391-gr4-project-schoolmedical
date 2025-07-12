@@ -23,4 +23,5 @@ public interface EventService {
     Event updateEvent(UpdateVaccinationRequest request , Long id);
     String deleteEvent(Long id);
     Event updateEvent( Long id);
+    List<VaccinationResult> getVaccinationResultList();
 }

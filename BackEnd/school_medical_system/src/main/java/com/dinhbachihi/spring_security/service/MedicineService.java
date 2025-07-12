@@ -14,4 +14,5 @@ public interface MedicineService {
     Medicine addMedicine(MedicineAddRequest request);
     Medicine updateMedicine(MedicineUpdateRequest request,Long id);
     List<UsedMedicine> getUsedMedicines();
+    String deleteMedicine(Long id);
 }

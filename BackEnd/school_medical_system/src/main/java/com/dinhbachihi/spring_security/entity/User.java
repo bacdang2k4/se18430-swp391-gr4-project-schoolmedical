@@ -99,4 +99,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<MedicineSent> medicineSent = null;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<CheckUpEventConsent> list = null;
+
 }

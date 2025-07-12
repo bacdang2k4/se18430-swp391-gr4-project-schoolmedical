@@ -2,6 +2,7 @@ package com.dinhbachihi.spring_security.controller;
 
 import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
+import com.dinhbachihi.spring_security.dto.response.MedicineResponse;
 import com.dinhbachihi.spring_security.entity.*;
 import com.dinhbachihi.spring_security.repository.MedicineSentRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
@@ -21,8 +22,8 @@ public class AdminController {
     private final EventService eventService;
     private final HealthRecordService healthRecordService;
     private  final MedicalEventService medicalEventService;
-
-
+    private final MedicineService medicineService;
+    private final CheckUpEventService checkUpEventService;
 
     @GetMapping
     public ApiResponse<String> welcome(){
@@ -180,4 +181,64 @@ public class AdminController {
         response.setResult(medicalEventService.deleteMedicalEventById(id));
         return response;
     }
+    @GetMapping("/medicine/list")
+    public ApiResponse<List<MedicineResponse>> getAllMedicines() {
+        ApiResponse<List<MedicineResponse>> response = new ApiResponse<>();
+        response.setResult(medicineService.getAllMedicines());
+        response.setMessage("Fetched medicine list successfully");
+        return response;
+    }
+    @PostMapping("/medicine")
+    public ApiResponse<Medicine> addMedicine(@RequestBody MedicineAddRequest request){
+        ApiResponse<Medicine> response = new ApiResponse<>();
+        response.setResult(medicineService.addMedicine(request));
+        response.setMessage("Successfully created medicine");
+        return response;
+    }
+    @PutMapping("/medicine/{id}")
+    public ApiResponse<Medicine> updateMedicine(@PathVariable("id") Long id, @RequestBody MedicineUpdateRequest request){
+        ApiResponse<Medicine> response = new ApiResponse<>();
+        response.setResult(medicineService.updateMedicine(request,id));
+        response.setMessage("Successfully updated medicine");
+        return response;
+    }
+    @DeleteMapping("/medicine/{id}")
+    public ApiResponse<String> deleteMedicine(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult( medicineService.deleteMedicine(id));
+        response.setMessage("Successfully deleted medicine");
+        return response;
+    }
+
+    @PostMapping("/checkup-event")
+    public ApiResponse<CheckUpEvent> createCheckUpEvent(@RequestBody CreateCheckUpEventRequest request){
+        ApiResponse<CheckUpEvent> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.addCheckUpEvent(request));
+        return response;
+    }
+    @PutMapping("/checkup-event/{id}")
+    public ApiResponse<CheckUpEvent> updateCheckUpEvent(@RequestBody UpdateCheckUpRequest request, @PathVariable("id") Long id){
+        ApiResponse<CheckUpEvent> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.updateCheckUpEvent(request,id));
+        return response;
+    }
+    @DeleteMapping("/checkup-event/{id}")
+    public ApiResponse<String> deleteCheckUpEvent(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.deleteCheckUpEvent(id));
+        return response;
+    }
+    @PostMapping("/checkup/sendNoti/{id}")
+    public ApiResponse<String> sendNotificationsCheckUp(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.sendNotification(id));
+        return response;
+    }
+    @GetMapping("/checkupEvent")
+    public ApiResponse<List<CheckUpEvent>>getAllCheckUpEvents(){
+        ApiResponse<List<CheckUpEvent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getAllCheckUpEvents());
+        return response;
+    }
+
 }
