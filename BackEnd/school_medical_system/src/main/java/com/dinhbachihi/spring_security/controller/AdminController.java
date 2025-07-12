@@ -23,9 +23,8 @@ public class AdminController {
     private final HealthRecordService healthRecordService;
     private  final MedicalEventService medicalEventService;
     private final MedicineService medicineService;
-
-
-
+    private final CheckUpEventService checkUpEventService;
+    
     @GetMapping
     public ApiResponse<String> welcome(){
         ApiResponse<String> response = new ApiResponse<>();
@@ -208,6 +207,13 @@ public class AdminController {
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult( medicineService.deleteMedicine(id));
         response.setMessage("Successfully deleted medicine");
+        return response;
+    }
+
+    @PostMapping("/checkup-event")
+    public ApiResponse<CheckUpEvent> createCheckUpEvent(@RequestBody CreateCheckUpEventRequest request){
+        ApiResponse<CheckUpEvent> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.addCheckUpEvent(request));
         return response;
     }
 }
