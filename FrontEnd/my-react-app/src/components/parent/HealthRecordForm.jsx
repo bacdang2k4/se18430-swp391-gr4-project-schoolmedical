@@ -16,7 +16,9 @@ function HealthRecordForm() {
         chronic_disease: "",
         vision: "",
         hearing: "",
-        medical_history: ""
+        medical_history: "",
+        height: "",
+        weight: ""
     });
     const [editLoading, setEditLoading] = useState(false);
     const [editError, setEditError] = useState(null);
@@ -77,7 +79,9 @@ function HealthRecordForm() {
                 chronic_disease: data.result.chronic_disease || "",
                 vision: data.result.vision || "",
                 hearing: data.result.hearing || "",
-                medical_history: data.result.medical_history || ""
+                medical_history: data.result.medical_history || "",
+                height: data.result.height || "",
+                weight: data.result.weight || ""
             });
         } catch (err) {
             console.error(err);
@@ -238,11 +242,13 @@ function HealthRecordForm() {
                             {healthDetail && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div><b>Mã hồ sơ:</b> {healthDetail.recordId}</div>
-                                    <div><b>Dị ứng:</b> {healthDetail.allergy}</div>
-                                    <div><b>Bệnh mãn tính:</b> {healthDetail.chronic_disease}</div>
-                                    <div><b>Thị lực:</b> {healthDetail.vision}</div>
-                                    <div><b>Thính lực:</b> {healthDetail.hearing}</div>
-                                    <div><b>Tiền sử bệnh:</b> {healthDetail.medical_history}</div>
+                                    <div><b>Dị ứng:</b> {healthDetail.allergy || 'Chưa cập nhật'}</div>
+                                    <div><b>Bệnh mãn tính:</b> {healthDetail.chronic_disease || 'Chưa cập nhật'}</div>
+                                    <div><b>Thị lực:</b> {healthDetail.vision || 'Chưa cập nhật'}</div>
+                                    <div><b>Thính lực:</b> {healthDetail.hearing || 'Chưa cập nhật'}</div>
+                                    <div><b>Cân nặng:</b> {healthDetail.weight || 'Chưa cập nhật'}</div>
+                                    <div><b>Chiều cao:</b> {healthDetail.height || 'Chưa cập nhật'}</div>
+                                    <div><b>Tiền sử bệnh:</b> {healthDetail.medical_history || 'Chưa cập nhật'}</div>
                                 </div>
                             )}
                         </div>
@@ -293,6 +299,14 @@ function HealthRecordForm() {
                                 <div>
                                     <label className="font-semibold">Tiền sử bệnh:</label>
                                     <input type="text" name="medical_history" value={editForm.medical_history} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Cân nặng:</label>
+                                    <input type="text" name="weight" value={editForm.weight} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
+                                </div>
+                                <div>
+                                    <label className="font-semibold">Chiều cao:</label>
+                                    <input type="text" name="height" value={editForm.height} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
                                 </div>
                                 <div className="flex justify-end gap-2 pt-2">
                                     <button type="button" onClick={handleCloseEditModal} className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400">Hủy</button>

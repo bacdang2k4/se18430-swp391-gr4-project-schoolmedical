@@ -171,7 +171,7 @@ function HeaderForm() {
                         setShowFeatureDropdown(false)
                       }
                       if (f.title === "Lịch kiểm tra y tế định kỳ") {
-                        navigate("/parent/medical-checkup")
+                        navigate("/parent/health-checkup")
                         setShowFeatureDropdown(false)
                       }
 

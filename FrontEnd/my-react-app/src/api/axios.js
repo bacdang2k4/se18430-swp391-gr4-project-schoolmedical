@@ -355,3 +355,21 @@ export const getParentVaccinationResult = async (id) => {
   const response = await api.get(`/v1/parent/event/result/${id}`);
   return response.data;
 };
+
+// Lấy danh sách form kiểm tra sức khỏe cho phụ huynh
+export const getParentCheckupForms = async () => {
+  const response = await api.get('/v1/parent/checkup/list-forms');
+  return response.data;
+};
+
+// Phụ huynh chấp nhận sự kiện kiểm tra sức khỏe
+export const acceptParentCheckup = async (id) => {
+  const response = await api.put(`/v1/parent/checkup/accept/${id}`);
+  return response.data;
+};
+
+// Phụ huynh từ chối sự kiện kiểm tra sức khỏe
+export const rejectParentCheckup = async (id) => {
+  const response = await api.put(`/v1/parent/checkup/reject/${id}`);
+  return response.data;
+};
