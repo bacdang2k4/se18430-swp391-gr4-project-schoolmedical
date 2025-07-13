@@ -345,3 +345,8 @@ export const getNurseVaccinationList = async () => {
   const response = await api.get('/v1/nurse/vaccination');
   return response.data;
 };
+
+export const updateNurseEventRecord = async (id, data) => {
+  const response = await api.put(`/v1/nurse/event/record/${id}`, data);
+  return response.data;
+};

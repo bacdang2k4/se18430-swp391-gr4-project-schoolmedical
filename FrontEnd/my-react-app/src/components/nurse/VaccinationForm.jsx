@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getNurseVaccinationList, getNurseEventParticipants } from "../../api/axios";
+import { getNurseVaccinationList, getNurseEventParticipants, updateNurseEventRecord } from "../../api/axios";
 
 function VaccinationForm() {
   const [events, setEvents] = useState([]);
@@ -10,8 +10,25 @@ function VaccinationForm() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [showRecordModal, setShowRecordModal] = useState(false);
+  const [recordTarget, setRecordTarget] = useState(null); // {item, record}
+  const [recordForm, setRecordForm] = useState({ vaccine: "", note: "" });
+  const [recordLoading, setRecordLoading] = useState(false);
+  const [recordError, setRecordError] = useState("");
 
-  // Lấy danh sách sự kiện tiêm chủng khi vào trang
+  const mapStatusLabel = (status) => {
+    switch (status) {
+      case "setup":
+        return "Đã lên lịch";
+      case "isgoing":
+        return "Đang tiến hành";
+      case "finished":
+        return "Kết thúc";
+      default:
+        return status;
+    }
+  };
+
   useEffect(() => {
     const fetchEvents = async () => {
       setLoadingEvents(true);
@@ -27,7 +44,6 @@ function VaccinationForm() {
     fetchEvents();
   }, []);
 
-  // Khi chọn sự kiện, lấy danh sách học sinh tham gia
   const handleShowParticipants = async (event) => {
     setSelectedEvent(event);
     setLoadingParticipants(true);
@@ -43,7 +59,6 @@ function VaccinationForm() {
     }
   };
 
-  // Lọc theo tên hoặc mã học sinh
   const filteredList = participants.filter(item => {
     const name = ((item.student.lastName || "") + " " + (item.student.firstName || "")).toLowerCase();
     const studentId = (item.student.studentId || "").toLowerCase();
@@ -51,10 +66,39 @@ function VaccinationForm() {
     return name.includes(searchText) || studentId.includes(searchText);
   });
 
-  // Hiển thị modal chi tiết
   const handleShowDetail = (item) => {
     setDetail(item);
     setShowModal(true);
+  };
+
+  // Hiển thị modal ghi nhận kết quả tiêm, truyền vào cả record
+  const handleShowRecordModal = (item, record) => {
+    setRecordTarget({ item, record });
+    setRecordForm({
+      vaccine: record?.vaccine || "",
+      note: record?.note || ""
+    });
+    setRecordError("");
+    setShowRecordModal(true);
+  };
+
+  const handleRecordSubmit = async (e) => {
+    e.preventDefault();
+    if (!recordForm.vaccine) {
+      setRecordError("Vui lòng nhập tên vaccine");
+      return;
+    }
+    setRecordLoading(true);
+    setRecordError("");
+    try {
+      await updateNurseEventRecord(recordTarget.record.id, recordForm);
+      setShowRecordModal(false);
+      if (selectedEvent) handleShowParticipants(selectedEvent);
+    } catch {
+      setRecordError("Có lỗi xảy ra, vui lòng thử lại");
+    } finally {
+      setRecordLoading(false);
+    }
   };
 
   return (
@@ -100,7 +144,7 @@ function VaccinationForm() {
                       <td className="px-6 py-4">{event.type}</td>
                       <td className="px-6 py-4">{event.eventDate}</td>
                       <td className="px-6 py-4">{event.description}</td>
-                      <td className="px-6 py-4">{event.status}</td>
+                      <td className="px-6 py-4">{mapStatusLabel(event.status)}</td>
                       <td className="px-6 py-4 text-center">
                         <button
                           className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
@@ -127,7 +171,7 @@ function VaccinationForm() {
               <input
                 type="text"
                 placeholder="Tìm kiếm theo tên hoặc mã học sinh..."
-                className="w-full mb-4 pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full mb-4 pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus-border-transparent"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -143,37 +187,53 @@ function VaccinationForm() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày sinh</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái đồng ý</th>
                       <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Chi tiết</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ghi nhận kết quả tiêm</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {loadingParticipants ? (
                       <tr>
-                        <td colSpan={8} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td>
+                        <td colSpan={9} className="text-center py-8 text-gray-500">Đang tải dữ liệu...</td>
                       </tr>
                     ) : filteredList.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="text-center py-8 text-gray-500">Không có học sinh tham gia</td>
+                        <td colSpan={9} className="text-center py-8 text-gray-500">Không có học sinh tham gia</td>
                       </tr>
                     ) : (
-                      filteredList.map((item, idx) => (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">{idx + 1}</td>
-                          <td className="px-6 py-4">{item.student.studentId || 'Không có'}</td>
-                          <td className="px-6 py-4">{`${item.student.lastName || ''} ${item.student.firstName || ''}`.trim() || 'Không có'}</td>
-                          <td className="px-6 py-4">{item.student.classes?.name || 'Không có'}</td>
-                          <td className="px-6 py-4">{item.student.gender === "MALE" ? "Nam" : item.student.gender === "FEMALE" ? "Nữ" : 'Không có'}</td>
-                          <td className="px-6 py-4">{item.student.dateOfBirth || 'Không có'}</td>
-                          <td className="px-6 py-4">{item.consent || 'Không có'}</td>
-                          <td className="px-6 py-4 text-center">
-                            <button
-                              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
-                              onClick={() => handleShowDetail(item)}
-                            >
-                              Xem chi tiết
-                            </button>
-                          </td>
-                        </tr>
-                      ))
+                      filteredList.map((item, idx) => {
+                        // Tìm record đúng với sự kiện đang chọn
+                        const record = (item.student.results || []).find(
+                          r => r.event && r.event.id === selectedEvent.id
+                        );
+                        return (
+                          <tr key={item.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4">{idx + 1}</td>
+                            <td className="px-6 py-4">{item.student.studentId || 'Không có'}</td>
+                            <td className="px-6 py-4">{`${item.student.lastName || ''} ${item.student.firstName || ''}`.trim() || 'Không có'}</td>
+                            <td className="px-6 py-4">{item.student.classes?.name || 'Không có'}</td>
+                            <td className="px-6 py-4">{item.student.gender === "MALE" ? "Nam" : item.student.gender === "FEMALE" ? "Nữ" : 'Không có'}</td>
+                            <td className="px-6 py-4">{item.student.dateOfBirth || 'Không có'}</td>
+                            <td className="px-6 py-4">{item.consent || 'Không có'}</td>
+                            <td className="px-6 py-4 text-center">
+                              <button
+                                className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
+                                onClick={() => handleShowDetail(item)}
+                              >
+                                Xem chi tiết
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <button
+                                className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs"
+                                onClick={() => record && handleShowRecordModal(item, record)}
+                                disabled={!record}
+                              >
+                                Ghi nhận kết quả tiêm
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </table>
@@ -205,6 +265,59 @@ function VaccinationForm() {
                 <div><b>Số điện thoại:</b> {detail.parent?.phone || 'Không có'}</div>
                 <div><b>Email:</b> {detail.parent?.email || 'Không có'}</div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal ghi nhận kết quả tiêm */}
+        {showRecordModal && recordTarget && (
+          <div className="fixed inset-0 flex items-center justify-center z-50" style={{backdropFilter: 'blur(3px)', background: 'rgba(0,0,0,0.2)'}}>
+            <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+                onClick={() => setShowRecordModal(false)}
+              >
+                ×
+              </button>
+              <h2 className="text-lg font-bold mb-4">Ghi nhận kết quả tiêm</h2>
+              <form onSubmit={handleRecordSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-medium mb-1">Tên vaccine <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                    value={recordForm.vaccine}
+                    onChange={e => setRecordForm({ ...recordForm, vaccine: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Ghi chú</label>
+                  <textarea
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                    value={recordForm.note}
+                    onChange={e => setRecordForm({ ...recordForm, note: e.target.value })}
+                  />
+                </div>
+                {recordError && <div className="text-red-500 text-sm">{recordError}</div>}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    onClick={() => setShowRecordModal(false)}
+                    disabled={recordLoading}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    disabled={recordLoading}
+                  >
+                    {recordLoading ? "Đang lưu..." : "Lưu kết quả"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

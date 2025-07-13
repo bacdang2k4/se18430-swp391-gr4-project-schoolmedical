@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class VaccinationResult {
     private LocalDate vaccinationDate;
     @ManyToOne
     @JoinColumn
+    @JsonBackReference
     private Student student;
 
     @ManyToOne

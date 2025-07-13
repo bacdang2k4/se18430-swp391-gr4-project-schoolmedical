@@ -94,6 +94,7 @@ public class User implements UserDetails {
     private List<VaccinationConsent> forms = null;
 
     @OneToMany(mappedBy = "nurse", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<VaccinationResult> results = null;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)

@@ -130,7 +130,7 @@ public class EventServiceImpl implements EventService {
             boolean exists = vaccinationResultRepository
                     .findByStudentAndEvent(student, event).isEmpty();
 
-            if (!exists) {
+            if (exists) {
                 VaccinationResult vr = new VaccinationResult();
                 vr.setStudent(student);
                 vr.setEvent(event);
