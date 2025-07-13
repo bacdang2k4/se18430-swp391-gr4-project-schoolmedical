@@ -117,8 +117,10 @@ public class EventServiceImpl implements EventService {
         vr.setNurse(nurse);
         return vaccinationResultRepository.save(vr);
     }
-    public List<VaccinationResult> getVaccinationResultList(){
-        return vaccinationResultRepository.findAll();
+    public List<VaccinationResult> getVaccinationResultList(Long id){
+        Event event = eventRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND));
+        return vaccinationResultRepository.findByEvent(event);
+
     }
     public List<VaccinationConsent> getStudentAccepts(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND));

@@ -22,7 +22,7 @@ public interface EventService {
     Event updateEvent(UpdateVaccinationRequest request , Long id);
     String deleteEvent(Long id);
     Event updateEvent( Long id);
-    List<VaccinationResult> getVaccinationResultList();
+    public List<VaccinationResult> getVaccinationResultList(Long id);
     List<VaccinationConsent> getStudentAccepts(Long id);
     List<VaccinationConsent> getStudentRejects(Long id);
 }

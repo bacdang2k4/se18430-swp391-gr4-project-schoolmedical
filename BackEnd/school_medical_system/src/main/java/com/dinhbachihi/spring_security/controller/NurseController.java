@@ -97,10 +97,10 @@ public class NurseController {
         response.setResult(eventService.getStudentRejects(id));
         return response;
     }
-    @GetMapping("/event/record/list")
-    public ApiResponse<List<VaccinationResult>> getListRecord(){
+    @GetMapping("/event/record/list/{id}")
+    public ApiResponse<List<VaccinationResult>> getListRecord(@PathVariable Long id){
         ApiResponse<List<VaccinationResult>> response = new ApiResponse<>();
-        response.setResult(eventService.getVaccinationResultList());
+        response.setResult(eventService.getVaccinationResultList(id));
         return response;
     }
     @PutMapping("/event/record/{id}")
