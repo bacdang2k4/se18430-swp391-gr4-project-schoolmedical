@@ -23,5 +23,5 @@ public interface CheckUpEventService {
     List<Student> getStudentAccept(Long id);
     CheckUpEventResult recordCheckupEventResult(Long Id , RecordCheckUpEventRequest request);
     List<CheckUpEventResult> getCheckUpEventResults();
-
+    List<CheckUpEventConsent> getList();
 }

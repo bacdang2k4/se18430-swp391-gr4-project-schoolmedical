@@ -79,6 +79,12 @@ public class ParentController {
         response.setResult(eventService.getConsentForms());
         return response;
     }
+    @GetMapping("/checkup/list-forms")
+    public ApiResponse<List<CheckUpEventConsent>> getCheckUpConsentForms(){
+        ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getList());
+        return response;
+    }
     @GetMapping("/medical-sent/history")
     public ApiResponse<List<MedicineSentResponse>> getMedicineSentHistoryForParent() {
         ApiResponse<List<MedicineSentResponse>> response = new ApiResponse<>();

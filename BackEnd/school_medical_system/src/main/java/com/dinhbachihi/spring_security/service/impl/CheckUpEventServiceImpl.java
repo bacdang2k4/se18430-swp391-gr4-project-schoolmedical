@@ -133,4 +133,12 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
         return checkUpEventResultRepository.findAll();
     }
 
+    public List<CheckUpEventConsent> getList(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User parent = userRepository.findByEmail(email).orElseThrow( () -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return parent.getList();
+
+    }
+
 }
