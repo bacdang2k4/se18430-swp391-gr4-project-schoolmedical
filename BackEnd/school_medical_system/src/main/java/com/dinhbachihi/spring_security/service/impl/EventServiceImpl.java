@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,20 +107,6 @@ public class EventServiceImpl implements EventService {
         User parent = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return parent.getForms();
     }
-    public List<Student> getStudentAccept(Long id) {
-        List<Student> students = vaccinationConsentRepository.findByConsent("Accepted")
-                .stream()
-                .map(VaccinationConsent::getStudent)
-                .collect(Collectors.toList());
-        for(Student student : students) {
-            VaccinationResult vr = new VaccinationResult();
-            vr.setStudent(student);
-            vr.setEvent(vaccinationConsentRepository.getReferenceById(id).getEvent());
-            vr.setVaccinationDate(vaccinationConsentRepository.getReferenceById(id).getEvent().getEventDate());
-            vaccinationResultRepository.save(vr);
-        }
-        return students;
-    }
     public VaccinationResult recordVaccinationResult(Long Id , RecordVaccinationResult request) {
         VaccinationResult vr = vaccinationResultRepository.findById(Id).orElseThrow(() -> new AppException(ErrorCode.VR_NOT_FOUND));
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -133,6 +120,21 @@ public class EventServiceImpl implements EventService {
     public List<VaccinationResult> getVaccinationResultList(){
         return vaccinationResultRepository.findAll();
     }
-
+    public List<VaccinationConsent> getStudentAccepts(Long id) {
+        Event event = eventRepository.getReferenceById(id);
+        List<VaccinationConsent> list = vaccinationConsentRepository.findByConsentAndEvent("Accepted", event);
+        List<Student> students = new ArrayList<>();
+        for(VaccinationConsent vc : list){
+            students.add(vc.getStudent());
+        }
+        for(Student student : students) {
+            VaccinationResult vr = new VaccinationResult();
+            vr.setStudent(student);
+            vr.setEvent(vaccinationConsentRepository.getReferenceById(id).getEvent());
+            vr.setVaccinationDate(vaccinationConsentRepository.getReferenceById(id).getEvent().getEventDate());
+            vaccinationResultRepository.save(vr);
+        }
+        return list;
+    }
 
 }

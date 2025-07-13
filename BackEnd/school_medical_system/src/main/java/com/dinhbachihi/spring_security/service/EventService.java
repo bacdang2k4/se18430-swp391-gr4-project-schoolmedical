@@ -17,11 +17,11 @@ public interface EventService {
     ConsentFormReviewResponse acceptConsent(Long id);
     ConsentFormReviewResponse rejectConsent(Long id);
     List<VaccinationConsent> getConsentForms();
-    List<Student> getStudentAccept(Long id);
     VaccinationResult recordVaccinationResult(Long Id , RecordVaccinationResult request);
     List<Event> getAllEvents();
     Event updateEvent(UpdateVaccinationRequest request , Long id);
     String deleteEvent(Long id);
     Event updateEvent( Long id);
     List<VaccinationResult> getVaccinationResultList();
+    List<VaccinationConsent> getStudentAccepts(Long id);
 }
