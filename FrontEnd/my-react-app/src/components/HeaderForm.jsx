@@ -196,6 +196,10 @@ function HeaderForm() {
                         navigate("/nurse/vaccination")
                         setShowFeatureDropdown(false)
                       }
+                      if (f.title === "Quản lý kiểm tra y tế định kỳ") {
+                        navigate("/nurse/health-checkup")
+                        setShowFeatureDropdown(false)
+                      }
                     }}
                   >
                     <span className="text-lg">{f.icon}</span> {f.title}
