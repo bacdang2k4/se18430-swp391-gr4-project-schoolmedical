@@ -4,6 +4,7 @@ import com.dinhbachihi.spring_security.dto.request.*;
 import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineResponse;
 import com.dinhbachihi.spring_security.entity.*;
+import com.dinhbachihi.spring_security.repository.BlogRepository;
 import com.dinhbachihi.spring_security.repository.MedicineSentRepository;
 import com.dinhbachihi.spring_security.repository.StudentRepository;
 import com.dinhbachihi.spring_security.service.*;
@@ -24,6 +25,7 @@ public class AdminController {
     private  final MedicalEventService medicalEventService;
     private final MedicineService medicineService;
     private final CheckUpEventService checkUpEventService;
+    private final BlogService blogService;
 
     @GetMapping
     public ApiResponse<String> welcome(){
@@ -270,6 +272,33 @@ public class AdminController {
     public ApiResponse<List<CheckUpEventConsent>> getStudentReject(@PathVariable("id") Long id){
         ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
         response.setResult(checkUpEventService.getStudentReject(id));
+        return response;
+    }
+
+    @PutMapping("/blog/accept/{id}")
+    public ApiResponse<String> acceptBlog(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(blogService.acceptBlog(id));
+        return response;
+    }
+
+    @PutMapping("/blog/reject/{id}")
+    public ApiResponse<String> rejectBlog(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(blogService.rejectBlog(id));
+        return response;
+    }
+
+    @GetMapping("/blog")
+    public ApiResponse<List<Blog>> updateBlog(){
+        ApiResponse<List<Blog>> response = new ApiResponse<>();
+        response.setResult(blogService.getAllBlogs());
+        return response;
+    }
+    @GetMapping("/blog/{id}")
+    public ApiResponse<ViewBlogRequest> viewBlogById (@PathVariable("id") Long id){
+        ApiResponse<ViewBlogRequest> response = new ApiResponse<>();
+        response.setResult(blogService.getBlogById(id));
         return response;
     }
 }

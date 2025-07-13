@@ -373,3 +373,68 @@ export const rejectParentCheckup = async (id) => {
   const response = await api.put(`/v1/parent/checkup/reject/${id}`);
   return response.data;
 };
+
+// Lấy danh sách người tham gia kiểm tra sức khỏe (Nurse)
+export const getNurseCheckupParticipants = async (id) => {
+  const response = await api.get(`/v1/nurse/checkup/parti/${id}`);
+  return response.data;
+};
+
+// Lấy danh sách sự kiện kiểm tra sức khỏe (Nurse)
+export const getNurseCheckupEventList = async () => {
+  const response = await api.get('/v1/nurse/checkupEvent');
+  return response.data;
+};
+
+// Lấy danh sách từ chối sự kiện kiểm tra sức khỏe (Nurse)
+export const getNurseCheckupRejectList = async (id) => {
+  const response = await api.get(`/v1/nurse/checkup/reject/${id}`);
+  return response.data;
+};
+
+// Cập nhật kết quả kiểm tra sức khỏe (Nurse)
+export const updateNurseCheckupRecord = async (id, data) => {
+  const response = await api.put(`/v1/nurse/checkup/record/${id}`, data);
+  return response.data;
+};
+
+// Tạo blog mới (Nurse)
+export const createNurseBlog = async (data) => {
+  const response = await api.post('/v1/nurse/blog', data);
+  return response.data;
+};
+
+// Cập nhật blog (Nurse)
+export const updateNurseBlog = async (id, data) => {
+  const response = await api.put(`/v1/nurse/blog/${id}`, data);
+  return response.data;
+};
+
+// Xóa blog (Nurse)
+export const deleteNurseBlog = async (id) => {
+  const response = await api.delete(`/v1/nurse/blog/${id}`);
+  return response.data;
+};
+
+// Lấy danh sách blog (Admin)
+export const getBlogList = async () => {
+  const response = await api.get('/v1/blog');
+  return response.data;
+};
+
+// Lấy chi tiết blog (Admin)
+export const getBlogDetail = async (id) => {
+  const response = await api.get(`/v1/blog/${id}`);
+  return response.data;
+};
+
+// Duyệt blog (Admin)
+export const acceptAdminBlog = async (id) => {
+  const response = await api.put(`/v1/admin/blog/accept/${id}`);
+  return response.data;
+};
+// Không duyệt blog (Admin)
+export const rejectAdminBlog = async (id) => {
+  const response = await api.put(`/v1/admin/blog/reject/${id}`);
+  return response.data;
+};

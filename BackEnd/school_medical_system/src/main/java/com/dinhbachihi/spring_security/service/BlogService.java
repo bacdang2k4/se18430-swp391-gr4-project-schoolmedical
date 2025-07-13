@@ -12,4 +12,7 @@ public interface BlogService {
     Blog updateBlog(UpdateBlogRequest request, Long blogId);
     ViewBlogRequest getBlogById(Long blogId);
     List<Blog> getAllBlogs();
+    String acceptBlog(Long blogId);
+    String rejectBlog(Long blogId);
+    String deleteBlog(Long blogId);
 }

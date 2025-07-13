@@ -25,8 +25,10 @@ public class Blog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long post_id;
     private String title;
+
+    @Column(length = 1000000000)
     private String content;
-    private String type;
+    private String status = "waiting";
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
@@ -38,6 +40,5 @@ public class Blog {
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    @JsonBackReference
     private User author;
 }

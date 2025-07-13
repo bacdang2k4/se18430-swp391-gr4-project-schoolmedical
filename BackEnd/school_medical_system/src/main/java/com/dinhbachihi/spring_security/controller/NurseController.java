@@ -48,7 +48,20 @@ public class NurseController {
         return response;
     }
 
+    @DeleteMapping("/blog/{blog-id}")
+    public ApiResponse<String> updateBlog(@PathVariable("blog-id") Long blogId){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(blogService.deleteBlog(blogId));
+        response.setMessage("Successfully updated blog");
+        return response;
+    }
 
+    @GetMapping("/blog")
+    public ApiResponse<List<Blog>> updateBlog(){
+        ApiResponse<List<Blog>> response = new ApiResponse<>();
+        response.setResult(blogService.getAllBlogs());
+        return response;
+    }
     @PostMapping("/medical-event/{id}")
     public ApiResponse<MedicalEventResponse> createMedicalEventApiResponse(@RequestBody MedicalEventRequest request, @PathVariable("id") String id){
         ApiResponse<MedicalEventResponse> response = new ApiResponse<>();
@@ -185,4 +198,10 @@ public class NurseController {
         return response;
     }
 
+    @GetMapping("/checkupEvent")
+    public ApiResponse<List<CheckUpEvent>>getAllCheckUpEvents(){
+        ApiResponse<List<CheckUpEvent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getAllCheckUpEvents());
+        return response;
+    }
 }

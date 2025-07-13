@@ -31,7 +31,6 @@ public class BlogServiceImpl implements BlogService {
         blog.setTitle(request.getTitle());
         blog.setContent(request.getContent());
         blog.setAuthor(user);
-        blog.setType(request.getType());
         return blogRepository.save(blog);
     }
 
@@ -39,6 +38,7 @@ public class BlogServiceImpl implements BlogService {
         Blog blog = blogRepository.getReferenceById(blogId);
         blog.setTitle(request.getTitle());
         blog.setContent(request.getContent());
+        blog.setStatus("waiting");
         return blogRepository.save(blog);
     }
 
@@ -53,5 +53,25 @@ public class BlogServiceImpl implements BlogService {
 
     public List<Blog> getAllBlogs(){
         return blogRepository.findAll();
+    }
+
+    public String deleteBlog(Long blogId){
+        Blog blog = blogRepository.getReferenceById(blogId);
+        blogRepository.deleteById(blogId);
+        return "Successfully deleted blog";
+    }
+
+    public String acceptBlog(Long blogId){
+        Blog blog = blogRepository.getReferenceById(blogId);
+        blog.setStatus("accepted");
+        blogRepository.save(blog);
+        return "blog accepted";
+    }
+
+    public String rejectBlog(Long blogId){
+        Blog blog = blogRepository.getReferenceById(blogId);
+        blog.setStatus("rejected");
+        blogRepository.save(blog);
+        return "blog rejected";
     }
 }

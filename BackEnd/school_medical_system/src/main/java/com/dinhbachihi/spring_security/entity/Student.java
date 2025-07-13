@@ -60,4 +60,7 @@ public class Student {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<MedicineSent> medicineSentList = null;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<CheckUpEventResult> listCheckupResult = null;
 }

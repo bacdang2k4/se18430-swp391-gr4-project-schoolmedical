@@ -1,5 +1,6 @@
 package com.dinhbachihi.spring_security.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class CheckUpEventResult {
 
     @ManyToOne
     @JoinColumn
+    @JsonBackReference
     private Student student;
 
     @ManyToOne

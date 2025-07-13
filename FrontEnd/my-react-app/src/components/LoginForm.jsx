@@ -28,6 +28,7 @@ export default function LoginForm() {
 
       if (enabled === true) {
         setTokens(token, refreshToken);
+        localStorage.setItem('role', role);
         if (role === "ADMIN") {
           navigate("/admin/dashboard");
         } else {
