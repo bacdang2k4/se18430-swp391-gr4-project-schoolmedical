@@ -60,16 +60,20 @@ public class EventServiceImpl implements EventService {
     }
     public String sendNotification(Long id) {
         List<Student> students = studentRepository.findAll();
-        Event event = eventRepository.getReferenceById(id);
+        Event event = eventRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND));
         event.setStatus("isgoing");
         for(Student student : students) {
+            boolean notExists = vaccinationConsentRepository
+                    .findByStudentAndEvent(student, event)
+                    .isEmpty();
+            if(notExists) {
             if(student.getParent()!=null){
             VaccinationConsent cf = new VaccinationConsent();
             emailService.sendEmail(student.getParent().getEmail(),event.getName(),event.getDescription());
             cf.setEvent(event);
             cf.setStudent(student);
             cf.setParent(student.getParent());
-            vaccinationConsentRepository.save(cf);}
+            vaccinationConsentRepository.save(cf);}}
         }
         return "Successfully sent notification";
     }
