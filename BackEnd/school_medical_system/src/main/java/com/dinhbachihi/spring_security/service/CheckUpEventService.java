@@ -20,7 +20,7 @@ public interface CheckUpEventService {
     String sendNotification(Long id);
     CheckUpEventConsent acceptCheckUpEventConsent(Long id);
     CheckUpEventConsent rejectCheckUpEventConsent(Long id);
-    List<Student> getStudentAccept(Long id);
+    List<CheckUpEventConsent> getStudentAccept(Long id);
     CheckUpEventResult recordCheckupEventResult(Long Id , RecordCheckUpEventRequest request);
     List<CheckUpEventResult> getCheckUpEventResults();
     List<CheckUpEventConsent> getList();

@@ -65,16 +65,20 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
 
     public String sendNotification(Long id){ // thông báo
         List<Student> stu = studentRepository.findAll();
-        CheckUpEvent checkUpEvent = checkUpEventRepository.getReferenceById(id);
+        CheckUpEvent checkUpEvent = checkUpEventRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CE_NOT_FOUND));
         checkUpEvent.setStatus("isgoing");
         for(Student student : stu) {
+            boolean notExists = checkUpEventConsentRepository
+                    .findByStudentAndEvent(student, checkUpEvent)
+                    .isEmpty();
+            if(notExists) {
             if(student.getParent()!=null){
                 CheckUpEventConsent cku = new CheckUpEventConsent();
                 emailService.sendEmail(student.getParent().getEmail(),checkUpEvent.getName(),checkUpEvent.getDescription());
                 cku.setCheckUp(checkUpEvent);
                 cku.setStudent(student);
                 cku.setParent(student.getParent());
-                checkUpEventConsentRepository.save(cku);
+                checkUpEventConsentRepository.save(cku);}
             }
         }
         return  "Successfully sent notification";
@@ -91,19 +95,37 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
         return checkUpEventConsentRepository.save(checkUpEventConsent);
     }
 
-    public List<Student> getStudentAccept(Long id) {
-        List<Student> students = checkUpEventConsentRepository.findByConsent("Accepted")
-                .stream()
-                .map(CheckUpEventConsent::getStudent)
-                .collect(Collectors.toList());
-        for (Student student : students) {
-            CheckUpEventResult checkupr = new CheckUpEventResult();
-            checkupr.setStudent(student);
-            checkupr.setCheckUpEvent(checkUpEventConsentRepository.getReferenceById(id).getCheckUp());
-            checkupr.setCheckupDate(checkUpEventConsentRepository.getReferenceById(id).getCheckUp().getEventDate());
-            checkUpEventResultRepository.save(checkupr);
+    public List<CheckUpEventConsent> getStudentAccept(Long id) {
+        CheckUpEvent ce = checkUpEventRepository.findById(id).orElseThrow( () -> new AppException(ErrorCode.CE_NOT_FOUND));
+        List<CheckUpEventConsent> list = checkUpEventConsentRepository.findByConsentAndEvent("Accept",ce);
+        for(CheckUpEventConsent checkUpEventConsent : list) {
+            Student student = checkUpEventConsent.getStudent();
+            boolean exists = checkUpEventResultRepository.findByStudentAndEvent(student,ce).isEmpty();
+            if(exists){
+                CheckUpEventResult checkUpEventResult = new CheckUpEventResult();
+                checkUpEventResult.setStudent(student);
+                checkUpEventResult.setCheckUpEvent(ce);
+                checkUpEventResult.setCheckupDate(ce.getEventDate());
+                checkUpEventResultRepository.save(checkUpEventResult);
+            }
         }
-        return students;
+        return list;
+    }
+    public List<CheckUpEventConsent> getStudentReject(Long id) {
+        CheckUpEvent ce = checkUpEventRepository.findById(id).orElseThrow( () -> new AppException(ErrorCode.CE_NOT_FOUND));
+        List<CheckUpEventConsent> list = checkUpEventConsentRepository.findByConsentAndEvent("Reject",ce);
+        for(CheckUpEventConsent checkUpEventConsent : list) {
+            Student student = checkUpEventConsent.getStudent();
+            boolean exists = checkUpEventResultRepository.findByStudentAndEvent(student,ce).isEmpty();
+            if(exists){
+                CheckUpEventResult checkUpEventResult = new CheckUpEventResult();
+                checkUpEventResult.setStudent(student);
+                checkUpEventResult.setCheckUpEvent(ce);
+                checkUpEventResult.setCheckupDate(ce.getEventDate());
+                checkUpEventResultRepository.save(checkUpEventResult);
+            }
+        }
+        return list;
     }
 
     public CheckUpEventResult recordCheckupEventResult(Long Id , RecordCheckUpEventRequest request) {

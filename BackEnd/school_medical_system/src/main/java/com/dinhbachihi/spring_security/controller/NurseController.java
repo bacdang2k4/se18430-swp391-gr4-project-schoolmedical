@@ -153,13 +153,11 @@ public class NurseController {
     }
 
     @GetMapping("/checkup/parti/{id}")
-    public ApiResponse<List<Student>> getStudentAccept(@PathVariable("id") Long id){
-        ApiResponse<List<Student>> response = new ApiResponse<>();
+    public ApiResponse<List<CheckUpEventConsent>> getStudentAccept(@PathVariable("id") Long id){
+        ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
         response.setResult(checkUpEventService.getStudentAccept(id));
         return response;
     }
-
-
     @PutMapping("/checkup/record/{id}")
     public ApiResponse<CheckUpEventResult> recordCheckupEventResult(@PathVariable("id") Long id, @RequestBody RecordCheckUpEventRequest request) {
         ApiResponse<CheckUpEventResult> response = new ApiResponse<>();
