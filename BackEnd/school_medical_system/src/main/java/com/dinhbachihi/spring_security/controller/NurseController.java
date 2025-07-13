@@ -174,6 +174,11 @@ public class NurseController {
         return response;
     }
 
-
+    @GetMapping("/vaccination")
+    public ApiResponse<List<Event>> getAllEvent(){
+        ApiResponse<List<Event>> response = new ApiResponse<>();
+        response.setResult(eventService.getAllEvents());
+        return response;
+    }
 
 }

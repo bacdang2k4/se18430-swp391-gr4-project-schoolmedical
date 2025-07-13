@@ -335,3 +335,13 @@ export const editAdminCheckupEvent = async (id, data) => {
   const response = await api.put(`/v1/admin/checkup-event/${id}`, data);
   return response.data;
 };
+
+export const getNurseEventParticipants = async (id) => {
+  const response = await api.get(`/v1/nurse/event/parti/${id}`);
+  return response.data;
+};
+
+export const getNurseVaccinationList = async () => {
+  const response = await api.get('/v1/nurse/vaccination');
+  return response.data;
+};
