@@ -80,18 +80,6 @@ const menuItems = [
     color: "text-indigo-600",
   },
   {
-    title: "Lịch sử y tế",
-    icon: ClockIcon,
-    path: "/admin/medical-history",
-    color: "text-pink-600",
-  },
-  {
-    title: "Hệ thống",
-    icon: CogIcon,
-    path: "/admin/system",
-    color: "text-gray-600",
-  },
-  {
     title: "Báo cáo",
     icon: ChartBarIcon,
     path: "/admin/reports",
