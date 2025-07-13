@@ -114,17 +114,6 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
     public List<CheckUpEventConsent> getStudentReject(Long id) {
         CheckUpEvent ce = checkUpEventRepository.findById(id).orElseThrow( () -> new AppException(ErrorCode.CE_NOT_FOUND));
         List<CheckUpEventConsent> list = checkUpEventConsentRepository.findByConsentAndEvent("Reject",ce);
-        for(CheckUpEventConsent checkUpEventConsent : list) {
-            Student student = checkUpEventConsent.getStudent();
-            boolean exists = checkUpEventResultRepository.findByStudentAndEvent(student,ce).isEmpty();
-            if(exists){
-                CheckUpEventResult checkUpEventResult = new CheckUpEventResult();
-                checkUpEventResult.setStudent(student);
-                checkUpEventResult.setEvent(ce);
-                checkUpEventResult.setCheckupDate(ce.getEventDate());
-                checkUpEventResultRepository.save(checkUpEventResult);
-            }
-        }
         return list;
     }
 
