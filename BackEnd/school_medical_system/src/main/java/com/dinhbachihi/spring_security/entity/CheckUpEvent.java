@@ -18,12 +18,12 @@ public class CheckUpEvent {
     private String description;
     private String status ="setup";
 
-    @OneToMany(mappedBy = "checkUp", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<CheckUpEventConsent> forms = null;
 
 
-    @OneToMany(mappedBy = "checkUpEvent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<CheckUpEventResult> list = null;
 

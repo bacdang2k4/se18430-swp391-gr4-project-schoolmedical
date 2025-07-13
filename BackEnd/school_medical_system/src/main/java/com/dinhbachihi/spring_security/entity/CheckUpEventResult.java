@@ -27,7 +27,7 @@ public class CheckUpEventResult {
 
     @ManyToOne
     @JoinColumn
-    private CheckUpEvent checkUpEvent;
+    private CheckUpEvent event;
 
     @ManyToOne
     @JoinColumn

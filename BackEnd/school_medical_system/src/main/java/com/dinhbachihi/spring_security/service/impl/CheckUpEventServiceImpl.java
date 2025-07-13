@@ -75,7 +75,7 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
             if(student.getParent()!=null){
                 CheckUpEventConsent cku = new CheckUpEventConsent();
                 emailService.sendEmail(student.getParent().getEmail(),checkUpEvent.getName(),checkUpEvent.getDescription());
-                cku.setCheckUp(checkUpEvent);
+                cku.setEvent(checkUpEvent);
                 cku.setStudent(student);
                 cku.setParent(student.getParent());
                 checkUpEventConsentRepository.save(cku);}
@@ -104,7 +104,7 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
             if(exists){
                 CheckUpEventResult checkUpEventResult = new CheckUpEventResult();
                 checkUpEventResult.setStudent(student);
-                checkUpEventResult.setCheckUpEvent(ce);
+                checkUpEventResult.setEvent(ce);
                 checkUpEventResult.setCheckupDate(ce.getEventDate());
                 checkUpEventResultRepository.save(checkUpEventResult);
             }
@@ -120,7 +120,7 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
             if(exists){
                 CheckUpEventResult checkUpEventResult = new CheckUpEventResult();
                 checkUpEventResult.setStudent(student);
-                checkUpEventResult.setCheckUpEvent(ce);
+                checkUpEventResult.setEvent(ce);
                 checkUpEventResult.setCheckupDate(ce.getEventDate());
                 checkUpEventResultRepository.save(checkUpEventResult);
             }
