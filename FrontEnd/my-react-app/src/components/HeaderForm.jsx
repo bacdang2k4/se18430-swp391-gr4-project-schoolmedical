@@ -192,6 +192,10 @@ function HeaderForm() {
                         navigate("/nurse/warehouse")
                         setShowFeatureDropdown(false)
                       }
+                      if (f.title === "Quản lý tiêm chủng") {
+                        navigate("/nurse/vaccination")
+                        setShowFeatureDropdown(false)
+                      }
                     }}
                   >
                     <span className="text-lg">{f.icon}</span> {f.title}

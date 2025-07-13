@@ -13,7 +13,7 @@ import {
   BellIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../AdminLayout"
-import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent } from "../../api/axios"
+import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent, editAdminCheckupEvent } from "../../api/axios"
 
 const studentCheckups = [
   {
@@ -123,6 +123,8 @@ function MedicalCheckups() {
     description: "",
   });
   const [loadingCreate, setLoadingCreate] = useState(false);
+  const [editModal, setEditModal] = useState({ open: false, id: null, eventDate: '', description: '' });
+  const [loadingEdit, setLoadingEdit] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,10 +153,6 @@ function MedicalCheckups() {
 
     return matchesSearch && matchesStatus
   })
-
-  const handleViewDetail = (campaign) => {
-    console.log("View campaign detail:", campaign)
-  }
 
   const handleViewResult = (student) => {
     setSelectedStudent(student)
@@ -195,6 +193,44 @@ function MedicalCheckups() {
       alert("Tạo đợt kiểm tra thất bại!" + (err?.response?.data?.message ? `\n${err.response.data.message}` : ""));
     } finally {
       setLoadingCreate(false);
+    }
+  };
+
+  const openEditModal = (campaign) => {
+    setEditModal({
+      open: true,
+      id: campaign.id,
+      eventDate: campaign.eventDate || '',
+      description: campaign.description || '',
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditModal({ open: false, id: null, eventDate: '', description: '' });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditModal((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setLoadingEdit(true);
+    try {
+      await editAdminCheckupEvent(editModal.id, {
+        eventDate: editModal.eventDate,
+        description: editModal.description,
+      });
+      alert('Cập nhật đợt kiểm tra thành công!');
+      closeEditModal();
+      // Refresh list
+      const res = await getAdminCheckupEventList();
+      setCheckupCampaigns(res.result || []);
+    } catch {
+      alert('Cập nhật đợt kiểm tra thất bại!');
+    } finally {
+      setLoadingEdit(false);
     }
   };
 
@@ -401,18 +437,20 @@ function MedicalCheckups() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end gap-2">
                             <button
-                              onClick={() => handleViewDetail(campaign)}
-                              className="text-blue-600 hover:text-blue-900 p-1"
-                              title="Xem chi tiết"
-                            >
-                              <EyeIcon className="w-4 h-4" />
-                            </button>
-                            <button
                               onClick={() => handleSendNotification(campaign.id)}
                               className="text-indigo-600 hover:text-indigo-900 p-1"
                               title="Gửi thông báo cho phụ huynh"
                             >
                               <BellIcon className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => openEditModal(campaign)}
+                              className="text-yellow-600 hover:text-yellow-900 p-1"
+                              title="Sửa đợt kiểm tra"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.1 2.1 0 113.02 2.92L7.5 18.793 3 19.5l.707-4.5L16.862 3.487z" />
+                              </svg>
                             </button>
                             {/* Các nút hành động khác nếu cần */}
                           </div>
@@ -676,6 +714,52 @@ function MedicalCheckups() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModal.open && (
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Sửa đợt kiểm tra</h3>
+            <form className="space-y-4" onSubmit={handleEditSubmit}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày diễn ra</label>
+                <input
+                  type="date"
+                  name="eventDate"
+                  value={editModal.eventDate}
+                  onChange={handleEditChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  value={editModal.description}
+                  onChange={handleEditChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  required
+                ></textarea>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={loadingEdit}
+                >
+                  Hủy
+                </button>
+                <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700" disabled={loadingEdit}>
+                  {loadingEdit ? "Đang lưu..." : "Lưu"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -9,61 +9,14 @@ import {
   FunnelIcon,
   CheckCircleIcon,
   ClockIcon,
+  UsersIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
-import { createAdminVaccinationEvent, getAdminVaccinationList, sendAdminNotification, finishAdminVaccination, editAdminVaccination, deleteAdminVaccination } from "../../api/axios";
+import { createAdminVaccinationEvent, getAdminVaccinationList, sendAdminNotification, finishAdminVaccination, editAdminVaccination, deleteAdminVaccination, getAdminVaccinationParticipants, getRRejectAdminVaccination } from "../../api/axios";
 
 import { useEffect } from "react";
 
-const studentVaccinations = [
-  {
-    id: 1,
-    studentName: "Nguyễn Văn A",
-    class: "6A1",
-    campaignId: 2,
-    parentConsent: true,
-    vaccinationDate: "2025-01-08",
-    status: "completed",
-    reaction: "Không có phản ứng",
-    notes: "Tiêm thành công, theo dõi 30 phút",
-  },
-  {
-    id: 2,
-    studentName: "Trần Thị B",
-    class: "8B2",
-    campaignId: 2,
-    parentConsent: true,
-    vaccinationDate: null,
-    status: "registered",
-    reaction: null,
-    notes: "Đã đăng ký, chờ tiêm",
-  },
-  {
-    id: 3,
-    studentName: "Lê Văn C",
-    class: "9C1",
-    campaignId: 2,
-    parentConsent: false,
-    vaccinationDate: null,
-    status: "declined",
-    reaction: null,
-    notes: "Phụ huynh không đồng ý",
-  },
-]
-
-const studentStatusLabels = {
-  registered: "Đã đăng ký",
-  completed: "Đã tiêm",
-  declined: "Từ chối",
-  absent: "Vắng mặt",
-}
-
-const studentStatusColors = {
-  registered: "bg-blue-100 text-blue-800",
-  completed: "bg-green-100 text-green-800",
-  declined: "bg-red-100 text-red-800",
-  absent: "bg-gray-100 text-gray-800",
-}
 
 function VaccinationManagement() {
   const [activeTab, setActiveTab] = useState("campaigns");
@@ -78,6 +31,7 @@ function VaccinationManagement() {
   });
   const [vaccinationList, setVaccinationList] = useState([]);
   const [editModal, setEditModal] = useState({ open: false, id: null, eventDate: '', description: '' });
+  const [participantsModal, setParticipantsModal] = useState({ open: false, campaignId: null, participants: [], type: '' });
 
   useEffect(() => {
     const fetchVaccinations = async () => {
@@ -184,22 +138,43 @@ function VaccinationManagement() {
     }
   };
 
+  const handleViewParticipants = async (campaignId) => {
+    try {
+      const data = await getAdminVaccinationParticipants(campaignId);
+      setParticipantsModal({
+        open: true,
+        campaignId,
+        participants: Array.isArray(data.result) ? data.result : [],
+        type: 'participants'
+      });
+    } catch {
+      alert("Không thể tải danh sách tham gia!");
+    }
+  };
+
+  const handleViewRejections = async (campaignId) => {
+    try {
+      const data = await getRRejectAdminVaccination(campaignId);
+      setParticipantsModal({
+        open: true,
+        campaignId,
+        participants: Array.isArray(data.result) ? data.result : [],
+        type: 'rejections'
+      });
+    } catch {
+      alert("Không thể tải danh sách từ chối!");
+    }
+  };
+
+  const closeParticipantsModal = () => {
+    setParticipantsModal({ open: false, campaignId: null, participants: [], type: '' });
+  };
+
   const filteredCampaigns = vaccinationList.filter((campaign) => {
     const matchesSearch = (campaign.name || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = !selectedStatus || campaign.status === selectedStatus;
     return matchesSearch && matchesStatus;
   });
-
-  const filteredStudents = studentVaccinations.filter((student) => {
-    const matchesSearch = student.studentName.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = !selectedStatus || student.status === selectedStatus
-
-    return matchesSearch && matchesStatus
-  })
-
-  const handleViewDetail = (campaign) => {
-    console.log("View campaign detail:", campaign)
-  }
 
   // Thêm hàm map status
   const mapStatusLabel = (status) => {
@@ -339,7 +314,7 @@ function VaccinationManagement() {
                 <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
                 <input
                   type="text"
-                  placeholder={activeTab === "campaigns" ? "Tìm kiếm chiến dịch..." : "Tìm kiếm học sinh..."}
+                  placeholder={activeTab === "campaigns" ? "Tìm kiếm chiến dịch..." : "Tìm kiếm chiến dịch..."}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -351,23 +326,17 @@ function VaccinationManagement() {
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
                 <option value="">Tất cả trạng thái</option>
-                {activeTab === "campaigns"
-                  ? Object.entries({ setup: 'Đã lên lịch', isgoing: 'Đang tiến hành', finished: 'Kết thúc' }).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))
-                  : Object.entries(studentStatusLabels).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
+                {Object.entries({ setup: 'Đã lên lịch', isgoing: 'Đang tiến hành', finished: 'Kết thúc' }).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
               </select>
               <div></div>
               <div className="flex items-center text-sm text-gray-600">
                 <FunnelIcon className="w-4 h-4 mr-2" />
-                Tìm thấy {activeTab === "campaigns" ? filteredCampaigns.length : filteredStudents.length}{" "}
-                {activeTab === "campaigns" ? "chiến dịch" : "học sinh"}
+                Tìm thấy {activeTab === "campaigns" ? filteredCampaigns.length : filteredCampaigns.length}{" "}
+                {activeTab === "campaigns" ? "chiến dịch" : "chiến dịch"}
               </div>
             </div>
           </div>
@@ -421,13 +390,6 @@ function VaccinationManagement() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end gap-2">
                             <button
-                              onClick={() => handleViewDetail(campaign)}
-                              className="text-blue-600 hover:text-blue-900 p-1"
-                              title="Xem chi tiết"
-                            >
-                              <EyeIcon className="w-4 h-4" />
-                            </button>
-                            <button
                               onClick={() => handleSendNotification(campaign.id)}
                               className="text-green-600 hover:text-green-900 p-1"
                               title="Gửi thông báo"
@@ -472,23 +434,20 @@ function VaccinationManagement() {
               </div>
             </div>
           ) : (
-            /* Students Table */
+            /* Students Table - Now shows campaigns with participant/rejection buttons */
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Học sinh
+                        Tên chiến dịch
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Chiến dịch
+                        Loại sự kiện
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Đồng ý PH
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ngày tiêm
+                        Ngày diễn ra
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Trạng thái
@@ -499,53 +458,45 @@ function VaccinationManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents.map((student) => {
-                      const campaign = vaccinationList.find((c) => c.id === student.campaignId)
-                      return (
-                        <tr key={student.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{student.studentName}</div>
-                              <div className="text-sm text-gray-500">Lớp {student.class}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{campaign?.name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                student.parentConsent ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                              }`}
+                    {filteredCampaigns.map((campaign) => (
+                      <tr key={campaign.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
+                          <div className="text-sm text-gray-500">{campaign.description}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {campaign.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.eventDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status)}`}>
+                            {mapStatusLabel(campaign.status) || "-"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleViewParticipants(campaign.id)}
+                              className="text-green-600 hover:text-green-900 p-2 border border-green-300 rounded-lg flex items-center gap-1"
+                              title="Xem danh sách tham gia"
                             >
-                              {student.parentConsent ? "Đã đồng ý" : "Chưa đồng ý"}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {student.vaccinationDate || "Chưa tiêm"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${studentStatusColors[student.status]}`}
+                              <UsersIcon className="w-4 h-4" />
+                              <span className="text-xs">Tham gia</span>
+                            </button>
+                            <button
+                              onClick={() => handleViewRejections(campaign.id)}
+                              className="text-red-600 hover:text-red-900 p-2 border border-red-300 rounded-lg flex items-center gap-1"
+                              title="Xem danh sách từ chối"
                             >
-                              {studentStatusLabels[student.status]}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end gap-2">
-                              <button className="text-blue-600 hover:text-blue-900 p-1" title="Xem chi tiết">
-                                <EyeIcon className="w-4 h-4" />
-                              </button>
-                              {student.status === "registered" && (
-                                <button className="text-green-600 hover:text-green-900 p-1" title="Đánh dấu đã tiêm">
-                                  <CheckCircleIcon className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
+                              <XCircleIcon className="w-4 h-4" />
+                              <span className="text-xs">Từ chối</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -662,6 +613,92 @@ function VaccinationManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Participants/Rejections Modal */}
+      {participantsModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                {participantsModal.type === 'participants' ? 'Danh sách học sinh tham gia' : 'Danh sách học sinh từ chối'}
+              </h3>
+              <button
+                onClick={closeParticipantsModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Học sinh
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Lớp
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phụ huynh
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ngày gửi
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Trạng thái
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {participantsModal.participants.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.student?.firstName} {item.student?.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">ID: {item.student?.studentId}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.student?.classes?.name}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.parent?.firstName} {item.parent?.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">{item.parent?.email}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.sendDate}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          item.consent === 'Accepted' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {item.consent === 'Accepted' ? 'Đã đồng ý' : 'Từ chối'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-4 text-sm text-gray-600">
+              Tổng cộng: {participantsModal.participants.length} học sinh
+            </div>
           </div>
         </div>
       )}

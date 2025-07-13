@@ -90,6 +90,13 @@ public class NurseController {
         response.setResult(eventService.getStudentAccepts(id));
         return response;
     }
+
+    @GetMapping("/event/reject/{id}")
+    public ApiResponse<List<VaccinationConsent>> getListReject(@PathVariable("id") Long id){
+        ApiResponse<List<VaccinationConsent>> response = new ApiResponse<>();
+        response.setResult(eventService.getStudentRejects(id));
+        return response;
+    }
     @GetMapping("/event/record/list")
     public ApiResponse<List<VaccinationResult>> getListRecord(){
         ApiResponse<List<VaccinationResult>> response = new ApiResponse<>();

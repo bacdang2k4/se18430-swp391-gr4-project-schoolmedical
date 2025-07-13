@@ -247,6 +247,13 @@ public class AdminController {
         response.setResult(eventService.getStudentAccepts(id));
         return response;
     }
+
+    @GetMapping("/vaccination/reject/{id}")
+    public ApiResponse<List<VaccinationConsent>> getListRejectVaccine(@PathVariable("id") Long id){
+        ApiResponse<List<VaccinationConsent>> response = new ApiResponse<>();
+        response.setResult(eventService.getStudentRejects(id));
+        return response;
+    }
     @PutMapping("/checkup/mark/{id}")
     public ApiResponse<String> markFinished(@PathVariable Long id){
         ApiResponse<String> response = new ApiResponse<>();

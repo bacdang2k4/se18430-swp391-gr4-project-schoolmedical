@@ -317,3 +317,21 @@ export const createAdminCheckupEvent = async (eventData) => {
   const response = await api.post('/v1/admin/checkup-event', eventData);
   return response.data;
 };
+
+// Lấy danh sách người tham gia tiêm chủng (Admin)
+export const getAdminVaccinationParticipants = async (id) => {
+  const response = await api.get(`/v1/admin/vaccination/parti/${id}`);
+  return response.data;
+};
+
+// Lấy danh sách từ chối chiến dịch tiêm chủng (Admin)
+export const getRRejectAdminVaccination = async (id) => {
+  const response = await api.get(`/v1/admin/vaccination/reject/${id}`);
+  return response.data;
+};
+
+// Sửa sự kiện kiểm tra sức khỏe (Admin)
+export const editAdminCheckupEvent = async (id, data) => {
+  const response = await api.put(`/v1/admin/checkup-event/${id}`, data);
+  return response.data;
+};

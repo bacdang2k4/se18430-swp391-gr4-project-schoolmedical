@@ -24,4 +24,5 @@ public interface EventService {
     Event updateEvent( Long id);
     List<VaccinationResult> getVaccinationResultList();
     List<VaccinationConsent> getStudentAccepts(Long id);
+    List<VaccinationConsent> getStudentRejects(Long id);
 }

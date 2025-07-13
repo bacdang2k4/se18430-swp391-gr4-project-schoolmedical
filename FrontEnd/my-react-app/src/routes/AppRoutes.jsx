@@ -33,7 +33,7 @@ import EventInSchoolForm from "../pages/parent/EventInSchool"
 import Warehouse from "../pages/nurse/WareHouse"
 import StudentManagement from "../components/admin/StudentManagement"
 import Vaccination from "../pages/parent/Vaccination"
-
+import VaccinationNurse from "../pages/nurse/Vaccination"
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -262,6 +262,14 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <Warehouse />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/nurse/vaccination"
+          element={
+            <PrivateRoute>
+              <VaccinationNurse />
             </PrivateRoute>
           }
         />
