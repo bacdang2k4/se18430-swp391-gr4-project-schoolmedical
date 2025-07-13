@@ -27,8 +27,10 @@ public enum ErrorCode {
     WRONG_PASSWORD(400, "Wrong Password"),
     HEALTH_RECORD_ALREADY_EXISTS(400, "Health Record Already Exists"),
     HEALTH_RECORD_NOT_FOUND(400, "Health Record Not Found"),
+    EVENT_NOT_FOUND(404, "Event Not Found"),
     MEDICAL_EVENT_NOT_FOUND(400, "Medical Event Not Found"),
     ;
+
     private final int code;
     private final String message;
 

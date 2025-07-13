@@ -247,4 +247,10 @@ public class AdminController {
         response.setResult(eventService.getStudentAccepts(id));
         return response;
     }
+    @PutMapping("/checkup/mark/{id}")
+    public ApiResponse<String> markFinished(@PathVariable Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.markCheckUpEvent(id));
+        return response;
+    }
 }

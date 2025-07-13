@@ -56,6 +56,13 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
     public List<CheckUpEvent> getAllCheckUpEvents() {
         return checkUpEventRepository.findAll();
     }
+    public String markCheckUpEvent(Long id) {
+        CheckUpEvent checkUpEvent = checkUpEventRepository.findById(id).get();
+        checkUpEvent.setStatus("finished");
+        checkUpEventRepository.save(checkUpEvent);
+        return "Mark finished successfully";
+    }
+
     public String sendNotification(Long id){ // thông báo
         List<Student> stu = studentRepository.findAll();
         CheckUpEvent checkUpEvent = checkUpEventRepository.getReferenceById(id);
