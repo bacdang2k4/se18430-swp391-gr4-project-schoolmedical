@@ -159,6 +159,8 @@ function HealthRecords() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Thị lực/Thính lực
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cân nặng</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chiều cao</th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Hành động
                     </th>
@@ -211,6 +213,28 @@ function HealthRecords() {
                           <div className="text-sm text-gray-900">
                             <div>👁️ {record.healthRecord?.vision || 'Chưa cập nhật'}</div>
                             <div>👂 {record.healthRecord?.hearing || 'Chưa cập nhật'}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900">
+                            {record.healthRecord?.weight && record.healthRecord.weight !== '' ? (
+                              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                {record.healthRecord.weight}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">Chưa cập nhật</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900">
+                            {record.healthRecord?.height && record.healthRecord.height !== '' ? (
+                              <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                                {record.healthRecord.height}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">Chưa cập nhật</span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -282,6 +306,16 @@ function HealthRecords() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Thính lực</label>
                   <p className="text-sm text-gray-900">{selectedRecord.healthRecord?.hearing || 'Chưa cập nhật'}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Cân nặng</label>
+                  <p className="text-sm text-gray-900">{selectedRecord.healthRecord?.weight || 'Chưa cập nhật'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Chiều cao</label>
+                  <p className="text-sm text-gray-900">{selectedRecord.healthRecord?.height || 'Chưa cập nhật'}</p>
                 </div>
               </div>
               <div>

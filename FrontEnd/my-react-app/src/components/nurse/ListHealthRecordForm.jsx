@@ -134,6 +134,8 @@ function ListHealthRecordForm() {
                 <div><b>Bệnh mãn tính:</b> {detail.healthRecord?.chronic_disease || 'Không có'}</div>
                 <div><b>Thị lực:</b> {detail.healthRecord?.vision || 'Chưa cập nhật'}</div>
                 <div><b>Thính lực:</b> {detail.healthRecord?.hearing || 'Chưa cập nhật'}</div>
+                <div><b>Cân nặng:</b> {detail.healthRecord?.weight || 'Chưa cập nhật'}</div>
+                <div><b>Chiều cao:</b> {detail.healthRecord?.height || 'Chưa cập nhật'}</div>
                 <div><b>Tiền sử bệnh:</b> {detail.healthRecord?.medical_history || 'Không có'}</div>
               </div>
             </div>
