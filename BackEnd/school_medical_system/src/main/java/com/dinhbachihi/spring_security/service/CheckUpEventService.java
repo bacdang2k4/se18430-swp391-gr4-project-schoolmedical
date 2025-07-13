@@ -15,6 +15,7 @@ public interface CheckUpEventService {
     CheckUpEvent addCheckUpEvent(CreateCheckUpEventRequest request);
     CheckUpEvent updateCheckUpEvent(UpdateCheckUpRequest request , Long id);
     String deleteCheckUpEvent(Long id);
+    String markCheckUpEvent(Long id);
     List<CheckUpEvent> getAllCheckUpEvents();
     String sendNotification(Long id);
     CheckUpEventConsent acceptCheckUpEventConsent(Long id);
