@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   ClipboardDocumentCheckIcon,
   PlusIcon,
@@ -10,53 +10,10 @@ import {
   CheckCircleIcon,
   ClockIcon,
   UserGroupIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../AdminLayout"
-
-const checkupCampaigns = [
-  {
-    id: 1,
-    name: "Kiểm tra sức khỏe định kỳ học kỳ 1",
-    type: "periodic",
-    targetGrades: ["6", "7", "8", "9"],
-    scheduledDate: "2025-01-20",
-    endDate: "2025-01-25",
-    status: "scheduled",
-    totalStudents: 450,
-    completedStudents: 0,
-    location: "Phòng y tế trường",
-    medicalStaff: "BS. Nguyễn Văn A, Y tá Trần Thị B",
-    checkupItems: ["Chiều cao", "Cân nặng", "Thị lực", "Thính lực", "Răng miệng", "Tim mạch"],
-  },
-  {
-    id: 2,
-    name: "Kiểm tra thị lực chuyên sâu",
-    type: "specialized",
-    targetGrades: ["8", "9"],
-    scheduledDate: "2025-01-15",
-    endDate: "2025-01-16",
-    status: "in_progress",
-    totalStudents: 180,
-    completedStudents: 95,
-    location: "Phòng khám mắt",
-    medicalStaff: "BS. Lê Thị C - Chuyên khoa mắt",
-    checkupItems: ["Đo thị lực", "Khám tật khúc xạ", "Kiểm tra màu sắc", "Áp lực mắt"],
-  },
-  {
-    id: 3,
-    name: "Kiểm tra sức khỏe tuyển sinh",
-    type: "entrance",
-    targetGrades: ["6"],
-    scheduledDate: "2024-08-15",
-    endDate: "2024-08-20",
-    status: "completed",
-    totalStudents: 120,
-    completedStudents: 120,
-    location: "Phòng y tế trường",
-    medicalStaff: "BS. Hoàng Văn D, Y tá Phạm Thị E",
-    checkupItems: ["Khám tổng quát", "Xét nghiệm máu", "Chụp X-quang", "Tiêm chủng"],
-  },
-]
+import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent } from "../../api/axios"
 
 const studentCheckups = [
   {
@@ -117,13 +74,19 @@ const checkupTypes = {
 }
 
 const statusLabels = {
+  setup: "Đã lên lịch",
+  isgoing: "Đang diễn ra",
+  finished: "Hoàn thành",
   scheduled: "Đã lên lịch",
   in_progress: "Đang tiến hành",
   completed: "Hoàn thành",
   cancelled: "Đã hủy",
-}
+};
 
 const statusColors = {
+  setup: "bg-blue-100 text-blue-800",
+  isgoing: "bg-yellow-100 text-yellow-800",
+  finished: "bg-green-100 text-green-800",
   scheduled: "bg-blue-100 text-blue-800",
   in_progress: "bg-yellow-100 text-yellow-800",
   completed: "bg-green-100 text-green-800",
@@ -145,6 +108,7 @@ const studentStatusColors = {
 }
 
 function MedicalCheckups() {
+  const [checkupCampaigns, setCheckupCampaigns] = useState([])
   const [activeTab, setActiveTab] = useState("campaigns")
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedType, setSelectedType] = useState("")
@@ -152,6 +116,26 @@ function MedicalCheckups() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showResultModal, setShowResultModal] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState(null)
+  const [form, setForm] = useState({
+    name: "",
+    type: "",
+    eventDate: "",
+    description: "",
+  });
+  const [loadingCreate, setLoadingCreate] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getAdminCheckupEventList();
+        // Nếu API trả về { code, result: [...] }
+        setCheckupCampaigns(res.result || []);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách sự kiện kiểm tra sức khỏe:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredCampaigns = checkupCampaigns.filter((campaign) => {
     const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -177,9 +161,42 @@ function MedicalCheckups() {
     setShowResultModal(true)
   }
 
-  const handleUpdateStatus = (campaignId, newStatus) => {
-    console.log("Update campaign status:", campaignId, newStatus)
-  }
+  const handleSendNotification = async (id) => {
+    try {
+      await sendAdminCheckupNotification(id);
+      alert("Gửi thông báo thành công!");
+      // Reload lại danh sách đợt kiểm tra
+      const res = await getAdminCheckupEventList();
+      setCheckupCampaigns(res.result || []);
+    } catch (error) {
+      alert("Gửi thông báo thất bại! " + (error?.response?.data?.message || error.message || ""));
+    }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCreateCheckup = async (e) => {
+    e.preventDefault();
+    setLoadingCreate(true);
+    try {
+      await createAdminCheckupEvent(form);
+      setShowAddModal(false);
+      setForm({ name: "", type: "", eventDate: "", description: "" });
+      // Refresh list
+      const res = await getAdminCheckupEventList();
+      setCheckupCampaigns(res.result || []);
+    } catch (err) {
+      alert("Tạo đợt kiểm tra thất bại!" + (err?.response?.data?.message ? `\n${err.response.data.message}` : ""));
+    } finally {
+      setLoadingCreate(false);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -350,9 +367,6 @@ function MedicalCheckups() {
                         Thời gian
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Tiến độ
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Trạng thái
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -364,39 +378,24 @@ function MedicalCheckups() {
                     {filteredCampaigns.map((campaign) => (
                       <tr key={campaign.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
-                            <div className="text-sm text-gray-500">Khối: {campaign.targetGrades.join(", ")}</div>
-                          </div>
+                          <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
+                          <div className="text-sm text-gray-500">{campaign.description || ""}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {checkupTypes[campaign.type]}
+                            {campaign.type}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {campaign.scheduledDate} - {campaign.endDate}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
-                            {campaign.completedStudents}/{campaign.totalStudents} học sinh
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div
-                              className="bg-indigo-600 h-2 rounded-full"
-                              style={{
-                                width: `${(campaign.completedStudents / campaign.totalStudents) * 100}%`,
-                              }}
-                            ></div>
+                            {campaign.eventDate}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[campaign.status]}`}
                           >
-                            {statusLabels[campaign.status]}
+                            {statusLabels[campaign.status] || campaign.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -408,24 +407,14 @@ function MedicalCheckups() {
                             >
                               <EyeIcon className="w-4 h-4" />
                             </button>
-                            {campaign.status === "scheduled" && (
-                              <button
-                                onClick={() => handleUpdateStatus(campaign.id, "in_progress")}
-                                className="text-yellow-600 hover:text-yellow-900 p-1"
-                                title="Bắt đầu kiểm tra"
-                              >
-                                <ClockIcon className="w-4 h-4" />
-                              </button>
-                            )}
-                            {campaign.status === "in_progress" && (
-                              <button
-                                onClick={() => handleUpdateStatus(campaign.id, "completed")}
-                                className="text-green-600 hover:text-green-900 p-1"
-                                title="Hoàn thành"
-                              >
-                                <CheckCircleIcon className="w-4 h-4" />
-                              </button>
-                            )}
+                            <button
+                              onClick={() => handleSendNotification(campaign.id)}
+                              className="text-indigo-600 hover:text-indigo-900 p-1"
+                              title="Gửi thông báo cho phụ huynh"
+                            >
+                              <BellIcon className="w-4 h-4" />
+                            </button>
+                            {/* Các nút hành động khác nếu cần */}
                           </div>
                         </td>
                       </tr>
@@ -525,84 +514,54 @@ function MedicalCheckups() {
 
       {/* Add Campaign Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Tạo đợt kiểm tra y tế mới</h3>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleCreateCheckup}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tên đợt kiểm tra</label>
                 <input
                   type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                   placeholder="Nhập tên đợt kiểm tra"
+                  required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Loại kiểm tra</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                    {Object.entries(checkupTypes).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
-                  <input
-                    type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
-                  <input
-                    type="date"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Địa điểm</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Địa điểm kiểm tra"
-                  />
-                </div>
-              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Khối lớp đối tượng</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {["6", "7", "8", "9"].map((grade) => (
-                    <label key={grade} className="flex items-center">
-                      <input type="checkbox" className="mr-2" value={grade} />
-                      Khối {grade}
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Hạng mục kiểm tra</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {["Chiều cao", "Cân nặng", "Thị lực", "Thính lực", "Răng miệng", "Tim mạch", "Huyết áp", "BMI"].map(
-                    (item) => (
-                      <label key={item} className="flex items-center">
-                        <input type="checkbox" className="mr-2" value={item} />
-                        {item}
-                      </label>
-                    ),
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nhân viên y tế</label>
-                <textarea
-                  rows={2}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Loại kiểm tra</label>
+                <input
+                  type="text"
+                  name="type"
+                  value={form.type}
+                  onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Danh sách nhân viên y tế tham gia"
+                  placeholder="Nhập loại kiểm tra"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày diễn ra</label>
+                <input
+                  type="date"
+                  name="eventDate"
+                  value={form.eventDate}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Mô tả về đợt kiểm tra"
+                  rows={2}
                 ></textarea>
               </div>
               <div className="flex justify-end gap-3 mt-6">
@@ -610,11 +569,16 @@ function MedicalCheckups() {
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={loadingCreate}
                 >
                   Hủy
                 </button>
-                <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                  Tạo đợt kiểm tra
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                  disabled={loadingCreate}
+                >
+                  {loadingCreate ? "Đang tạo..." : "Tạo đợt kiểm tra"}
                 </button>
               </div>
             </form>
@@ -624,7 +588,7 @@ function MedicalCheckups() {
 
       {/* Result Detail Modal */}
       {showResultModal && selectedStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Kết quả kiểm tra sức khỏe</h3>
             <div className="space-y-6">

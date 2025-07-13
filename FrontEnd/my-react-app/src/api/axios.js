@@ -201,6 +201,12 @@ export const getAdminMedicalEventList = async () => {
   return response.data;
 };
 
+// Lấy danh sách sự kiện kiểm tra sức khỏe (Admin)
+export const getAdminCheckupEventList = async () => {
+  const response = await api.get('/v1/admin/checkupEvent');
+  return response.data;
+};
+
 // Lấy danh sách tất cả học sinh (Admin)
 export const getAllAdminStudents = async () => {
   const response = await api.get('/v1/admin/students/get-all-student');
@@ -299,3 +305,15 @@ export const rejectParentEvent = async (eventId) => {
 };
 
 export default api;
+
+// Gửi thông báo sự kiện kiểm tra sức khỏe (Admin)
+export const sendAdminCheckupNotification = async (id) => {
+  const response = await api.post(`/v1/admin/checkup/sendNoti/${id}`);
+  return response.data;
+};
+
+// Tạo sự kiện kiểm tra sức khỏe (Admin)
+export const createAdminCheckupEvent = async (eventData) => {
+  const response = await api.post('/v1/admin/checkup-event', eventData);
+  return response.data;
+};
