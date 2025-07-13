@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { getParentEventForms, acceptParentEvent, rejectParentEvent } from "../../api/axios";
+import { getParentEventForms, acceptParentEvent, rejectParentEvent, getParentVaccinationResult } from "../../api/axios";
 
 function VaccinationForm() {
   const [forms, setForms] = useState([]);
   const [search, setSearch] = useState("");
   const [loadingId, setLoadingId] = useState(null);
+  const [resultModal, setResultModal] = useState(false);
+  const [resultData, setResultData] = useState(null);
+  const [resultLoading, setResultLoading] = useState(false);
+  const [resultError, setResultError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +42,21 @@ function VaccinationForm() {
       setForms(res.result || []);
     } finally {
       setLoadingId(null);
+    }
+  };
+
+  const handleShowResult = async (id) => {
+    setResultLoading(true);
+    setResultError("");
+    setResultData(null);
+    setResultModal(true);
+    try {
+      const res = await getParentVaccinationResult(id);
+      setResultData(res.result || null);
+    } catch {
+      setResultError("Không thể lấy kết quả. Vui lòng thử lại.");
+    } finally {
+      setResultLoading(false);
     }
   };
 
@@ -97,12 +116,13 @@ function VaccinationForm() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày gửi</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phụ huynh</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái sự kiện</th>
+                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kết quả tiêm</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredForms.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-8 text-gray-500">Không có dữ liệu</td>
+                    <td colSpan={10} className="text-center py-8 text-gray-500">Không có dữ liệu</td>
                   </tr>
                 ) : (
                   filteredForms.map((item, idx) => (
@@ -113,10 +133,10 @@ function VaccinationForm() {
                       <td className="px-6 py-4">{item.event?.name}</td>
                       <td className="px-6 py-4">{item.event?.eventDate}</td>
                       <td className="px-6 py-4 font-semibold" style={{
-                        color: item.consent === "pending" ? "orange" : item.consent === "accepted" ? "green" : "red",
+                        color: item.consent?.toLowerCase() === "pending" ? "orange" : item.consent?.toLowerCase() === "accepted" ? "green" : "red",
                         textTransform: "capitalize"
                       }}>
-                        {item.consent === "pending" ? (
+                        {item.consent?.toLowerCase() === "pending" ? (
                           <div className="flex gap-2">
                             <button
                               className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
@@ -133,7 +153,7 @@ function VaccinationForm() {
                               {loadingId === item.id + "-reject" ? "Đang từ chối..." : "Từ chối"}
                             </button>
                           </div>
-                        ) : item.consent === "accepted" ? "Đồng ý" : item.consent === "rejected" ? "Từ chối" : item.consent}
+                        ) : item.consent?.toLowerCase() === "accepted" ? "Đồng ý" : item.consent?.toLowerCase() === "rejected" ? "Từ chối" : item.consent}
                       </td>
                       <td className="px-6 py-4">{item.sendDate}</td>
                       <td className="px-6 py-4">{item.parent?.lastName} {item.parent?.firstName}</td>
@@ -145,6 +165,20 @@ function VaccinationForm() {
                          item.event?.status === "finished" ? "Đã kết thúc" :
                          item.event?.status}
                       </td>
+                     <td className="px-6 py-4 text-center">
+                       {item.consent?.toLowerCase() === "accepted" && item.student?.results?.find(r => r.event?.id === item.event?.id) && (
+                         <button
+                           className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                           onClick={() => {
+                             const result = item.student?.results?.find(r => r.event?.id === item.event?.id);
+                             if (result) handleShowResult(result.id);
+                           }}
+                           disabled={resultLoading}
+                         >
+                           Xem kết quả
+                         </button>
+                       )}
+                     </td>
                     </tr>
                   ))
                 )}
@@ -152,6 +186,33 @@ function VaccinationForm() {
             </table>
           </div>
         </div>
+
+       {/* Modal kết quả tiêm */}
+       {resultModal && (
+         <div className="fixed inset-0 flex items-center justify-center z-50" style={{backdropFilter: 'blur(3px)', background: 'rgba(0,0,0,0.2)'}}>
+           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+             <button
+               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+               onClick={() => setResultModal(false)}
+             >
+               ×
+             </button>
+             <h2 className="text-lg font-bold mb-4">Kết quả tiêm chủng</h2>
+             {resultLoading ? (
+               <div>Đang tải kết quả...</div>
+             ) : resultError ? (
+               <div className="text-red-500">{resultError}</div>
+             ) : resultData ? (
+               <div className="space-y-2">
+                 <div><b>Tên vaccine:</b> {resultData.vaccine || 'Không có'}</div>
+                 <div><b>Ghi chú:</b> {resultData.note || 'Không có'}</div>
+               </div>
+             ) : (
+               <div>Không có dữ liệu kết quả.</div>
+             )}
+           </div>
+         </div>
+       )}
       </div>
     </div>
   );

@@ -350,3 +350,8 @@ export const updateNurseEventRecord = async (id, data) => {
   const response = await api.put(`/v1/nurse/event/record/${id}`, data);
   return response.data;
 };
+
+export const getParentVaccinationResult = async (id) => {
+  const response = await api.get(`/v1/parent/event/result/${id}`);
+  return response.data;
+};
