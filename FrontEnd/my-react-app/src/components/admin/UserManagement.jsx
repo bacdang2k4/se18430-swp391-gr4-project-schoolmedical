@@ -11,7 +11,7 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
-import api, { signupUser, deleteUser, getUserById } from "../../api/axios"
+import { signupUser, deleteUser, getUserById, getAdminUserList } from "../../api/axios"
 
 const roleLabels = {
   ADMIN: "Quản trị viên",
@@ -33,8 +33,8 @@ function UserManagement() {
   const [selectedRole, setSelectedRole] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [_showEditModal, setShowEditModal] = useState(false)
+  const [_selectedUser, setSelectedUser] = useState(null)
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -50,10 +50,10 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/v1/admin/users")
-      setUsers(res.data.result || res.data)
-    } catch (err) {
-      console.error("Lỗi khi lấy danh sách user:", err)
+      const res = await getAdminUserList();
+      setUsers(res.result || res);
+    } catch {
+      console.error("Lỗi khi lấy danh sách user:");
     }
   }
 
@@ -83,7 +83,7 @@ function UserManagement() {
     return matchesSearch && matchesRole && matchesStatus;
   })
 
-  const handleEdit = (user) => {
+  const _handleEdit = (user) => {
     setSelectedUser(user)
     setShowEditModal(true)
   }
@@ -93,13 +93,13 @@ function UserManagement() {
       try {
         await deleteUser(userId);
         fetchUsers();
-      } catch (err) {
+      } catch {
         alert("Xóa người dùng thất bại!");
       }
     }
   }
 
-  const handleToggleStatus = (userId) => {
+  const _handleToggleStatus = (userId) => {
     console.log("Toggle status for user:", userId)
   }
 
@@ -108,7 +108,7 @@ function UserManagement() {
       const user = await getUserById(userId);
       setUserDetail(user);
       setShowUserDetailModal(true);
-    } catch (err) {
+    } catch {
       alert("Không thể lấy thông tin người dùng!");
     }
   }

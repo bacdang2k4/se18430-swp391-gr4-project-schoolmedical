@@ -207,6 +207,12 @@ export const getAllAdminStudents = async () => {
   return response.data;
 };
 
+// Lấy danh sách user (Admin)
+export const getAdminUserList = async () => {
+  const response = await api.get('/v1/admin/users');
+  return response.data;
+};
+
 // Gửi thông báo (Admin)
 export const sendAdminNotification = async (id) => {
   const response = await api.post(`/v1/admin/sendNoti/${id}`);
@@ -253,6 +259,42 @@ export const createAdminMedicine = async (medicineData) => {
 // Xóa thuốc (Admin)
 export const deleteAdminMedicine = async (id) => {
   const response = await api.delete(`/v1/admin/medicine/${id}`);
+  return response.data;
+};
+
+// Thêm học sinh mới (Admin)
+export const addAdminStudent = async (studentData) => {
+  const response = await api.post('/v1/admin/students/add-student', studentData);
+  return response.data;
+};
+
+// Xóa học sinh (Admin)
+export const deleteAdminStudent = async (studentId) => {
+  const response = await api.delete(`/v1/admin/students/${studentId}`);
+  return response.data;
+};
+
+// Sửa thông tin học sinh (Admin)
+export const updateAdminStudent = async (studentId, data) => {
+  const response = await api.put(`/v1/admin/students/${studentId}`, data);
+  return response.data;
+};
+
+// Lấy danh sách form sự kiện cho phụ huynh
+export const getParentEventForms = async () => {
+  const response = await api.get('/v1/parent/event/list-forms');
+  return response.data;
+};
+
+// Phụ huynh chấp nhận sự kiện tiêm chủng
+export const acceptParentEvent = async (eventId) => {
+  const response = await api.put(`/v1/parent/event/accept/${eventId}`);
+  return response.data;
+};
+
+// Phụ huynh từ chối sự kiện tiêm chủng
+export const rejectParentEvent = async (eventId) => {
+  const response = await api.put(`/v1/parent/event/reject/${eventId}`);
   return response.data;
 };
 

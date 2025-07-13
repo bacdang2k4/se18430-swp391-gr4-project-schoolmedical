@@ -31,6 +31,8 @@ import ListHealthRecord from "../pages/nurse/ListHealthRecord"
 import EventInSchool from "../pages/nurse/EventInSchool"
 import EventInSchoolForm from "../pages/parent/EventInSchool"
 import Warehouse from "../pages/nurse/WareHouse"
+import StudentManagement from "../components/admin/StudentManagement"
+import Vaccination from "../pages/parent/Vaccination"
 
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
@@ -114,6 +116,14 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <UserManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/students"
+          element={
+            <PrivateRoute>
+              <StudentManagement />
             </PrivateRoute>
           }
         />
@@ -211,6 +221,14 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <EventInSchoolForm />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/parent/medical-vaccine"
+          element={
+            <PrivateRoute>
+              <Vaccination />
             </PrivateRoute>
           }
         />
