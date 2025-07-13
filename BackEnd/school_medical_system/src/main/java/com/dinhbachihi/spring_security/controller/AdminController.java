@@ -260,4 +260,16 @@ public class AdminController {
         response.setResult(checkUpEventService.markCheckUpEvent(id));
         return response;
     }
+    @GetMapping("/checkup/parti/{id}")
+    public ApiResponse<List<CheckUpEventConsent>> getStudentAccept(@PathVariable("id") Long id){
+        ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getStudentAccept(id));
+        return response;
+    }
+    @GetMapping("/checkup/reject/{id}")
+    public ApiResponse<List<CheckUpEventConsent>> getStudentReject(@PathVariable("id") Long id){
+        ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getStudentReject(id));
+        return response;
+    }
 }

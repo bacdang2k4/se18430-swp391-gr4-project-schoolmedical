@@ -158,6 +158,12 @@ public class NurseController {
         response.setResult(checkUpEventService.getStudentAccept(id));
         return response;
     }
+    @GetMapping("/checkup/reject/{id}")
+    public ApiResponse<List<CheckUpEventConsent>> getStudentReject(@PathVariable("id") Long id){
+        ApiResponse<List<CheckUpEventConsent>> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.getStudentReject(id));
+        return response;
+    }
     @PutMapping("/checkup/record/{id}")
     public ApiResponse<CheckUpEventResult> recordCheckupEventResult(@PathVariable("id") Long id, @RequestBody RecordCheckUpEventRequest request) {
         ApiResponse<CheckUpEventResult> response = new ApiResponse<>();
