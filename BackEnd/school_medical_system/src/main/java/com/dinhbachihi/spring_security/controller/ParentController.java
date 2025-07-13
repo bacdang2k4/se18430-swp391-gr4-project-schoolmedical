@@ -7,6 +7,7 @@ import com.dinhbachihi.spring_security.dto.response.ApiResponse;
 import com.dinhbachihi.spring_security.dto.response.ConsentFormReviewResponse;
 import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
 import com.dinhbachihi.spring_security.entity.*;
+import com.dinhbachihi.spring_security.repository.VaccinationResultRepository;
 import com.dinhbachihi.spring_security.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -99,5 +100,12 @@ public class ParentController {
         response.setMessage("Reject Consent Success");
         response.setResult(checkUpEventService.rejectCheckUpEventConsent(id));
         return response;
+    }
+    @GetMapping("/event/result/{id}")
+    public ApiResponse<VaccinationResult> getVaccinationResult(@PathVariable("id") Long id){
+        ApiResponse<VaccinationResult> response = new ApiResponse<>();
+        response.setResult(eventService.getVaccinationResultOfStudent(id));
+        return response;
+
     }
 }

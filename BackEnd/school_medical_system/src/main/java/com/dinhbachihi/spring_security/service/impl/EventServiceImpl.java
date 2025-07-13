@@ -158,4 +158,10 @@ public class EventServiceImpl implements EventService {
         return list;
     }
 
+    public VaccinationResult getVaccinationResultOfStudent(Long id ){
+        VaccinationResult rs = vaccinationResultRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.VR_NOT_FOUND));
+        return rs;
+    }
+
+
 }
