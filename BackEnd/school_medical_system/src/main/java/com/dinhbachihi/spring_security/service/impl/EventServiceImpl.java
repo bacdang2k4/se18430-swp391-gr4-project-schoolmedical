@@ -125,16 +125,18 @@ public class EventServiceImpl implements EventService {
     public List<VaccinationConsent> getStudentAccepts(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.EVENT_NOT_FOUND));
         List<VaccinationConsent> list = vaccinationConsentRepository.findByConsentAndEvent("Accepted", event);
-        List<Student> students = new ArrayList<>();
-        for(VaccinationConsent vc : list){
-            students.add(vc.getStudent());
-        }
-        for(Student student : students) {
-            VaccinationResult vr = new VaccinationResult();
-            vr.setStudent(student);
-            vr.setEvent(event);
-            vr.setVaccinationDate(event.getEventDate());
-            vaccinationResultRepository.save(vr);
+        for (VaccinationConsent vc : list) {
+            Student student = vc.getStudent();
+            boolean exists = vaccinationResultRepository
+                    .findByStudentAndEvent(student, event).isEmpty();
+
+            if (!exists) {
+                VaccinationResult vr = new VaccinationResult();
+                vr.setStudent(student);
+                vr.setEvent(event);
+                vr.setVaccinationDate(event.getEventDate());
+                vaccinationResultRepository.save(vr);
+            }
         }
         return list;
     }
