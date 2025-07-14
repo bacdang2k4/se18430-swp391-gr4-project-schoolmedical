@@ -242,20 +242,9 @@ function VaccinationManagement() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Đang tiến hành</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {vaccinationList.filter((v) => v.status === "in_progress").length}
-                  </p>
-                </div>
-                <ClockIcon className="w-8 h-8 text-yellow-500" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Hoàn thành</p>
+                  <p className="text-sm font-medium text-gray-600">Kết thúc</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {vaccinationList.filter((v) => v.status === "completed").length}
+                    {vaccinationList.filter((v) => v.status === "finished").length}
                   </p>
                 </div>
                 <CheckCircleIcon className="w-8 h-8 text-green-500" />
@@ -264,14 +253,20 @@ function VaccinationManagement() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Tỷ lệ tiêm chủng</p>
+                  <p className="text-sm font-medium text-gray-600">Đang tiến hành</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {vaccinationList.filter((v) => v.status === "isgoing").length}
+                  </p>
+                </div>
+                <ClockIcon className="w-8 h-8 text-yellow-500" />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Đã lên lịch</p>
                   <p className="text-2xl font-bold text-blue-600">
-                    {Math.round(
-                      (vaccinationList.reduce((sum, v) => sum + v.completedStudents, 0) /
-                        vaccinationList.reduce((sum, v) => sum + v.totalStudents, 0)) *
-                        100,
-                    )}
-                    %
+                    {vaccinationList.filter((v) => v.status === "setup").length}
                   </p>
                 </div>
                 <ShieldCheckIcon className="w-8 h-8 text-blue-500" />

@@ -138,7 +138,7 @@ function MedicalEvents() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -151,36 +151,48 @@ function MedicalEvents() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Chờ xử lý</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {medicalEvents.filter((e) => e.status === "pending").length}
+                  <p className="text-sm font-medium text-gray-600">Tai nạn</p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {medicalEvents.filter((e) => e.eventType === "accident").length}
                   </p>
                 </div>
-                <XCircleIcon className="w-8 h-8 text-red-500" />
+                <ExclamationTriangleIcon className="w-8 h-8 text-orange-500" />
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Đang xử lý</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {medicalEvents.filter((e) => e.status === "in_progress").length}
-                  </p>
-                </div>
-                <ExclamationTriangleIcon className="w-8 h-8 text-blue-500" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Đã xử lý</p>
+                  <p className="text-sm font-medium text-gray-600">Ốm đau</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {medicalEvents.filter((e) => e.status === "resolved").length}
+                    {medicalEvents.filter((e) => e.eventType === "illness").length}
                   </p>
                 </div>
-                <CheckCircleIcon className="w-8 h-8 text-green-500" />
+                <ExclamationTriangleIcon className="w-8 h-8 text-green-500" />
               </div>
             </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Dị ứng</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {medicalEvents.filter((e) => e.eventType === "allergy").length}
+                  </p>
+                </div>
+                <ExclamationTriangleIcon className="w-8 h-8 text-yellow-500" />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Khẩn cấp</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {medicalEvents.filter((e) => e.eventType === "emergency").length}
+                  </p>
+                </div>
+                <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+              </div>
+            </div>
+
           </div>
 
           {/* Filters */}

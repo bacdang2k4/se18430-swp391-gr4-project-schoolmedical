@@ -69,13 +69,7 @@ function MedicineManagement() {
     }
   }
 
-  const isExpiringSoon = (expiryDate) => {
-    const today = new Date()
-    const expiry = new Date(expiryDate)
-    const diffTime = expiry - today
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays <= 30 && diffDays > 0
-  }
+
 
   if (loading) {
     return (
@@ -117,7 +111,7 @@ function MedicineManagement() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -130,31 +124,20 @@ function MedicineManagement() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Sắp hết hàng</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {/* bỏ đếm theo trạng thái */}
+                  <p className="text-sm font-medium text-gray-600">Thuốc</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {medicineData.filter((m) => m.type === "Thuốc").length}
                   </p>
                 </div>
-                <ExclamationTriangleIcon className="w-8 h-8 text-yellow-500" />
+                <BeakerIcon className="w-8 h-8 text-blue-500" />
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Sắp hết hạn</p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {medicineData.filter((m) => isExpiringSoon(m.expiryDate)).length}
-                  </p>
-                </div>
-                <ClockIcon className="w-8 h-8 text-orange-500" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Còn hàng</p>
+                  <p className="text-sm font-medium text-gray-600">Vật tư</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {/* bỏ đếm theo trạng thái */}
+                    {medicineData.filter((m) => m.type === "Vật tư").length}
                   </p>
                 </div>
                 <CheckCircleIcon className="w-8 h-8 text-green-500" />

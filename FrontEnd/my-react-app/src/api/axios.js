@@ -438,3 +438,9 @@ export const rejectAdminBlog = async (id) => {
   const response = await api.put(`/v1/admin/blog/reject/${id}`);
   return response.data;
 };
+
+// Kết thúc sự kiện kiểm tra y tế (Admin)
+export const markFinishCheckupAdmin = async (id) => {
+  const response = await api.put(`/v1/admin/checkup/mark/${id}`);
+  return response.data;
+};

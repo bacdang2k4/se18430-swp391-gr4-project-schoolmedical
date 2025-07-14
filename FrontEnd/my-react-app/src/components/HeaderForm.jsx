@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import { BellIcon, UserCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid"
+import { BellIcon, UserCircleIcon, ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { useNavigate } from "react-router-dom"
 import logo from "../../images/logo-removebg.png"
 import { logout } from "../utils/auth"
@@ -64,7 +64,6 @@ function HeaderForm() {
   const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showFeatureDropdown, setShowFeatureDropdown] = useState(false)
-  const dropdownRef = useRef(null)
   const featureDropdownRef = useRef(null)
   const unreadCount = notifications.length
   const [firstName, setFirstName] = useState("")
@@ -114,20 +113,26 @@ function HeaderForm() {
   }, [role]);
 
   return (
-    <header className="w-full bg-white shadow-sm border-b border-gray-200 flex items-center px-4 py-2 z-30 sticky top-0">
+    <header className="w-full bg-white shadow-sm border-b border-gray-200 flex flex-col md:flex-row items-center px-2 md:px-4 py-2 z-30 sticky top-0 gap-2 md:gap-0">
       {/* Logo + Tên trường */}
-      <div className="flex items-center gap-3 min-w-[220px]">
-        <div className="bg-gradient-to-br from-white-500 to-indigo-200 rounded-xl p-2 flex items-center justify-center">
-          <img src={logo || "/placeholder.svg"} alt="Logo" className="w-10 h-10 object-contain" />
+      <div className="flex items-center gap-2 md:gap-3 min-w-[120px] md:min-w-[220px]">
+        <div className="bg-gradient-to-br from-white-500 to-indigo-200 rounded-xl p-1 md:p-2 flex items-center justify-center">
+          <img src={logo || "/placeholder.svg"} alt="Logo" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-xl font-bold text-gray-800 tracking-tight">Y TẾ HỌC</span>
-          <span className="text-xl font-bold text-gray-800 tracking-tight">ĐƯỜNG</span>
-          <span className="text-xs text-gray-500 font-medium">FPT University HCM</span>
+          <span className="text-base md:text-xl font-bold text-gray-800 tracking-tight">Y TẾ HỌC</span>
+          <span className="text-base md:text-xl font-bold text-gray-800 tracking-tight">ĐƯỜNG</span>
+          <span className="text-xs text-gray-500 font-medium hidden md:block">FPT University HCM</span>
         </div>
       </div>
-      {/* Menu */}
-      <nav className="flex-1 flex justify-center gap-8 md:gap-10">
+      {/* Hamburger menu for mobile */}
+      <div className="flex md:hidden flex-1 justify-end">
+        <button onClick={() => setShowFeatureDropdown((v) => !v)} className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none">
+          <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+      </div>
+      {/* Menu - desktop only */}
+      <nav className="hidden md:flex flex-1 justify-center gap-4 md:gap-8">
         <a href="/" className="text-gray-700 font-semibold hover:text-blue-600 transition">
           Trang chủ
         </a>
@@ -220,11 +225,11 @@ function HeaderForm() {
         </a>
       </nav>
       {/* Notification + User */}
-      <div className="flex items-center gap-4 min-w-[220px] justify-end relative">
+      <div className="flex items-center gap-2 md:gap-4 min-w-[120px] md:min-w-[220px] justify-end relative">
         {/* Bell with badge */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative">
           <button className="relative focus:outline-none" onClick={handleDropdownToggle} aria-label="Thông báo">
-            <BellIcon className="w-8 h-8 text-yellow-500" />
+            <BellIcon className="w-7 h-7 md:w-8 md:h-8 text-yellow-500" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 animate-pulse">
                 {unreadCount}
@@ -234,8 +239,8 @@ function HeaderForm() {
           {/* Dropdown */}
           {showDropdown && (
             <div
-              className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 animate-fade-in"
-              style={{ minWidth: "320px" }}
+              className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 animate-fade-in"
+              style={{ minWidth: "220px" }}
             >
               <div className="p-4 border-b border-gray-100">
                 <h4 className="font-bold text-gray-800 mb-1">Thông báo</h4>
@@ -271,18 +276,18 @@ function HeaderForm() {
         {/* User */}
         <div className="relative" ref={accountDropdownRef}>
           <button
-            className="flex items-center bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl px-4 py-2 gap-2 shadow-md focus:outline-none"
+            className="flex items-center bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl px-2 md:px-4 py-2 gap-1 md:gap-2 shadow-md focus:outline-none"
             onClick={() => setShowAccountDropdown((v) => !v)}
             type="button"
           >
-            <UserCircleIcon className="w-8 h-8 text-white" />
-            <div className="flex flex-col text-white font-semibold text-base leading-tight">
-              <span>{lastName + " " + firstName || "Account"}</span>
+            <UserCircleIcon className="w-7 h-7 md:w-8 md:h-8 text-white" />
+            <div className="flex flex-col text-white font-semibold text-sm md:text-base leading-tight">
+              <span className="truncate max-w-[60px] md:max-w-none">{lastName + " " + firstName || "Account"}</span>
             </div>
             <ChevronDownIcon className="w-4 h-4 text-white" />
           </button>
           {showAccountDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 animate-fade-in">
+            <div className="absolute right-0 mt-2 w-40 md:w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 animate-fade-in">
               <ul className="py-2">
                 {lastName || firstName ? (
                   <>
@@ -317,8 +322,86 @@ function HeaderForm() {
           )}
         </div>
       </div>
+      {/* Mobile menu overlay */}
+      {showFeatureDropdown && (
+        <div className="fixed inset-0 z-40 flex md:hidden" onClick={() => setShowFeatureDropdown(false)}> 
+    <div className="bg-white w-64 h-full p-4 flex flex-col gap-2 animate-fade-in" onClick={e => e.stopPropagation()}>
+            <button className="self-end mb-2" onClick={() => setShowFeatureDropdown(false)}>
+              <XMarkIcon className="w-6 h-6 text-gray-600" />
+            </button>
+            <a href="/" className="text-gray-700 font-semibold hover:text-blue-600 transition py-2">Trang chủ</a>
+            {features.map((f, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 py-2 px-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 font-medium"
+                onClick={() => {
+                  // Admin features
+                  if (f.title === "Báo cáo & Thống kê") {
+                    navigate("/admin/dashboard")
+                    setShowFeatureDropdown(false)
+                  }
+                  
+                  //Parent features
+                  if (f.title === "Hồ sơ sức khỏe") {
+                    navigate("/parent/health-record")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Gửi thuốc") {
+                    navigate("/parent/medical-send-history")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Xem sự kiện y tế") {
+                    navigate("/parent/event-in-school")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Xem lịch tiêm chủng") {
+                    navigate("/parent/medical-vaccine")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Lịch kiểm tra y tế định kỳ") {
+                    navigate("/parent/health-checkup")
+                    setShowFeatureDropdown(false)
+                  }
+
+                  //Nurse features
+                  if (f.title === "Quản lý thuốc gửi thuốc từ phụ huynh") {
+                    navigate("/nurse/list-medical-send")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Xem hồ sơ sức khỏe học sinh") {
+                    navigate("/nurse/list-health-records")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Xử lý sự kiện y tế") {
+                    navigate("/nurse/event-in-school")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Quản lý vật tư") {
+                    navigate("/nurse/warehouse")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Quản lý tiêm chủng") {
+                    navigate("/nurse/vaccination")
+                    setShowFeatureDropdown(false)
+                  }
+                  if (f.title === "Quản lý kiểm tra y tế định kỳ") {
+                    navigate("/nurse/health-checkup")
+                    setShowFeatureDropdown(false)
+                  }
+                }}
+              >
+                <span className="text-lg">{f.icon}</span> {f.title}
+              </div>
+            ))}
+            <a href="/documents" className="text-gray-700 font-semibold hover:text-blue-600 transition py-2">Tài liệu</a>
+            <a href="/blog" className="text-gray-700 font-semibold hover:text-blue-600 transition py-2">Blog</a>
+            <a href="/contact" className="text-gray-700 font-semibold hover:text-blue-600 transition py-2">Liên hệ</a>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
 
 export default HeaderForm
+

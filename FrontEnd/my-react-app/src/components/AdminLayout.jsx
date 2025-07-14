@@ -12,7 +12,7 @@ function AdminLayout({ children }) {
 
       {/* Main content */}
       <div
-        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:ml-16" : "lg:ml-64"}`}
+        className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
       >
         {/* Content area */}
         <main className="flex-1 overflow-y-auto">{children}</main>

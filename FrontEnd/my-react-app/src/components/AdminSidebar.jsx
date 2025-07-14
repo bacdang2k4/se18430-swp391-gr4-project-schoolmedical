@@ -127,17 +127,17 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
       </button>
 
       {/* Mobile overlay */}
-      {isMobileOpen && <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={toggleMobile} />}
+      {isMobileOpen && <div className="lg:hidden fixed inset-0 z-40" onClick={toggleMobile} />}
 
       {/* Sidebar */}
       <div
-        className={`
-          fixed lg:static inset-y-0 left-0 z-50 
-          ${isCollapsed ? "w-16" : "w-64"} 
+        className={
+          `fixed lg:static inset-y-0 left-0 z-50 
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           bg-white shadow-lg border-r border-gray-200 transition-all duration-300 ease-in-out
-          flex flex-col
-        `}
+          flex flex-col`
+        }
+        style={{ width: isCollapsed ? '4rem' : '16rem' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">

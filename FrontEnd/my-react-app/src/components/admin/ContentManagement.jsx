@@ -94,7 +94,7 @@ function ContentManagement() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Chờ duyệt</p>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {blogList.filter((c) => c.status === "pending").length}
+                    {blogList.filter((c) => c.status === "waiting").length}
                   </p>
                 </div>
                 <CloudArrowUpIcon className="w-8 h-8 text-yellow-500" />
@@ -103,10 +103,10 @@ function ContentManagement() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Tổng lượt xem</p>
-                  <p className="text-2xl font-bold text-blue-600">{blogList.reduce((sum, c) => sum + c.views, 0)}</p>
+                  <p className="text-sm font-medium text-gray-600">Không duyệt</p>
+                  <p className="text-2xl font-bold text-red-600">{blogList.filter((c) => c.status === "rejected").length}</p>
                 </div>
-                <EyeIcon className="w-8 h-8 text-blue-500" />
+                <TrashIcon className="w-8 h-8 text-red-500" />
               </div>
             </div>
           </div>
@@ -131,8 +131,8 @@ function ContentManagement() {
               >
                 <option value="">Tất cả trạng thái</option>
                 <option value="accepted">Đã duyệt</option>
-                <option value="pending">Chờ duyệt</option>
-                <option value="rejected">Từ chối</option>
+                <option value="waiting">Chờ duyệt</option>
+                <option value="rejected">Không duyệt</option>
               </select>
               <div className="flex items-center text-sm text-gray-600">Tìm thấy {filteredBlogs.length} blog</div>
             </div>

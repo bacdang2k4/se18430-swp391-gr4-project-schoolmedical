@@ -13,7 +13,7 @@ import {
   BellIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../AdminLayout"
-import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent, editAdminCheckupEvent } from "../../api/axios"
+import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent, editAdminCheckupEvent, markFinishCheckupAdmin } from "../../api/axios"
 
 const studentCheckups = [
   {
@@ -66,21 +66,12 @@ const studentCheckups = [
   },
 ]
 
-const checkupTypes = {
-  periodic: "Định kỳ",
-  specialized: "Chuyên khoa",
-  entrance: "Tuyển sinh",
-  emergency: "Khẩn cấp",
-}
+
 
 const statusLabels = {
   setup: "Đã lên lịch",
   isgoing: "Đang diễn ra",
   finished: "Hoàn thành",
-  scheduled: "Đã lên lịch",
-  in_progress: "Đang tiến hành",
-  completed: "Hoàn thành",
-  cancelled: "Đã hủy",
 };
 
 const statusColors = {
@@ -111,7 +102,7 @@ function MedicalCheckups() {
   const [checkupCampaigns, setCheckupCampaigns] = useState([])
   const [activeTab, setActiveTab] = useState("campaigns")
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState("")
+
   const [selectedStatus, setSelectedStatus] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
   const [showResultModal, setShowResultModal] = useState(false)
@@ -141,10 +132,9 @@ function MedicalCheckups() {
 
   const filteredCampaigns = checkupCampaigns.filter((campaign) => {
     const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesType = !selectedType || campaign.type === selectedType
     const matchesStatus = !selectedStatus || campaign.status === selectedStatus
 
-    return matchesSearch && matchesType && matchesStatus
+    return matchesSearch && matchesStatus
   })
 
   const filteredStudents = studentCheckups.filter((student) => {
@@ -234,6 +224,18 @@ function MedicalCheckups() {
     }
   };
 
+  const handleFinishCheckup = async (id) => {
+    try {
+      await markFinishCheckupAdmin(id);
+      alert("Đã chuyển trạng thái đợt kiểm tra thành 'Hoàn thành'!");
+      // Refresh list
+      const res = await getAdminCheckupEventList();
+      setCheckupCampaigns(res.result || []);
+    } catch {
+      alert("Chuyển trạng thái thất bại!");
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="p-6">
@@ -272,9 +274,20 @@ function MedicalCheckups() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Đang tiến hành</p>
+                  <p className="text-sm font-medium text-gray-600">Đã lên lịch</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {checkupCampaigns.filter((c) => c.status === "setup").length}
+                  </p>
+                </div>
+                <ClockIcon className="w-8 h-8 text-blue-500" />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Đang diễn ra</p>
                   <p className="text-2xl font-bold text-yellow-600">
-                    {checkupCampaigns.filter((c) => c.status === "in_progress").length}
+                    {checkupCampaigns.filter((c) => c.status === "isgoing").length}
                   </p>
                 </div>
                 <ClockIcon className="w-8 h-8 text-yellow-500" />
@@ -285,21 +298,10 @@ function MedicalCheckups() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Hoàn thành</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {checkupCampaigns.filter((c) => c.status === "completed").length}
+                    {checkupCampaigns.filter((c) => c.status === "finished").length}
                   </p>
                 </div>
                 <CheckCircleIcon className="w-8 h-8 text-green-500" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Học sinh đã khám</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {checkupCampaigns.reduce((sum, c) => sum + c.completedStudents, 0)}
-                  </p>
-                </div>
-                <UserGroupIcon className="w-8 h-8 text-blue-500" />
               </div>
             </div>
           </div>
@@ -334,7 +336,7 @@ function MedicalCheckups() {
 
           {/* Filters */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="relative">
                 <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
                 <input
@@ -345,20 +347,6 @@ function MedicalCheckups() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              {activeTab === "campaigns" && (
-                <select
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                >
-                  <option value="">Tất cả loại</option>
-                  {Object.entries(checkupTypes).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              )}
               <select
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 value={selectedStatus}
@@ -366,7 +354,7 @@ function MedicalCheckups() {
               >
                 <option value="">Tất cả trạng thái</option>
                 {activeTab === "campaigns"
-                  ? Object.entries(statusLabels).map(([key, label]) => (
+                  ? Object.entries({ setup: 'Đã lên lịch', isgoing: 'Đang diễn ra', finished: 'Hoàn thành' }).map(([key, label]) => (
                       <option key={key} value={key}>
                         {label}
                       </option>
@@ -452,7 +440,15 @@ function MedicalCheckups() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.1 2.1 0 113.02 2.92L7.5 18.793 3 19.5l.707-4.5L16.862 3.487z" />
                               </svg>
                             </button>
-                            {/* Các nút hành động khác nếu cần */}
+                            {campaign.status !== "finished" && (
+                              <button
+                                onClick={() => handleFinishCheckup(campaign.id)}
+                                className="text-gray-600 hover:text-gray-900 p-1 border border-gray-300 rounded"
+                                title="Chuyển trạng thái thành 'Hoàn thành'"
+                              >
+                                <CheckCircleIcon className="w-5 h-5" />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
