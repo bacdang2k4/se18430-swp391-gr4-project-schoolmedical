@@ -26,7 +26,7 @@ public class Blog {
     private Long post_id;
     private String title;
 
-    @Column(length = 1000000000)
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
     private String status = "waiting";
 

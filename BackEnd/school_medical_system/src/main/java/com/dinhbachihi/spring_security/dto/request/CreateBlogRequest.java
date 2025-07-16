@@ -7,7 +7,5 @@ import lombok.Data;
 @Data
 public class CreateBlogRequest {
     private String title;
-
-    @Column(length = 1000000000)
     private String content;
 }
