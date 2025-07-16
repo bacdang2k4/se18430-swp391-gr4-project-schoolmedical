@@ -1,6 +1,6 @@
 # 🏥 School Medical Management System
 
-Một hệ thống quản lý y tế học đường (backend + frontend) được phát triển trong khuôn khổ nhóm SWP391.
+Một hệ thống quản lý y tế học đường (backend + frontend) được phát triển trong khuôn khổ nhóm 4 lớp SE1840 môn SWP391.
 
 ---
 
