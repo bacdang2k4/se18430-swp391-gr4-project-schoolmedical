@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate} from "react-router-dom"
 import {
   HomeIcon,
   UsersIcon,
@@ -22,7 +22,7 @@ import {
 } from "@heroicons/react/24/outline"
 import logo from "../../images/logo-removebg.png"
 import { getProfile } from "../api/axios"
-import { logout } from "../utils/auth"
+import { logoutAdmin } from "../utils/auth"
 
 const menuItems = [
   {
@@ -92,6 +92,7 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -116,7 +117,8 @@ function AdminSidebar({ isCollapsed, setIsCollapsed }) {
   }
 
   const handleLogout = () => {
-    logout()
+    logoutAdmin()
+    navigate("/login")
   }
 
   return (
