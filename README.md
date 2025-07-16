@@ -6,9 +6,11 @@ Một hệ thống quản lý y tế học đường (backend + frontend) đư�
 
 ## 📂 Cấu trúc dự án
 
-/
-├── BackEnd/ ← mã nguồn ứng dụng Spring Boot
-└── FrontEnd/ ← mã nguồn ứng dụng web (React/Vue/Angular)
+
+```bash
+├── BackEnd/      # mã nguồn ứng dụng Spring Boot
+└── FrontEnd/     # mã nguồn ứng dụng web React
+```
 
 ---
 
