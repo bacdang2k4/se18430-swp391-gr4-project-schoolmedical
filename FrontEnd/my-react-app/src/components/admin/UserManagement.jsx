@@ -13,6 +13,36 @@ import {
 import AdminLayout from "../../components/AdminLayout"
 import { signupUser, deleteUser, getUserById, getAdminUserList } from "../../api/axios"
 
+// Toast component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+      onClick={onClose}
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+}
+
+// Confirm Modal component
+function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-bold mb-2">{title}</h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Huỷ</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const roleLabels = {
   ADMIN: "Quản trị viên",
   NURSE: "Nhân viên y tế",
@@ -47,6 +77,19 @@ function UserManagement() {
   const [addUserError, setAddUserError] = useState("");
   const [showUserDetailModal, setShowUserDetailModal] = useState(false);
   const [userDetail, setUserDetail] = useState(null);
+
+  // Toast state
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  // Confirm modal state
+  const [confirm, setConfirm] = useState({ open: false, action: null, title: '', message: '' });
+
+  // Toast auto close
+  useEffect(() => {
+    if (toast.message) {
+      const timer = setTimeout(() => setToast({ ...toast, message: '' }), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const fetchUsers = async () => {
     try {
@@ -88,15 +131,22 @@ function UserManagement() {
     setShowEditModal(true)
   }
 
-  const handleDelete = async (userId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-      try {
-        await deleteUser(userId);
-        fetchUsers();
-      } catch {
-        alert("Xóa người dùng thất bại!");
-      }
-    }
+  const handleDelete = (userId) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await deleteUser(userId);
+          setToast({ message: 'Xóa người dùng thành công!', type: 'success' });
+          fetchUsers();
+        } catch {
+          setToast({ message: 'Xóa người dùng thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận xóa người dùng',
+      message: 'Bạn có chắc chắn muốn xóa người dùng này?'
+    });
   }
 
   const _handleToggleStatus = (userId) => {
@@ -109,12 +159,24 @@ function UserManagement() {
       setUserDetail(user);
       setShowUserDetailModal(true);
     } catch {
-      alert("Không thể lấy thông tin người dùng!");
+      setToast({ message: 'Không thể lấy thông tin người dùng!', type: 'error' });
     }
   }
 
   return (
     <AdminLayout>
+      {/* Toast notification */}
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, message: '' })} />
+      {/* Confirm modal */}
+      <ConfirmModal
+        open={confirm.open}
+        title={confirm.title}
+        message={confirm.message}
+        onConfirm={async () => {
+          if (confirm.action) await confirm.action();
+        }}
+        onCancel={() => setConfirm({ ...confirm, open: false })}
+      />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -268,7 +330,7 @@ function UserManagement() {
 
       {/* Add User Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white border border-blue-200 shadow-xl rounded-xl p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Thêm người dùng mới</h3>
             <form className="space-y-4" onSubmit={async (e) => {
@@ -394,7 +456,7 @@ function UserManagement() {
 
       {/* User Detail Modal */}
       {showUserDetailModal && userDetail && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white border border-blue-200 shadow-xl rounded-xl p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Chi tiết người dùng</h3>
             <div className="space-y-3">

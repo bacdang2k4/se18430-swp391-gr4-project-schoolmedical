@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   ChartBarIcon,
   DocumentArrowDownIcon,
@@ -12,6 +12,7 @@ import {
   BeakerIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
+import { getUserReport, getHealthOverviewReport, getMedicalEventReport, getVaccinationReport, getCheckupReport, getMedicineUsageReport } from "../../api/axios"
 
 const reportTypes = [
   {
@@ -117,10 +118,105 @@ const monthlyData = [
 ]
 
 function Reports() {
-  const [selectedReport, setSelectedReport] = useState(null)
   const [dateFrom, setDateFrom] = useState("2024-01-01")
   const [dateTo, setDateTo] = useState("2024-12-31")
   const [reportFormat, setReportFormat] = useState("pdf")
+  const [userReport, setUserReport] = useState(null)
+  const [userReportLoading, setUserReportLoading] = useState(false)
+  const [userReportError, setUserReportError] = useState(null)
+  const [healthOverview, setHealthOverview] = useState(null)
+  const [healthOverviewLoading, setHealthOverviewLoading] = useState(false)
+  const [healthOverviewError, setHealthOverviewError] = useState(null)
+  const [medicalEventReport, setMedicalEventReport] = useState(null)
+  const [medicalEventLoading, setMedicalEventLoading] = useState(false)
+  const [medicalEventError, setMedicalEventError] = useState(null)
+  const [vaccinationReport, setVaccinationReport] = useState(null)
+  const [vaccinationLoading, setVaccinationLoading] = useState(false)
+  const [vaccinationError, setVaccinationError] = useState(null)
+  const [checkupReport, setCheckupReport] = useState(null)
+  const [checkupLoading, setCheckupLoading] = useState(false)
+  const [checkupError, setCheckupError] = useState(null)
+  const [medicineUsageReport, setMedicineUsageReport] = useState(null)
+  const [medicineUsageLoading, setMedicineUsageLoading] = useState(false)
+  const [medicineUsageError, setMedicineUsageError] = useState(null)
+
+  useEffect(() => {
+    setUserReportLoading(true)
+    getUserReport()
+      .then((data) => {
+        setUserReport(data.result || data)
+        setUserReportLoading(false)
+      })
+      .catch(() => {
+        setUserReportError("Không thể lấy báo cáo user")
+        setUserReportLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setHealthOverviewLoading(true)
+    getHealthOverviewReport()
+      .then((data) => {
+        setHealthOverview(data.result || data)
+        setHealthOverviewLoading(false)
+      })
+      .catch(() => {
+        setHealthOverviewError("Không thể lấy báo cáo sức khỏe")
+        setHealthOverviewLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setMedicalEventLoading(true)
+    getMedicalEventReport()
+      .then((data) => {
+        setMedicalEventReport(data.result || data)
+        setMedicalEventLoading(false)
+      })
+      .catch(() => {
+        setMedicalEventError("Không thể lấy báo cáo sự kiện y tế")
+        setMedicalEventLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setVaccinationLoading(true)
+    getVaccinationReport()
+      .then((data) => {
+        setVaccinationReport(data.result || data)
+        setVaccinationLoading(false)
+      })
+      .catch(() => {
+        setVaccinationError("Không thể lấy báo cáo tiêm chủng")
+        setVaccinationLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setCheckupLoading(true)
+    getCheckupReport()
+      .then((data) => {
+        setCheckupReport(data.result || data)
+        setCheckupLoading(false)
+      })
+      .catch(() => {
+        setCheckupError("Không thể lấy báo cáo kiểm tra sức khỏe")
+        setCheckupLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setMedicineUsageLoading(true)
+    getMedicineUsageReport()
+      .then((data) => {
+        setMedicineUsageReport(data.result || data)
+        setMedicineUsageLoading(false)
+      })
+      .catch(() => {
+        setMedicineUsageError("Không thể lấy báo cáo sử dụng thuốc")
+        setMedicineUsageLoading(false)
+      })
+  }, [])
 
   const handleGenerateReport = (reportType) => {
     console.log("Generating report:", reportType, { dateFrom, dateTo, reportFormat })
@@ -199,42 +295,376 @@ function Reports() {
 
           {/* Report Types Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {reportTypes.map((report) => (
-              <div
-                key={report.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedReport(report)}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
-                    <report.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleGenerateReport(report.id)
-                    }}
-                    className="text-gray-400 hover:text-gray-600"
+            {reportTypes.map((report) => {
+              if (report.id === "health_overview") {
+                // Nếu là báo cáo tổng quan sức khỏe, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
                   >
-                    <DocumentArrowDownIcon className="w-5 h-5" />
-                  </button>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{report.description}</p>
-                <div className="space-y-2">
-                  {Object.entries(report.data)
-                    .slice(0, 3)
-                    .map(([key, value]) => (
-                      <div key={key} className="flex justify-between text-sm">
-                        <span className="text-gray-600 capitalize">
-                          {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
-                        </span>
-                        <span className="font-semibold">{value}</span>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
                       </div>
-                    ))}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {healthOverviewLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {healthOverviewError && <div className="text-red-500 text-sm">{healthOverviewError}</div>}
+                      {healthOverview && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tổng số học sinh:</span>
+                            <span className="font-semibold">{healthOverview.totalStudents}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Có dị ứng:</span>
+                            <span className="font-semibold">{healthOverview.studentsWithAllergies}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Bệnh mãn tính:</span>
+                            <span className="font-semibold">{healthOverview.studentsWithChronicDiseases}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Chiều cao TB:</span>
+                            <span className="font-semibold">{healthOverview.averageHeight}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Cân nặng TB:</span>
+                            <span className="font-semibold">{healthOverview.averageWeight}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              if (report.id === "medical_events") {
+                // Nếu là báo cáo sự kiện y tế, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {medicalEventLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {medicalEventError && <div className="text-red-500 text-sm">{medicalEventError}</div>}
+                      {medicalEventReport && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tổng số sự kiện:</span>
+                            <span className="font-semibold">{medicalEventReport.totalEvents}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tai nạn:</span>
+                            <span className="font-semibold">{medicalEventReport.accidents}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Đau ốm:</span>
+                            <span className="font-semibold">{medicalEventReport.illnesses}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Dị ứng:</span>
+                            <span className="font-semibold">{medicalEventReport.allergicReactions}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Khẩn cấp:</span>
+                            <span className="font-semibold">{medicalEventReport.emergencies}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              if (report.id === "vaccination") {
+                // Nếu là báo cáo tiêm chủng, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {vaccinationLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {vaccinationError && <div className="text-red-500 text-sm">{vaccinationError}</div>}
+                      {vaccinationReport && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tổng số chiến dịch:</span>
+                            <span className="font-semibold">{vaccinationReport.totalCampaigns}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Chiến dịch đã hoàn thành:</span>
+                            <span className="font-semibold">{vaccinationReport.completedCampaigns}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Học sinh đã tiêm:</span>
+                            <span className="font-semibold">{vaccinationReport.studentsVaccinated}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tỷ lệ tiêm chủng (%):</span>
+                            <span className="font-semibold">{vaccinationReport.vaccinationRate}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Chờ tiêm:</span>
+                            <span className="font-semibold">{vaccinationReport.pendingVaccinations}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              if (report.id === "checkup_results") {
+                // Nếu là báo cáo kiểm tra sức khỏe, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {checkupLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {checkupError && <div className="text-red-500 text-sm">{checkupError}</div>}
+                      {checkupReport && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tổng số đợt kiểm tra:</span>
+                            <span className="font-semibold">{checkupReport.totalCheckups}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Học sinh đã kiểm tra:</span>
+                            <span className="font-semibold">{checkupReport.studentsChecked}</span>
+                          </div>
+                          {checkupReport.abnormalResults !== undefined && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Kết quả bất thường:</span>
+                              <span className="font-semibold">{checkupReport.abnormalResults}</span>
+                            </div>
+                          )}
+                          {checkupReport.followUpRequired !== undefined && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Cần theo dõi:</span>
+                              <span className="font-semibold">{checkupReport.followUpRequired}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Chiều cao TB:</span>
+                            <span className="font-semibold">{checkupReport.averageHeight}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Cân nặng TB:</span>
+                            <span className="font-semibold">{checkupReport.averageWeight}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              if (report.id === "medicine_usage") {
+                // Nếu là báo cáo sử dụng thuốc, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {medicineUsageLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {medicineUsageError && <div className="text-red-500 text-sm">{medicineUsageError}</div>}
+                      {medicineUsageReport && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Số lượt gửi thuốc:</span>
+                            <span className="font-semibold">{medicineUsageReport.medicinesUsed}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Đã dùng:</span>
+                            <span className="font-semibold">{medicineUsageReport.usedCount}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Đang chờ nhận:</span>
+                            <span className="font-semibold">{medicineUsageReport.pendingCount}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Đã nhận, chưa sử dụng:</span>
+                            <span className="font-semibold">{medicineUsageReport.receivedCount}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              if (report.id === "user_activity") {
+                // Nếu là báo cáo user, dùng dữ liệu từ API
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    // onClick bỏ modal, không làm gì
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                        <report.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleGenerateReport(report.id)
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <DocumentArrowDownIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                    <div className="space-y-2">
+                      {userReportLoading && <div className="text-gray-500 text-sm">Đang tải...</div>}
+                      {userReportError && <div className="text-red-500 text-sm">{userReportError}</div>}
+                      {userReport && (
+                        <>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Tổng số người dùng:</span>
+                            <span className="font-semibold">{userReport.totalUsers}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Đang hoạt động:</span>
+                            <span className="font-semibold">{userReport.activeUsers}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Chưa kích hoạt:</span>
+                            <span className="font-semibold">{userReport.inactiveUsers}</span>
+                          </div>
+                          {userReport.roleStats && Object.entries(userReport.roleStats).map(([role, count]) => (
+                            <div key={role} className="flex justify-between text-sm">
+                              <span className="text-gray-600">{role}:</span>
+                              <span className="font-semibold">{count}</span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+              return (
+                <div
+                  key={report.id}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                  // onClick bỏ modal, không làm gì
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 ${report.color} rounded-lg flex items-center justify-center`}>
+                      <report.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleGenerateReport(report.id)
+                      }}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <DocumentArrowDownIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{report.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                  <div className="space-y-2">
+                    {Object.entries(report.data)
+                      .slice(0, 3)
+                      .map(([key, value]) => (
+                        <div key={key} className="flex justify-between text-sm">
+                          <span className="text-gray-600 capitalize">
+                            {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
+                          </span>
+                          <span className="font-semibold">{value}</span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Monthly Chart */}
@@ -324,57 +754,6 @@ function Reports() {
           </div>
         </div>
       </div>
-
-      {/* Report Detail Modal */}
-      {selectedReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold">{selectedReport.title}</h3>
-              <button onClick={() => setSelectedReport(null)} className="text-gray-400 hover:text-gray-600">
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
-              {Object.entries(selectedReport.data).map(([key, value]) => (
-                <div key={key} className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600 capitalize mb-1">
-                    {key.replace(/([A-Z])/g, " $1").toLowerCase()}
-                  </p>
-                  <p className="text-xl font-bold text-gray-900">{value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-blue-900 mb-2">Thông tin báo cáo</h4>
-              <p className="text-sm text-blue-800">{selectedReport.description}</p>
-              <p className="text-sm text-blue-700 mt-2">
-                Khoảng thời gian: {dateFrom} đến {dateTo}
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setSelectedReport(null)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Đóng
-              </button>
-              <button
-                onClick={() => {
-                  handleGenerateReport(selectedReport.id)
-                  setSelectedReport(null)
-                }}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Tạo báo cáo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </AdminLayout>
   )
 }

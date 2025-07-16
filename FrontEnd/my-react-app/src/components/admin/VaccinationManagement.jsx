@@ -17,6 +17,35 @@ import { createAdminVaccinationEvent, getAdminVaccinationList, sendAdminNotifica
 
 import { useEffect } from "react";
 
+// Toast component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+      onClick={onClose}
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+}
+
+// Confirm Modal component
+function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-bold mb-2">{title}</h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Huỷ</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function VaccinationManagement() {
   const [activeTab, setActiveTab] = useState("campaigns");
@@ -32,6 +61,19 @@ function VaccinationManagement() {
   const [vaccinationList, setVaccinationList] = useState([]);
   const [editModal, setEditModal] = useState({ open: false, id: null, eventDate: '', description: '' });
   const [participantsModal, setParticipantsModal] = useState({ open: false, campaignId: null, participants: [], type: '' });
+
+  // Toast state
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  // Confirm modal state
+  const [confirm, setConfirm] = useState({ open: false, action: null, title: '', message: '' });
+
+  // Toast auto close
+  useEffect(() => {
+    if (toast.message) {
+      const timer = setTimeout(() => setToast({ ...toast, message: '' }), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   useEffect(() => {
     const fetchVaccinations = async () => {
@@ -67,30 +109,46 @@ function VaccinationManagement() {
     try {
       await createAdminVaccinationEvent(form);
       setShowAddModal(false);
+      setToast({ message: 'Tạo chiến dịch thành công!', type: 'success' });
       reloadVaccinations();
-      // TODO: reload data or show success message
     } catch {
-      alert("Tạo chiến dịch thất bại!");
+      setToast({ message: 'Tạo chiến dịch thất bại!', type: 'error' });
     }
   };
 
-  const handleSendNotification = async (id) => {
-    try {
-      await sendAdminNotification(id);
-      alert("Gửi thông báo thành công!");
-    } catch {
-      alert("Gửi thông báo thất bại!");
-    }
+  const handleSendNotification = (id) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await sendAdminNotification(id);
+          setToast({ message: 'Gửi thông báo thành công!', type: 'success' });
+        } catch {
+          setToast({ message: 'Gửi thông báo thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận gửi thông báo',
+      message: 'Bạn có chắc chắn muốn gửi thông báo cho chiến dịch này?'
+    });
   };
 
-  const handleFinishVaccination = async (id) => {
-    try {
-      await finishAdminVaccination(id);
-      alert("Đã chuyển trạng thái sự kiện thành 'Kết thúc'!");
-      reloadVaccinations();
-    } catch {
-      alert("Chuyển trạng thái thất bại!");
-    }
+  const handleFinishVaccination = (id) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await finishAdminVaccination(id);
+          setToast({ message: "Đã chuyển trạng thái sự kiện thành 'Kết thúc'!", type: 'success' });
+          reloadVaccinations();
+        } catch {
+          setToast({ message: 'Chuyển trạng thái thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận kết thúc sự kiện',
+      message: 'Bạn có chắc chắn muốn chuyển trạng thái sự kiện này thành Kết thúc?'
+    });
   };
 
   const openEditModal = (campaign) => {
@@ -118,24 +176,30 @@ function VaccinationManagement() {
         eventDate: editModal.eventDate,
         description: editModal.description,
       });
-      alert('Cập nhật sự kiện thành công!');
+      setToast({ message: 'Cập nhật sự kiện thành công!', type: 'success' });
       closeEditModal();
       reloadVaccinations();
     } catch {
-      alert('Cập nhật sự kiện thất bại!');
+      setToast({ message: 'Cập nhật sự kiện thất bại!', type: 'error' });
     }
   };
 
-  const handleDeleteVaccination = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa sự kiện này?")) {
-      try {
-        await deleteAdminVaccination(id);
-        alert("Xóa sự kiện thành công!");
-        reloadVaccinations();
-      } catch {
-        alert("Xóa sự kiện thất bại!");
-      }
-    }
+  const handleDeleteVaccination = (id) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await deleteAdminVaccination(id);
+          setToast({ message: 'Xóa sự kiện thành công!', type: 'success' });
+          reloadVaccinations();
+        } catch {
+          setToast({ message: 'Xóa sự kiện thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận xóa sự kiện',
+      message: 'Bạn có chắc chắn muốn xóa sự kiện này?'
+    });
   };
 
   const handleViewParticipants = async (campaignId) => {
@@ -148,7 +212,7 @@ function VaccinationManagement() {
         type: 'participants'
       });
     } catch {
-      alert("Không thể tải danh sách tham gia!");
+      setToast({ message: 'Không thể tải danh sách tham gia!', type: 'error' });
     }
   };
 
@@ -162,7 +226,7 @@ function VaccinationManagement() {
         type: 'rejections'
       });
     } catch {
-      alert("Không thể tải danh sách từ chối!");
+      setToast({ message: 'Không thể tải danh sách từ chối!', type: 'error' });
     }
   };
 
@@ -206,6 +270,18 @@ function VaccinationManagement() {
 
   return (
     <AdminLayout>
+      {/* Toast notification */}
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, message: '' })} />
+      {/* Confirm modal */}
+      <ConfirmModal
+        open={confirm.open}
+        title={confirm.title}
+        message={confirm.message}
+        onConfirm={async () => {
+          if (confirm.action) await confirm.action();
+        }}
+        onCancel={() => setConfirm({ ...confirm, open: false })}
+      />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -501,7 +577,7 @@ function VaccinationManagement() {
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Tạo sự kiện mới</h3>
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -569,7 +645,7 @@ function VaccinationManagement() {
       )}
       {/* Edit Modal */}
       {editModal.open && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Sửa sự kiện</h3>
             <form className="space-y-4" onSubmit={handleEditSubmit}>

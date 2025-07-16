@@ -13,6 +13,36 @@ import {
 import AdminLayout from "../AdminLayout"
 import { getAdminUserList, addAdminStudent, deleteAdminStudent, updateAdminStudent } from "../../api/axios"
 
+// Toast component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+      onClick={onClose}
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+}
+
+// Confirm Modal component
+function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-bold mb-2">{title}</h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Huỷ</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StudentManagement() {
   const [students, setStudents] = useState([])
   const [parents, setParents] = useState([])
@@ -50,6 +80,18 @@ function StudentManagement() {
     parentPhone: "",
   })
   const [_loading, _setLoading] = useState(false)
+  // Toast state
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  // Confirm modal state
+  const [confirm, setConfirm] = useState({ open: false, action: null, title: '', message: '' });
+
+  // Toast auto close
+  useEffect(() => {
+    if (toast.message) {
+      const timer = setTimeout(() => setToast({ ...toast, message: '' }), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,6 +167,7 @@ function StudentManagement() {
         classID: "",
         parentID: ""
       });
+      setToast({ message: 'Thêm học sinh thành công!', type: 'success' });
       // Reload danh sách
       const usersRes = await getAdminUserList();
       const users = usersRes.result || usersRes;
@@ -145,8 +188,10 @@ function StudentManagement() {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setAddError(err.response.data.message);
+        setToast({ message: err.response.data.message, type: 'error' });
       } else {
         setAddError("Thêm học sinh thất bại!");
+        setToast({ message: 'Thêm học sinh thất bại!', type: 'error' });
       }
     } finally {
       setAddLoading(false);
@@ -154,31 +199,38 @@ function StudentManagement() {
   };
 
   // Xử lý xóa học sinh
-  const handleDeleteStudent = async (studentId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa học sinh này?")) {
-      try {
-        await deleteAdminStudent(studentId);
-        // Reload danh sách
-        const usersRes = await getAdminUserList();
-        const users = usersRes.result || usersRes;
-        const parentUsers = users.filter(u => u.role === "PARENT");
-        setParents(parentUsers);
-        const allStudents = [];
-        parentUsers.forEach(parent => {
-          (parent.students || []).forEach(student => {
-            allStudents.push({
-              ...student,
-              parentName: `${parent.firstName} ${parent.lastName}`,
-              parentEmail: parent.email,
-              parentPhone: parent.phone,
+  const handleDeleteStudent = (studentId) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await deleteAdminStudent(studentId);
+          setToast({ message: 'Xóa học sinh thành công!', type: 'success' });
+          // Reload danh sách
+          const usersRes = await getAdminUserList();
+          const users = usersRes.result || usersRes;
+          const parentUsers = users.filter(u => u.role === "PARENT");
+          setParents(parentUsers);
+          const allStudents = [];
+          parentUsers.forEach(parent => {
+            (parent.students || []).forEach(student => {
+              allStudents.push({
+                ...student,
+                parentName: `${parent.firstName} ${parent.lastName}`,
+                parentEmail: parent.email,
+                parentPhone: parent.phone,
+              });
             });
           });
-        });
-        setStudents(allStudents);
-      } catch {
-        alert("Xóa học sinh thất bại!");
-      }
-    }
+          setStudents(allStudents);
+        } catch {
+          setToast({ message: 'Xóa học sinh thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận xóa học sinh',
+      message: 'Bạn có chắc chắn muốn xóa học sinh này?'
+    });
   };
 
   // Xử lý submit sửa học sinh
@@ -195,6 +247,7 @@ function StudentManagement() {
       });
       setShowEditModal(false);
       setSelectedStudent(null);
+      setToast({ message: 'Cập nhật học sinh thành công!', type: 'success' });
       // Reload danh sách
       const usersRes = await getAdminUserList();
       const users = usersRes.result || usersRes;
@@ -215,8 +268,10 @@ function StudentManagement() {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setEditError(err.response.data.message);
+        setToast({ message: err.response.data.message, type: 'error' });
       } else {
         setEditError("Sửa học sinh thất bại!");
+        setToast({ message: 'Sửa học sinh thất bại!', type: 'error' });
       }
     } finally {
       setEditLoading(false);
@@ -225,6 +280,18 @@ function StudentManagement() {
 
   return (
     <AdminLayout>
+      {/* Toast notification */}
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, message: '' })} />
+      {/* Confirm modal */}
+      <ConfirmModal
+        open={confirm.open}
+        title={confirm.title}
+        message={confirm.message}
+        onConfirm={async () => {
+          if (confirm.action) await confirm.action();
+        }}
+        onCancel={() => setConfirm({ ...confirm, open: false })}
+      />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -361,7 +428,7 @@ function StudentManagement() {
       </div>
       {/* Modal thêm học sinh */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white border border-blue-200 shadow-xl rounded-xl p-6 w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Thêm học sinh mới</h2>
             <form onSubmit={handleAddStudent} className="space-y-4">
@@ -454,7 +521,7 @@ function StudentManagement() {
       )}
       {/* Modal sửa học sinh */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white border border-blue-200 shadow-xl rounded-xl p-6 w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Sửa thông tin học sinh</h2>
             <form onSubmit={handleUpdateStudent} className="space-y-4">
