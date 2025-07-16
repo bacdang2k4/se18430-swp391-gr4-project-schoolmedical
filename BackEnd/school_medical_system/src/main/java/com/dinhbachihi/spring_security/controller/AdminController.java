@@ -301,7 +301,7 @@ public class AdminController {
         response.setResult(blogService.getBlogById(id));
         return response;
     }
-    @GetMapping("/checkup/sendresult/{id}")
+    @GetMapping("/checkup/send-result/{id}")
     public ApiResponse<String> sendResult(@PathVariable("id") Long id){
         ApiResponse<String> response = new ApiResponse<>();
         response.setResult(checkUpEventService.sendResultForParent(id));

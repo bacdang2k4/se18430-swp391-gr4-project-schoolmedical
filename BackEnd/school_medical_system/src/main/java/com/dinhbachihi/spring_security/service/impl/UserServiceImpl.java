@@ -46,7 +46,9 @@ public class UserServiceImpl implements UserService {
         if (request.getPhone() != null) {
             user.setPhone(request.getPhone());
         }
-        
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
         return userRepository.save(user);
     }
 
