@@ -1,4 +1,26 @@
 import { useEffect, useState } from "react";
+import { 
+  HeartIcon,
+  MagnifyingGlassIcon,
+  EyeIcon,
+  PencilSquareIcon,
+  UserIcon,
+  CalendarDaysIcon,
+  IdentificationIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  XMarkIcon,
+  ArrowPathIcon,
+  DocumentTextIcon,
+  ScaleIcon,
+  EyeSlashIcon,
+  SpeakerWaveIcon, // Thêm icon thay thế cho EarIcon
+} from "@heroicons/react/24/outline";
+import { 
+  HeartIcon as HeartIconSolid,
+  CheckCircleIcon as CheckCircleIconSolid,
+  ExclamationTriangleIcon as ExclamationTriangleIconSolid
+} from "@heroicons/react/24/solid";
 import { getAllStudentsByParent, getHealthRecordById, updateHealthRecordById } from "../../api/axios";
 
 function HealthRecordForm() {
@@ -9,7 +31,6 @@ function HealthRecordForm() {
     const [loadingDetail, setLoadingDetail] = useState(false);
     const [errorDetail, setErrorDetail] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    // Modal edit
     const [showEditModal, setShowEditModal] = useState(false);
     const [editForm, setEditForm] = useState({
         allergy: "",
@@ -22,6 +43,7 @@ function HealthRecordForm() {
     });
     const [editLoading, setEditLoading] = useState(false);
     const [editError, setEditError] = useState(null);
+    const [editSuccess, setEditSuccess] = useState(false);
     const [editId, setEditId] = useState(null);
     const [search, setSearch] = useState("");
 
@@ -31,8 +53,8 @@ function HealthRecordForm() {
                 const data = await getAllStudentsByParent();
                 setStudents(data.result || []);
             } catch (err) {
-                console.error(err); // log error for debugging
-                setError("Không thể tải danh sách học sinh.");
+                console.error(err);
+                setError("Không thể tải danh sách học sinh. Vui lòng thử lại sau.");
             } finally {
                 setLoading(false);
             }
@@ -40,7 +62,6 @@ function HealthRecordForm() {
         fetchStudents();
     }, []);
 
-    // Lọc dữ liệu theo search
     const filteredStudents = students.filter(student => {
         const name = (student.lastName + " " + student.firstName).toLowerCase();
         const id = (student.studentId || "").toLowerCase();
@@ -48,7 +69,6 @@ function HealthRecordForm() {
         return name.includes(searchText) || id.includes(searchText);
     });
 
-    // Xử lý khi bấm nút xem hồ sơ
     const handleView = async (student) => {
         setHealthDetail(null);
         setErrorDetail(null);
@@ -58,21 +78,20 @@ function HealthRecordForm() {
             const data = await getHealthRecordById(student.healthRecord.recordId);
             setHealthDetail(data.result);
         } catch (err) {
-            console.error(err); // log error for debugging
-            setErrorDetail("Không thể tải chi tiết hồ sơ sức khỏe.");
+            console.error(err);
+            setErrorDetail("Không thể tải chi tiết hồ sơ sức khỏe. Vui lòng thử lại.");
         } finally {
             setLoadingDetail(false);
         }
     };
 
-    // Xử lý khi bấm nút sửa hồ sơ
     const handleEdit = async (student) => {
         setEditError(null);
+        setEditSuccess(false);
         setEditLoading(true);
         setShowEditModal(true);
         setEditId(student.healthRecord.recordId);
         try {
-            // Lấy dữ liệu hiện tại để prefill
             const data = await getHealthRecordById(student.healthRecord.recordId);
             setEditForm({
                 allergy: data.result.allergy || "",
@@ -85,234 +104,513 @@ function HealthRecordForm() {
             });
         } catch (err) {
             console.error(err);
-            setEditError("Không thể tải dữ liệu hồ sơ để sửa.");
+            setEditError("Không thể tải dữ liệu hồ sơ để chỉnh sửa.");
         } finally {
             setEditLoading(false);
         }
     };
 
-    // Đóng modal xem
     const handleCloseModal = () => {
         setShowModal(false);
         setHealthDetail(null);
         setErrorDetail(null);
     };
 
-    // Đóng modal sửa
     const handleCloseEditModal = () => {
         setShowEditModal(false);
         setEditError(null);
+        setEditSuccess(false);
         setEditId(null);
     };
 
-    // Xử lý thay đổi form
     const handleEditChange = (e) => {
         setEditForm({ ...editForm, [e.target.name]: e.target.value });
+        if (editError) setEditError(null);
+        if (editSuccess) setEditSuccess(false);
     };
 
-    // Submit form sửa
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         setEditLoading(true);
         setEditError(null);
+        setEditSuccess(false);
         try {
             await updateHealthRecordById(editId, editForm);
-            setShowEditModal(false);
-            // Sau khi update, reload lại chi tiết nếu đang xem
-            if (showModal && healthDetail && healthDetail.recordId === editId) {
-                setLoadingDetail(true);
-                try {
-                    const data = await getHealthRecordById(editId);
-                    setHealthDetail(data.result);
-                } catch (err) {
-                    console.error(err);
+            setEditSuccess(true);
+            setTimeout(() => {
+                setShowEditModal(false);
+                if (showModal && healthDetail && healthDetail.recordId === editId) {
+                    setLoadingDetail(true);
+                    getHealthRecordById(editId).then(data => {
+                        setHealthDetail(data.result);
+                        setLoadingDetail(false);
+                    }).catch(() => setLoadingDetail(false));
                 }
-                setLoadingDetail(false);
-            }
+            }, 1500);
         } catch (err) {
             console.error(err);
-            setEditError("Cập nhật hồ sơ thất bại.");
+            setEditError("Cập nhật hồ sơ thất bại. Vui lòng thử lại.");
         } finally {
             setEditLoading(false);
         }
     };
 
-    return (
-        <div className="p-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-1">
-                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-orange-400">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                                <rect x="3" y="8" width="18" height="8" rx="4" fill="#fff" stroke="none"/>
-                                <rect x="3" y="8" width="18" height="8" rx="4"/>
-                                <path d="M7 8v8" />
-                            </svg>
-                        </span>
-                        <h1 className="text-3xl font-extrabold text-gray-900">Danh sách hồ sơ sức khỏe</h1>
+    const getHealthStatus = (student) => {
+        return student.healthRecord ? 'complete' : 'incomplete';
+    };
+
+    const getStatusConfig = (status) => {
+        switch (status) {
+            case 'complete':
+                return {
+                    label: 'Đã có hồ sơ',
+                    color: 'text-emerald-600',
+                    bgColor: 'bg-emerald-50',
+                    borderColor: 'border-emerald-200',
+                    icon: CheckCircleIconSolid
+                };
+            case 'incomplete':
+                return {
+                    label: 'Chưa có hồ sơ',
+                    color: 'text-amber-600',
+                    bgColor: 'bg-amber-50',
+                    borderColor: 'border-amber-200',
+                    icon: ExclamationTriangleIconSolid
+                };
+            default:
+                return {
+                    label: 'Không xác định',
+                    color: 'text-gray-600',
+                    bgColor: 'bg-gray-50',
+                    borderColor: 'border-gray-200',
+                    icon: ExclamationTriangleIcon
+                };
+        }
+    };
+
+    // Loading skeleton
+    const LoadingSkeleton = () => (
+        <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                            <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                                <div className="h-3 bg-gray-200 rounded w-24"></div>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="h-9 bg-gray-200 rounded w-20"></div>
+                            <div className="h-9 bg-gray-200 rounded w-20"></div>
+                        </div>
                     </div>
-                    <div className="text-gray-500 text-base ml-12">Lịch sử hồ sơ sức khỏe của học sinh</div>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-emerald-50 py-8 px-4">
+            <div className="max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-3 bg-white rounded-full px-6 py-3 shadow-lg border border-gray-200/50 mb-4">
+                        <div className="w-8 h-8 bg-gradient-to-r from-sky-500 to-emerald-500 rounded-full flex items-center justify-center">
+                            <HeartIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <h1 className="text-xl font-bold bg-gradient-to-r from-sky-600 to-emerald-600 bg-clip-text text-transparent">
+                            Hồ Sơ Sức Khỏe
+                        </h1>
+                    </div>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                        Theo dõi và quản lý thông tin sức khỏe của con em một cách chi tiết và khoa học
+                    </p>
                 </div>
 
-                {/* Search Section in card */}
-                <div className="bg-white rounded-2xl shadow border p-6 mb-8 max-w-2xl">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {/* Search Section */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 p-6 mb-8">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1 relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
+                            </div>
                             <input
                                 type="text"
-                                placeholder="Tìm kiếm theo tên học sinh hoặc mã học sinh..."
-                                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base pr-10 bg-gray-50"
+                                placeholder="Tìm kiếm theo tên học sinh hoặc mã số sinh viên..."
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 bg-gray-50"
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                             />
-                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
                         </div>
-                        <div className="text-gray-500 text-base min-w-max">
-                            Tìm thấy {filteredStudents.length} học sinh
+                        <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-3 rounded-xl">
+                            <UserIcon className="w-4 h-4" />
+                            <span>Tìm thấy {filteredStudents.length} học sinh</span>
                         </div>
                     </div>
                 </div>
 
-                {loading && (
-                    <ul className="space-y-4 mt-6">
-                        {[1, 2].map((i) => (
-                            <li key={i} className="border rounded-lg p-4 shadow-sm animate-pulse">
-                                <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-                {error && <p className="text-red-500">{error}</p>}
-                {!loading && !error && (
-                    <ul className="space-y-4 mt-6">
-                        {filteredStudents.map((student) => (
-                            <li key={student.studentId} className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                <div>
-                                    <div><b>Mã số sinh viên:</b> {student.studentId}</div>
-                                    <div><b>Họ tên:</b> {student.lastName} {student.firstName}</div>
-                                    <div><b>Giới tính:</b> {student.gender}</div>
-                                    <div><b>Ngày sinh:</b> {student.dateOfBirth}</div>
-                                    <div><b>Trạng thái hồ sơ:</b> {student.healthRecord ? "Đã có hồ sơ sức khỏe" : "Chưa có hồ sơ sức khỏe"}</div>
+                {/* Content */}
+                {loading ? (
+                    <LoadingSkeleton />
+                ) : error ? (
+                    <div className="bg-white rounded-2xl shadow-xl border border-red-200/50 p-8 text-center">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">Có lỗi xảy ra</h3>
+                        <p className="text-gray-600 mb-4">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200"
+                        >
+                            Thử lại
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {filteredStudents.length === 0 ? (
+                            <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 p-8 text-center">
+                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <UserIcon className="w-8 h-8 text-gray-400" />
                                 </div>
-                                <div className="flex gap-2 md:flex-col md:gap-2">
-                                    <button
-                                        className={`px-4 py-2 rounded bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:bg-gray-300 disabled:text-gray-500`}
-                                        onClick={() => handleView(student)}
-                                        disabled={!student.healthRecord}
-                                    >
-                                        Xem hồ sơ
-                                    </button>
-                                    <button
-                                        className="px-4 py-2 rounded bg-yellow-500 text-white font-semibold shadow hover:bg-yellow-600 transition"
-                                        onClick={() => handleEdit(student)}
-                                    >
-                                        Sửa hồ sơ
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
-                        {filteredStudents.length === 0 && <li>Không có học sinh nào.</li>}
-                    </ul>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">Không tìm thấy học sinh</h3>
+                                <p className="text-gray-600">Thử thay đổi từ khóa tìm kiếm hoặc kiểm tra lại thông tin.</p>
+                            </div>
+                        ) : (
+                            filteredStudents.map((student) => {
+                                const status = getHealthStatus(student);
+                                const statusConfig = getStatusConfig(status);
+                                const StatusIcon = statusConfig.icon;
+
+                                return (
+                                    <div key={student.studentId} className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden hover:shadow-2xl transition-all duration-300">
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-gradient-to-r from-sky-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                                        <UserIcon className="w-6 h-6 text-white" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold text-gray-800">
+                                                            {student.lastName} {student.firstName}
+                                                        </h3>
+                                                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                                            <div className="flex items-center gap-1">
+                                                                <IdentificationIcon className="w-4 h-4" />
+                                                                <span>{student.studentId}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <CalendarDaysIcon className="w-4 h-4" />
+                                                                <span>{student.dateOfBirth}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <UserIcon className="w-4 h-4" />
+                                                                <span>{student.gender}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${statusConfig.bgColor} ${statusConfig.borderColor}`}>
+                                                        <StatusIcon className={`w-4 h-4 ${statusConfig.color}`} />
+                                                        <span className={`text-sm font-medium ${statusConfig.color}`}>
+                                                            {statusConfig.label}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleView(student)}
+                                                            disabled={!student.healthRecord}
+                                                            className="flex items-center gap-2 px-4 py-2 bg-sky-500 text-white rounded-lg font-medium hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        >
+                                                            <EyeIcon className="w-4 h-4" />
+                                                            Xem hồ sơ
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleEdit(student)}
+                                                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200"
+                                                        >
+                                                            <PencilSquareIcon className="w-4 h-4" />
+                                                            Chỉnh sửa
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
                 )}
-                {/* Modal hiển thị chi tiết hồ sơ */}
+
+                {/* View Modal */}
                 {showModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center">
-                        {/* Nền mờ */}
-                        <div className="absolute inset-0 backdrop-blur-xs bg-white/10" onClick={handleCloseModal}></div>
-                        {/* Nội dung modal */}
-                        <div className="relative bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg z-10 animate-fade-in flex flex-col">
-                            <button
-                                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl font-bold"
-                                onClick={handleCloseModal}
-                                aria-label="Đóng"
-                            >
-                                ×
-                            </button>
-                            <h2 className="text-2xl font-bold mb-4 text-blue-700">Chi tiết hồ sơ sức khỏe</h2>
-                            {loadingDetail && <div>Đang tải chi tiết hồ sơ...</div>}
-                            {errorDetail && <div className="text-red-500">{errorDetail}</div>}
-                            {healthDetail && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div><b>Mã hồ sơ:</b> {healthDetail.recordId}</div>
-                                    <div><b>Dị ứng:</b> {healthDetail.allergy || 'Chưa cập nhật'}</div>
-                                    <div><b>Bệnh mãn tính:</b> {healthDetail.chronic_disease || 'Chưa cập nhật'}</div>
-                                    <div><b>Thị lực:</b> {healthDetail.vision || 'Chưa cập nhật'}</div>
-                                    <div><b>Thính lực:</b> {healthDetail.hearing || 'Chưa cập nhật'}</div>
-                                    <div><b>Cân nặng:</b> {healthDetail.weight || 'Chưa cập nhật'}</div>
-                                    <div><b>Chiều cao:</b> {healthDetail.height || 'Chưa cập nhật'}</div>
-                                    <div><b>Tiền sử bệnh:</b> {healthDetail.medical_history || 'Chưa cập nhật'}</div>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCloseModal}></div>
+                        <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200/50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <div className="sticky top-0 bg-gradient-to-r from-sky-500 to-emerald-500 px-6 py-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <HeartIconSolid className="w-6 h-6 text-white" />
+                                    <h2 className="text-xl font-bold text-white">Chi tiết hồ sơ sức khỏe</h2>
                                 </div>
-                            )}
+                                <button
+                                    onClick={handleCloseModal}
+                                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                >
+                                    <XMarkIcon className="w-5 h-5 text-white" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-6">
+                                {loadingDetail ? (
+                                    <div className="text-center py-8">
+                                        <ArrowPathIcon className="w-8 h-8 text-sky-500 animate-spin mx-auto mb-4" />
+                                        <p className="text-gray-600">Đang tải chi tiết hồ sơ...</p>
+                                    </div>
+                                ) : errorDetail ? (
+                                    <div className="text-center py-8">
+                                        <ExclamationTriangleIcon className="w-8 h-8 text-red-500 mx-auto mb-4" />
+                                        <p className="text-red-600">{errorDetail}</p>
+                                    </div>
+                                ) : healthDetail ? (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <IdentificationIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Mã hồ sơ</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.recordId}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <ExclamationTriangleIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Dị ứng</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.allergy || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <HeartIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Bệnh mãn tính</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.chronic_disease || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <EyeIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Thị lực</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.vision || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <SpeakerWaveIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Thính lực</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.hearing || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <ScaleIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Cân nặng</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.weight || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <ScaleIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Chiều cao</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.height || 'Chưa cập nhật'}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-xl p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <DocumentTextIcon className="w-5 h-5 text-gray-600" />
+                                                    <span className="font-medium text-gray-700">Tiền sử bệnh</span>
+                                                </div>
+                                                <p className="text-gray-800">{healthDetail.medical_history || 'Chưa cập nhật'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
                         </div>
                     </div>
                 )}
-                {/* Modal sửa hồ sơ */}
+
+                {/* Edit Modal */}
                 {showEditModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center">
-                        <div className="absolute inset-0 backdrop-blur-xs bg-white/10" onClick={handleCloseEditModal}></div>
-                        <div className="relative bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg z-10 animate-fade-in flex flex-col">
-                            <button
-                                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl font-bold"
-                                onClick={handleCloseEditModal}
-                                aria-label="Đóng"
-                            >
-                                ×
-                            </button>
-                            <h2 className="text-2xl font-bold mb-4 text-yellow-600">Sửa hồ sơ sức khỏe</h2>
-                            {editLoading && <div>Đang tải...</div>}
-                            {editError && <div className="text-red-500 mb-2">{editError}</div>}
-                            <form onSubmit={handleEditSubmit} className="space-y-4">
-                                <div>
-                                    <label className="font-semibold">Dị ứng:</label>
-                                    <input type="text" name="allergy" value={editForm.allergy} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCloseEditModal}></div>
+                        <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200/50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                            <div className="sticky top-0 bg-gradient-to-r from-emerald-500 to-sky-500 px-6 py-4 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <PencilSquareIcon className="w-6 h-6 text-white" />
+                                    <h2 className="text-xl font-bold text-white">Chỉnh sửa hồ sơ sức khỏe</h2>
                                 </div>
-                                <div>
-                                    <label className="font-semibold">Bệnh mãn tính:</label>
-                                    <input type="text" name="chronic_disease" value={editForm.chronic_disease} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Thị lực:</label>
-                                    <select name="vision" value={editForm.vision} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1">
-                                        <option value="">Chọn thị lực</option>
-                                        {[...Array(10)].map((_, i) => (
-                                            <option key={i+1} value={i+1}>{i+1}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Thính lực:</label>
-                                    <select name="hearing" value={editForm.hearing} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1">
-                                        <option value="">Chọn thính lực</option>
-                                        {[...Array(10)].map((_, i) => (
-                                            <option key={i+1} value={i+1}>{i+1}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Tiền sử bệnh:</label>
-                                    <input type="text" name="medical_history" value={editForm.medical_history} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Cân nặng:</label>
-                                    <input type="text" name="weight" value={editForm.weight} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
-                                </div>
-                                <div>
-                                    <label className="font-semibold">Chiều cao:</label>
-                                    <input type="text" name="height" value={editForm.height} onChange={handleEditChange} className="w-full border rounded px-3 py-2 mt-1" />
-                                </div>
-                                <div className="flex justify-end gap-2 pt-2">
-                                    <button type="button" onClick={handleCloseEditModal} className="px-4 py-2 rounded bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400">Hủy</button>
-                                    <button type="submit" disabled={editLoading} className="px-4 py-2 rounded bg-yellow-500 text-white font-semibold hover:bg-yellow-600 disabled:opacity-60">Lưu</button>
-                                </div>
-                            </form>
+                                <button
+                                    onClick={handleCloseEditModal}
+                                    className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                >
+                                    <XMarkIcon className="w-5 h-5 text-white" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-6">
+                                {editSuccess && (
+                                    <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
+                                        <CheckCircleIconSolid className="w-6 h-6 text-emerald-600" />
+                                        <div>
+                                            <div className="font-medium text-emerald-800">Cập nhật thành công!</div>
+                                            <div className="text-emerald-700 text-sm">Hồ sơ sức khỏe đã được cập nhật.</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {editError && (
+                                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+                                        <ExclamationTriangleIconSolid className="w-6 h-6 text-red-600" />
+                                        <div>
+                                            <div className="font-medium text-red-800">Có lỗi xảy ra</div>
+                                            <div className="text-red-700 text-sm">{editError}</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleEditSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Dị ứng
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="allergy"
+                                                value={editForm.allergy}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                placeholder="Nhập thông tin dị ứng..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Bệnh mãn tính
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="chronic_disease"
+                                                value={editForm.chronic_disease}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                placeholder="Nhập thông tin bệnh mãn tính..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Thị lực
+                                            </label>
+                                            <select
+                                                name="vision"
+                                                value={editForm.vision}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                            >
+                                                <option value="">Chọn thị lực</option>
+                                                {[...Array(10)].map((_, i) => (
+                                                    <option key={i+1} value={i+1}>{i+1}/10</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Thính lực
+                                            </label>
+                                            <select
+                                                name="hearing"
+                                                value={editForm.hearing}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                            >
+                                                <option value="">Chọn thính lực</option>
+                                                {[...Array(10)].map((_, i) => (
+                                                    <option key={i+1} value={i+1}>{i+1}/10</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Cân nặng (kg)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="weight"
+                                                value={editForm.weight}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                placeholder="Nhập cân nặng..."
+                                                step="0.1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Chiều cao (cm)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="height"
+                                                value={editForm.height}
+                                                onChange={handleEditChange}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                                placeholder="Nhập chiều cao..."
+                                                step="0.1"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tiền sử bệnh
+                                        </label>
+                                        <textarea
+                                            name="medical_history"
+                                            value={editForm.medical_history}
+                                            onChange={handleEditChange}
+                                            rows={4}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                            placeholder="Nhập tiền sử bệnh..."
+                                        />
+                                    </div>
+                                    <div className="flex justify-end gap-4 pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={handleCloseEditModal}
+                                            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                                        >
+                                            Hủy
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={editLoading}
+                                            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-sky-500 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-sky-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                        >
+                                            {editLoading ? (
+                                                <>
+                                                    <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                                                    Đang lưu...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <CheckCircleIcon className="w-4 h-4" />
+                                                    Lưu thay đổi
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 )}
