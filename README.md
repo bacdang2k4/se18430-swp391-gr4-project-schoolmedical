@@ -86,7 +86,7 @@ Một hệ thống quản lý y tế học đường (backend + frontend) đư�
 ### Cấu hình kết nối backend
 - Kiểm tra file cấu hình (ví dụ `.env`, hoặc trong code) để đảm bảo:
     ```env
-    REACT_APP_API_URL=http://localhost:<backend-port>/api
+    VITE_API_URL=http://localhost:<backend-port>/api
     ```
 
 ### Xây dựng bản production
