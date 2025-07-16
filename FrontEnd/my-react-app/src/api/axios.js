@@ -67,6 +67,12 @@ export const getProfile = async () => {
   return response.data;
 };
 
+// Cập nhật thông tin hồ sơ người dùng
+export const updateProfile = async (profileData) => {
+  const response = await api.put('/v1/profile/update', profileData);
+  return response.data;
+};
+
 export const changePassword = async (oldPassword, newPassword, confirmPassword) => {
   const response = await api.put('/v1/profile/change-password', {
     oldPassword,
@@ -204,6 +210,12 @@ export const getAdminMedicalEventList = async () => {
 // Lấy danh sách sự kiện kiểm tra sức khỏe (Admin)
 export const getAdminCheckupEventList = async () => {
   const response = await api.get('/v1/admin/checkupEvent');
+  return response.data;
+};
+
+// Lấy danh sách từ chối kiểm tra sức khỏe (Admin)
+export const getAdminCheckupRejectList = async (id) => {
+  const response = await api.get(`/v1/admin/checkup/reject/${id}`);
   return response.data;
 };
 
@@ -444,3 +456,54 @@ export const markFinishCheckupAdmin = async (id) => {
   const response = await api.put(`/v1/admin/checkup/mark/${id}`);
   return response.data;
 };
+
+// Lấy danh sách người tham gia kiểm tra sức khỏe (Admin)
+export const getAdminCheckupParticipants = async (id) => {
+  const response = await api.get(`/v1/admin/checkup/parti/${id}`);
+  return response.data;
+};
+
+
+// Gửi thông báo kết quả kiểm tra sức khỏe về cho phụ huynh (Admin)
+export const sendAdminCheckupResultNotification = async (id) => {
+  const response = await api.get(`/v1/admin/checkup/send-result/${id}`);
+  return response.data;
+};
+
+// Lấy báo cáo user (Admin)
+export const getUserReport = async () => {
+  const response = await api.get('/v1/reports/users');
+  return response.data;
+};
+
+// Lấy báo cáo tổng quan sức khỏe (Admin)
+export const getHealthOverviewReport = async () => {
+  const response = await api.get('/v1/reports/health-overview');
+  return response.data;
+};
+
+// Lấy báo cáo sự kiện y tế (Admin)
+export const getMedicalEventReport = async () => {
+  const response = await api.get('/v1/reports/medical-events');
+  return response.data;
+};
+
+// Lấy báo cáo tiêm chủng (Admin)
+export const getVaccinationReport = async () => {
+  const response = await api.get('/v1/reports/vaccination');
+  return response.data;
+};
+
+// Lấy báo cáo kiểm tra sức khỏe (Admin)
+export const getCheckupReport = async () => {
+  const response = await api.get('/v1/reports/checkup');
+  return response.data;
+};
+
+// Lấy báo cáo sử dụng thuốc (Admin)
+export const getMedicineUsageReport = async () => {
+  const response = await api.get('/v1/reports/medicine-usage');
+  return response.data;
+};
+
+

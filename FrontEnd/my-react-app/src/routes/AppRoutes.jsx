@@ -1,6 +1,6 @@
 "use client"
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import Login from "../pages/Login"
 import Dashboard from "../pages/Dashboard"
@@ -24,18 +24,18 @@ import LoadingSpinner from "../components/LoadingSpinner"
 import Blog from "../pages/Blog"
 import Contact from "../pages/Contact"
 import Documents from "../pages/Documents"
-import HealthRecord from "../pages/parent/HealthRecord"
-import MedicalSend from "../pages/parent/MedicalSend"
-import ListMedicalSend from "../pages/nurse/ListMedicalSend"
-import ListHealthRecord from "../pages/nurse/ListHealthRecord"
-import EventInSchool from "../pages/nurse/EventInSchool"
-import EventInSchoolForm from "../pages/parent/EventInSchool"
-import Warehouse from "../pages/nurse/WareHouse"
+import HealthRecordParent from "../pages/parent/HealthRecordParent"
+import MedicalSendParent from "../pages/parent/MedicalSendParent"
+import ListMedicalSendNurse from "../pages/nurse/ListMedicalSendNurse"
+import ListHealthRecordNurse from "../pages/nurse/ListHealthRecordNurse"
+import EventInSchoolNurse from "../pages/nurse/EventInSchoolNurse"
+import EventInSchoolParent from "../pages/parent/EventInSchoolParent"
+import WarehouseNurse from "../pages/nurse/WarehouseNurse"
 import StudentManagement from "../components/admin/StudentManagement"
-import Vaccination from "../pages/parent/Vaccination"
-import VaccinationNurse from "../pages/nurse/Vaccination"
-import HealthCheckup from "../pages/parent/HealthCheckup"
-import HealthCheckupNurse from "../pages/nurse/HealthCheckup"
+import VaccinationParent from "../pages/parent/VaccinationParent"
+import VaccinationNurse from "../pages/nurse/VaccinationNurse"
+import HealthCheckupParent from "../pages/parent/HealthCheckupParent"
+import HealthCheckupNurse from "../pages/nurse/HealthCheckupNurse"
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -206,7 +206,7 @@ export default function AppRoutes() {
           path="/parent/health-record"
           element={
             <PrivateRoute>
-              <HealthRecord />
+              <HealthRecordParent />
             </PrivateRoute>
           }
         />
@@ -214,7 +214,7 @@ export default function AppRoutes() {
           path="/parent/medical-send-history"
           element={
             <PrivateRoute>
-              <MedicalSend />
+              <MedicalSendParent />
             </PrivateRoute>
           }
         />
@@ -222,7 +222,7 @@ export default function AppRoutes() {
           path="/parent/event-in-school"
           element={
             <PrivateRoute>
-              <EventInSchoolForm />
+              <EventInSchoolParent />
             </PrivateRoute>
           }
         />
@@ -230,7 +230,7 @@ export default function AppRoutes() {
           path="/parent/medical-vaccine"
           element={
             <PrivateRoute>
-              <Vaccination />
+              <VaccinationParent />
             </PrivateRoute>
           }
         />
@@ -238,7 +238,7 @@ export default function AppRoutes() {
           path="/parent/health-checkup"
           element={
             <PrivateRoute>
-              <HealthCheckup />
+              <HealthCheckupParent />
             </PrivateRoute>
           }
         />
@@ -247,7 +247,7 @@ export default function AppRoutes() {
           path="/nurse/list-medical-send"
           element={
             <PrivateRoute>
-              <ListMedicalSend />
+              <ListMedicalSendNurse />
             </PrivateRoute>
           }
         />
@@ -255,7 +255,7 @@ export default function AppRoutes() {
           path="/nurse/list-health-records"
           element={
             <PrivateRoute>
-              <ListHealthRecord />
+              <ListHealthRecordNurse />
             </PrivateRoute>
           }
         />
@@ -263,7 +263,7 @@ export default function AppRoutes() {
           path="/nurse/event-in-school"
           element={
             <PrivateRoute>
-              <EventInSchool />
+              <EventInSchoolNurse />
             </PrivateRoute>
           }
         />
@@ -271,7 +271,7 @@ export default function AppRoutes() {
           path="/nurse/warehouse"
           element={
             <PrivateRoute>
-              <Warehouse />
+              <WarehouseNurse />
             </PrivateRoute>
           }
         />
