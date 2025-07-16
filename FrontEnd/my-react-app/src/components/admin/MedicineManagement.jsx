@@ -14,6 +14,36 @@ import {
 import AdminLayout from "../../components/AdminLayout"
 import { getAdminMedicineList, createAdminMedicine, deleteAdminMedicine } from "../../api/axios"
 
+// Toast component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+      onClick={onClose}
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+}
+
+// Confirm Modal component
+function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-bold mb-2">{title}</h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Huỷ</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MedicineManagement() {
   const [medicineData, setMedicineData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,6 +55,18 @@ function MedicineManagement() {
   const [addForm, setAddForm] = useState({ name: "", type: "", quantity: "", unit: "" })
   const [addLoading, setAddLoading] = useState(false)
   const [addError, setAddError] = useState("")
+  // Toast state
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  // Confirm modal state
+  const [confirm, setConfirm] = useState({ open: false, action: null, title: '', message: '' });
+
+  // Toast auto close
+  useEffect(() => {
+    if (toast.message) {
+      const timer = setTimeout(() => setToast({ ...toast, message: '' }), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,19 +96,26 @@ function MedicineManagement() {
 
   // Xóa hàm handleEdit và handleUsage vì không còn dùng
 
-  const handleDelete = async (medicineId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa thuốc này?")) {
-      try {
-        await deleteAdminMedicine(medicineId);
-        // Reload list
-        setLoading(true);
-        const res = await getAdminMedicineList();
-        setMedicineData(res.result || []);
-        setLoading(false);
-      } catch {
-        alert("Xóa thuốc thất bại!");
-      }
-    }
+  const handleDelete = (medicineId) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await deleteAdminMedicine(medicineId);
+          setToast({ message: 'Xóa thuốc thành công!', type: 'success' });
+          // Reload list
+          setLoading(true);
+          const res = await getAdminMedicineList();
+          setMedicineData(res.result || []);
+          setLoading(false);
+        } catch {
+          setToast({ message: 'Xóa thuốc thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận xóa thuốc',
+      message: 'Bạn có chắc chắn muốn xóa thuốc này?'
+    });
   }
 
 
@@ -88,6 +137,18 @@ function MedicineManagement() {
 
   return (
     <AdminLayout>
+      {/* Toast notification */}
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, message: '' })} />
+      {/* Confirm modal */}
+      <ConfirmModal
+        open={confirm.open}
+        title={confirm.title}
+        message={confirm.message}
+        onConfirm={async () => {
+          if (confirm.action) await confirm.action();
+        }}
+        onCancel={() => setConfirm({ ...confirm, open: false })}
+      />
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -240,7 +301,7 @@ function MedicineManagement() {
 
       {/* Add Medicine Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-cyan-200 shadow-xl">
             <h3 className="text-lg font-semibold mb-4">Thêm thuốc/vật tư mới</h3>
             <form className="space-y-4" onSubmit={async (e) => {
@@ -249,11 +310,13 @@ function MedicineManagement() {
               setAddError("");
               if (!addForm.name || !addForm.type || !addForm.quantity || !addForm.unit) {
                 setAddError("Vui lòng nhập đầy đủ thông tin!");
+                setToast({ message: 'Vui lòng nhập đầy đủ thông tin!', type: 'error' });
                 setAddLoading(false);
                 return;
               }
               if (isNaN(Number(addForm.quantity)) || Number(addForm.quantity) < 0) {
                 setAddError("Số lượng phải là số không âm!");
+                setToast({ message: 'Số lượng phải là số không âm!', type: 'error' });
                 setAddLoading(false);
                 return;
               }
@@ -268,6 +331,7 @@ function MedicineManagement() {
                 setAddForm({ name: "", type: "", quantity: "", unit: "" });
                 setAddError("");
                 setAddLoading(false);
+                setToast({ message: 'Thêm thuốc thành công!', type: 'success' });
                 // Reload list
                 setLoading(true);
                 const res = await getAdminMedicineList();
@@ -275,6 +339,7 @@ function MedicineManagement() {
                 setLoading(false);
               } catch {
                 setAddError("Thêm thuốc thất bại!");
+                setToast({ message: 'Thêm thuốc thất bại!', type: 'error' });
                 setAddLoading(false);
               }
             }}>

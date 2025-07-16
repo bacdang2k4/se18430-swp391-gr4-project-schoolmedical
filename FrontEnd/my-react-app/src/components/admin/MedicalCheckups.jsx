@@ -13,7 +13,7 @@ import {
   BellIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../AdminLayout"
-import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent, editAdminCheckupEvent, markFinishCheckupAdmin } from "../../api/axios"
+import { getAdminCheckupEventList, sendAdminCheckupNotification, createAdminCheckupEvent, editAdminCheckupEvent, markFinishCheckupAdmin, getAdminCheckupParticipants, getAdminCheckupRejectList, sendAdminCheckupResultNotification } from "../../api/axios"
 
 const studentCheckups = [
   {
@@ -91,11 +91,34 @@ const studentStatusLabels = {
   rescheduled: "Hoãn lại",
 }
 
-const studentStatusColors = {
-  scheduled: "bg-blue-100 text-blue-800",
-  completed: "bg-green-100 text-green-800",
-  absent: "bg-red-100 text-red-800",
-  rescheduled: "bg-yellow-100 text-yellow-800",
+// Toast component
+function Toast({ message, type, onClose }) {
+  if (!message) return null;
+  return (
+    <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}
+      onClick={onClose}
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+}
+
+// Confirm Modal component
+function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h3 className="text-lg font-bold mb-2">{title}</h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">Huỷ</button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function MedicalCheckups() {
@@ -105,8 +128,6 @@ function MedicalCheckups() {
 
   const [selectedStatus, setSelectedStatus] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
-  const [showResultModal, setShowResultModal] = useState(false)
-  const [selectedStudent, setSelectedStudent] = useState(null)
   const [form, setForm] = useState({
     name: "",
     type: "",
@@ -116,15 +137,29 @@ function MedicalCheckups() {
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [editModal, setEditModal] = useState({ open: false, id: null, eventDate: '', description: '' });
   const [loadingEdit, setLoadingEdit] = useState(false);
+  const [participantsModal, setParticipantsModal] = useState({ open: false, campaignId: null, participants: [], type: '' });
+  const [sendingResultId, setSendingResultId] = useState(null);
+
+  // Toast state
+  const [toast, setToast] = useState({ message: '', type: 'success' });
+  // Confirm modal state
+  const [confirm, setConfirm] = useState({ open: false, action: null, title: '', message: '' });
+
+  // Toast auto close
+  useEffect(() => {
+    if (toast.message) {
+      const timer = setTimeout(() => setToast({ ...toast, message: '' }), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getAdminCheckupEventList();
-        // Nếu API trả về { code, result: [...] }
         setCheckupCampaigns(res.result || []);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách sự kiện kiểm tra sức khỏe:", error);
+      } catch {
+        setToast({ message: 'Lỗi khi lấy danh sách sự kiện kiểm tra sức khỏe', type: 'error' });
       }
     };
     fetchData();
@@ -133,32 +168,32 @@ function MedicalCheckups() {
   const filteredCampaigns = checkupCampaigns.filter((campaign) => {
     const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = !selectedStatus || campaign.status === selectedStatus
-
     return matchesSearch && matchesStatus
   })
 
   const filteredStudents = studentCheckups.filter((student) => {
     const matchesSearch = student.studentName.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = !selectedStatus || student.status === selectedStatus
-
     return matchesSearch && matchesStatus
   })
 
-  const handleViewResult = (student) => {
-    setSelectedStudent(student)
-    setShowResultModal(true)
-  }
-
-  const handleSendNotification = async (id) => {
-    try {
-      await sendAdminCheckupNotification(id);
-      alert("Gửi thông báo thành công!");
-      // Reload lại danh sách đợt kiểm tra
-      const res = await getAdminCheckupEventList();
-      setCheckupCampaigns(res.result || []);
-    } catch (error) {
-      alert("Gửi thông báo thất bại! " + (error?.response?.data?.message || error.message || ""));
-    }
+  const handleSendNotification = (id) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await sendAdminCheckupNotification(id);
+          setToast({ message: 'Gửi thông báo thành công!', type: 'success' });
+          const res = await getAdminCheckupEventList();
+          setCheckupCampaigns(res.result || []);
+        } catch (error) {
+          setToast({ message: 'Gửi thông báo thất bại! ' + (error?.response?.data?.message || error.message || ''), type: 'error' });
+        }
+      },
+      title: 'Xác nhận gửi thông báo',
+      message: 'Bạn có chắc chắn muốn gửi thông báo cho đợt kiểm tra này?'
+    });
   };
 
   const handleFormChange = (e) => {
@@ -176,11 +211,11 @@ function MedicalCheckups() {
       await createAdminCheckupEvent(form);
       setShowAddModal(false);
       setForm({ name: "", type: "", eventDate: "", description: "" });
-      // Refresh list
       const res = await getAdminCheckupEventList();
       setCheckupCampaigns(res.result || []);
+      setToast({ message: 'Tạo đợt kiểm tra thành công!', type: 'success' });
     } catch (err) {
-      alert("Tạo đợt kiểm tra thất bại!" + (err?.response?.data?.message ? `\n${err.response.data.message}` : ""));
+      setToast({ message: 'Tạo đợt kiểm tra thất bại!' + (err?.response?.data?.message ? `\n${err.response.data.message}` : ''), type: 'error' });
     } finally {
       setLoadingCreate(false);
     }
@@ -212,27 +247,79 @@ function MedicalCheckups() {
         eventDate: editModal.eventDate,
         description: editModal.description,
       });
-      alert('Cập nhật đợt kiểm tra thành công!');
+      setToast({ message: 'Cập nhật đợt kiểm tra thành công!', type: 'success' });
       closeEditModal();
-      // Refresh list
       const res = await getAdminCheckupEventList();
       setCheckupCampaigns(res.result || []);
     } catch {
-      alert('Cập nhật đợt kiểm tra thất bại!');
+      setToast({ message: 'Cập nhật đợt kiểm tra thất bại!', type: 'error' });
     } finally {
       setLoadingEdit(false);
     }
   };
 
-  const handleFinishCheckup = async (id) => {
+  const handleFinishCheckup = (id) => {
+    setConfirm({
+      open: true,
+      action: async () => {
+        setConfirm({ ...confirm, open: false });
+        try {
+          await markFinishCheckupAdmin(id);
+          setToast({ message: "Đã chuyển trạng thái đợt kiểm tra thành 'Hoàn thành'!", type: 'success' });
+          const res = await getAdminCheckupEventList();
+          setCheckupCampaigns(res.result || []);
+        } catch {
+          setToast({ message: 'Chuyển trạng thái thất bại!', type: 'error' });
+        }
+      },
+      title: 'Xác nhận hoàn thành',
+      message: 'Bạn có chắc chắn muốn chuyển trạng thái đợt kiểm tra này thành Hoàn thành?'
+    });
+  };
+
+  // Handlers for participants/rejections
+  const handleViewParticipants = async (campaignId) => {
     try {
-      await markFinishCheckupAdmin(id);
-      alert("Đã chuyển trạng thái đợt kiểm tra thành 'Hoàn thành'!");
-      // Refresh list
-      const res = await getAdminCheckupEventList();
-      setCheckupCampaigns(res.result || []);
+      const data = await getAdminCheckupParticipants(campaignId);
+      setParticipantsModal({
+        open: true,
+        campaignId,
+        participants: Array.isArray(data.result) ? data.result : [],
+        type: 'participants'
+      });
     } catch {
-      alert("Chuyển trạng thái thất bại!");
+      setToast({ message: 'Không thể tải danh sách tham gia!', type: 'error' });
+    }
+  };
+
+  const handleViewRejections = async (campaignId) => {
+    try {
+      const data = await getAdminCheckupRejectList(campaignId);
+      setParticipantsModal({
+        open: true,
+        campaignId,
+        participants: Array.isArray(data.result) ? data.result : [],
+        type: 'rejections'
+      });
+    } catch {
+      setToast({ message: 'Không thể tải danh sách từ chối!', type: 'error' });
+    }
+  };
+
+  const closeParticipantsModal = () => {
+    setParticipantsModal({ open: false, campaignId: null, participants: [], type: '' });
+  };
+
+  // Handler to send result notification
+  const handleSendResultNotification = async (campaignId) => {
+    setSendingResultId(campaignId);
+    try {
+      await sendAdminCheckupResultNotification(campaignId);
+      setToast({ message: 'Đã gửi thông báo kết quả về cho phụ huynh!', type: 'success' });
+    } catch {
+      setToast({ message: 'Gửi thông báo kết quả thất bại!', type: 'error' });
+    } finally {
+      setSendingResultId(null);
     }
   };
 
@@ -458,86 +545,67 @@ function MedicalCheckups() {
               </div>
             </div>
           ) : (
-            /* Results Table */
+            /* Results Table: List events, with actions to view participants/rejections */
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Học sinh
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Đợt kiểm tra
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ngày khám
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Chỉ số cơ bản
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Trạng thái
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Hành động
-                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đợt kiểm tra</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredStudents.map((student) => {
-                      const campaign = checkupCampaigns.find((c) => c.id === student.campaignId)
-                      return (
-                        <tr key={student.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{student.studentName}</div>
-                              <div className="text-sm text-gray-500">Lớp {student.class}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{campaign?.name}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {student.checkupDate || "Chưa khám"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {student.height ? (
-                              <div className="text-sm text-gray-900">
-                                <div>Cao: {student.height}cm</div>
-                                <div>Nặng: {student.weight}kg</div>
-                                <div>Thị lực: {student.vision}</div>
-                              </div>
-                            ) : (
-                              <span className="text-gray-400">Chưa có kết quả</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${studentStatusColors[student.status]}`}
+                    {filteredCampaigns.map((campaign) => (
+                      <tr key={campaign.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">{campaign.name}</div>
+                          <div className="text-sm text-gray-500">{campaign.description || ""}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{campaign.type}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{campaign.eventDate}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[campaign.status]}`}>{statusLabels[campaign.status] || campaign.status}</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleViewParticipants(campaign.id)}
+                              className="text-green-600 hover:text-green-900 p-2 border border-green-300 rounded-lg flex items-center gap-1"
+                              title="Xem danh sách tham gia"
                             >
-                              {studentStatusLabels[student.status]}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end gap-2">
+                              <UserGroupIcon className="w-4 h-4" />
+                              <span className="text-xs">Tham gia</span>
+                            </button>
+                            <button
+                              onClick={() => handleViewRejections(campaign.id)}
+                              className="text-red-600 hover:text-red-900 p-2 border border-red-300 rounded-lg flex items-center gap-1"
+                              title="Xem danh sách từ chối"
+                            >
+                              <span className="text-xs">Từ chối</span>
+                            </button>
+                            {campaign.status === 'finished' && (
                               <button
-                                onClick={() => handleViewResult(student)}
-                                className="text-blue-600 hover:text-blue-900 p-1"
-                                title="Xem kết quả"
+                                onClick={() => handleSendResultNotification(campaign.id)}
+                                className={`text-blue-600 hover:text-blue-900 p-2 border border-blue-300 rounded-lg flex items-center gap-1 ${sendingResultId === campaign.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                title="Gửi thông báo kết quả về cho phụ huynh"
+                                disabled={sendingResultId === campaign.id}
                               >
-                                <EyeIcon className="w-4 h-4" />
+                                <BellIcon className="w-4 h-4" />
+                                <span className="text-xs">Gửi kết quả</span>
                               </button>
-                              {student.status === "scheduled" && (
-                                <button className="text-green-600 hover:text-green-900 p-1" title="Nhập kết quả">
-                                  <CheckCircleIcon className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -546,9 +614,8 @@ function MedicalCheckups() {
         </div>
       </div>
 
-      {/* Add Campaign Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Tạo đợt kiểm tra y tế mới</h3>
             <form className="space-y-4" onSubmit={handleCreateCheckup}>
@@ -620,103 +687,10 @@ function MedicalCheckups() {
         </div>
       )}
 
-      {/* Result Detail Modal */}
-      {showResultModal && selectedStudent && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Kết quả kiểm tra sức khỏe</h3>
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Học sinh</label>
-                  <p className="text-sm text-gray-900">
-                    {selectedStudent.studentName} - Lớp {selectedStudent.class}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Ngày khám</label>
-                  <p className="text-sm text-gray-900">{selectedStudent.checkupDate || "Chưa khám"}</p>
-                </div>
-              </div>
+      {/* Removed showResultModal and selectedStudent */}
 
-              {selectedStudent.height && (
-                <>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Chiều cao</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.height} cm</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Cân nặng</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.weight} kg</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">BMI</label>
-                      <p className="text-sm text-gray-900">
-                        {(selectedStudent.weight / (selectedStudent.height / 100) ** 2 || 0).toFixed(1)}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Nhịp tim</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.heartRate} bpm</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Thị lực</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.vision}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Thính lực</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.hearing}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Huyết áp</label>
-                      <p className="text-sm text-gray-900">{selectedStudent.bloodPressure} mmHg</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Ghi chú</label>
-                    <p className="text-sm text-gray-900">{selectedStudent.notes}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Khuyến nghị</label>
-                    <p className="text-sm text-gray-900">{selectedStudent.recommendations}</p>
-                  </div>
-                </>
-              )}
-
-              {!selectedStudent.height && (
-                <div className="text-center py-8">
-                  <ClipboardDocumentCheckIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Chưa có kết quả kiểm tra</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowResultModal(false)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                Đóng
-              </button>
-              {selectedStudent.status === "scheduled" && (
-                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                  Nhập kết quả
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
       {editModal.open && (
-        <div className="fixed inset-0 bg-white/10 backdrop-blur-xs flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Sửa đợt kiểm tra</h3>
             <form className="space-y-4" onSubmit={handleEditSubmit}>
@@ -759,6 +733,86 @@ function MedicalCheckups() {
           </div>
         </div>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          open={confirm.open}
+          title={confirm.title}
+          message={confirm.message}
+          onConfirm={confirm.action}
+          onCancel={() => setConfirm({ ...confirm, open: false })}
+        />
+      )}
+
+      {/* Participants/Rejections Modal */}
+      {participantsModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">
+                {participantsModal.type === 'participants' ? 'Danh sách học sinh tham gia' : 'Danh sách học sinh từ chối'}
+              </h3>
+              <button
+                onClick={closeParticipantsModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học sinh</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lớp</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phụ huynh</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày gửi</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {participantsModal.participants.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.student?.firstName} {item.student?.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">ID: {item.student?.studentId}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.student?.classes?.name}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.parent?.firstName} {item.parent?.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">{item.parent?.email}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.sendDate}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${item.consent === 'Accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {item.consent === 'Accepted' ? 'Đã đồng ý' : 'Từ chối'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-4 text-sm text-gray-600">Tổng cộng: {participantsModal.participants.length} học sinh</div>
+          </div>
+        </div>
+      )}
+
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, message: '' })} />
     </AdminLayout>
   )
 }
