@@ -10,6 +10,7 @@ import com.dinhbachihi.spring_security.entity.Student;
 import com.dinhbachihi.spring_security.entity.VaccinationResult;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EventService {
     Event createEvent(CreateEventRequest request);
@@ -26,4 +27,5 @@ public interface EventService {
     List<VaccinationConsent> getStudentAccepts(Long id);
     List<VaccinationConsent> getStudentRejects(Long id);
     VaccinationResult getVaccinationResultOfStudent(Long id );
+    Map<String, Object> getVaccinationReport();
 }

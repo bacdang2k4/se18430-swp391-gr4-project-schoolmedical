@@ -8,8 +8,8 @@ import java.time.LocalDate;
 @Data
 public class RecordCheckUpEventRequest {
     private String note;
-    private String height;
-    private String weight;
+    private Double height;
+    private Double weight;
     private String vision;
     private String hearing;
 }

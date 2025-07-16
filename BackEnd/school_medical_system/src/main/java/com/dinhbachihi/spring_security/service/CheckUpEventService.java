@@ -10,6 +10,7 @@ import com.dinhbachihi.spring_security.entity.CheckUpEventResult;
 import com.dinhbachihi.spring_security.entity.Student;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CheckUpEventService {
     CheckUpEvent addCheckUpEvent(CreateCheckUpEventRequest request);
@@ -26,4 +27,5 @@ public interface CheckUpEventService {
     List<CheckUpEventResult> getCheckUpEventResults();
     List<CheckUpEventConsent> getList();
     String sendResultForParent(Long id);
+    Map<String, Object> getCheckupReport();
 }

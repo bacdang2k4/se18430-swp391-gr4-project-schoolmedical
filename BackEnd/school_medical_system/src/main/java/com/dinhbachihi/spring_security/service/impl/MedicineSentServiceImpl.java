@@ -17,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -99,5 +101,28 @@ public class MedicineSentServiceImpl implements MedicineSentService {
         MedicineSent medicineSent = medicineSentRepository.getReferenceById(id);
         medicineSent.setStatus("used");
         return medicineSentRepository.save(medicineSent);
+    }
+    public Map<String, Object> getMedicineUsageReport() {
+        List<MedicineSent> all = medicineSentRepository.findAll();
+
+        int totalMedicines = (int) all.stream()
+                .map(MedicineSent::getMedicineName)
+                .distinct()
+                .count();
+
+        int medicinesUsed = all.size();
+
+        long usedCount = all.stream().filter(m -> "used".equalsIgnoreCase(m.getStatus())).count();
+        long pendingCount = all.stream().filter(m -> "pending".equalsIgnoreCase(m.getStatus())).count();
+        long receivedCount = all.stream().filter(m -> "received".equalsIgnoreCase(m.getStatus())).count();
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalMedicines", totalMedicines);
+        report.put("medicinesUsed", medicinesUsed);
+        report.put("usedCount", usedCount);
+        report.put("pendingCount", pendingCount);
+        report.put("receivedCount", receivedCount);
+
+        return report;
     }
 }

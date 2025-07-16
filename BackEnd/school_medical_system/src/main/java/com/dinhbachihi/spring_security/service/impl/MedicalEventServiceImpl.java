@@ -17,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -102,5 +104,24 @@ public class MedicalEventServiceImpl implements MedicalEventService {
         medicalEventRepository.findById(medicalEventId).orElseThrow(() -> new AppException(ErrorCode.MEDICAL_EVENT_NOT_FOUND));
         medicalEventRepository.deleteById(medicalEventId);
         return "medical event deleted";
+    }
+
+    public Map<String, Object> getMedicalEventReport() {
+        List<MedicalEvent> events = medicalEventRepository.findAll();
+
+        int totalEvents = events.size();
+        long accidents = events.stream().filter(e -> "accident".equalsIgnoreCase(e.getType())).count();
+        long illnesses = events.stream().filter(e -> "illness".equalsIgnoreCase(e.getType())).count();
+        long allergicReactions = events.stream().filter(e -> "allergy".equalsIgnoreCase(e.getType())).count();
+        long emergencies = events.stream().filter(e -> "emergency".equalsIgnoreCase(e.getType())).count();
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalEvents", totalEvents);
+        report.put("accidents", accidents);
+        report.put("illnesses", illnesses);
+        report.put("allergicReactions", allergicReactions);
+        report.put("emergencies", emergencies);
+
+        return report;
     }
 }

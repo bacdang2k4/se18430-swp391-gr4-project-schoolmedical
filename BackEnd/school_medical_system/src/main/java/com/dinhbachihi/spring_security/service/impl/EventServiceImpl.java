@@ -16,7 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,5 +159,38 @@ public class EventServiceImpl implements EventService {
         return rs;
     }
 
+    public Map<String, Object> getVaccinationReport() {
+        List<Event> allEvents = eventRepository.findAll()
+                .stream()
+                .filter(e -> "Tiêm phòng".equalsIgnoreCase(e.getType()))
+                .collect(Collectors.toList());
+
+        int totalCampaigns = allEvents.size();
+        long completedCampaigns = allEvents.stream().filter(e -> "finished".equalsIgnoreCase(e.getStatus())).count();
+
+        // Đếm số học sinh đã tiêm
+        long studentsVaccinated = vaccinationResultRepository.count();
+
+        // Tổng số học sinh
+        long totalStudents = studentRepository.count();
+
+        // Tỷ lệ tiêm chủng
+        double vaccinationRate = totalStudents > 0 ? (studentsVaccinated * 100.0 / totalStudents) : 0;
+
+        // Số học sinh chờ tiêm (có consent accepted nhưng chưa có VaccinationResult)
+        long pendingVaccinations = vaccinationConsentRepository.findByConsent("Accepted")
+                .stream()
+                .filter(vc -> vaccinationResultRepository.findByStudentAndEvent(vc.getStudent(), vc.getEvent()).isEmpty())
+                .count();
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalCampaigns", totalCampaigns);
+        report.put("completedCampaigns", completedCampaigns);
+        report.put("studentsVaccinated", studentsVaccinated);
+        report.put("vaccinationRate", vaccinationRate);
+        report.put("pendingVaccinations", pendingVaccinations);
+
+        return report;
+    }
 
 }

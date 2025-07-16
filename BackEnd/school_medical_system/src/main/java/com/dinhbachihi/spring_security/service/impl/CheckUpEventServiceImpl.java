@@ -16,7 +16,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -169,6 +172,44 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
         String mess = "Send successfully";
         return mess;
 
+    }
+
+    public Map<String, Object> getCheckupReport() {
+        List<CheckUpEvent> allEvents = checkUpEventRepository.findAll();
+        int totalCheckups = allEvents.size();
+
+        List<CheckUpEventResult> allResults = checkUpEventResultRepository.findAll();
+
+        // Đếm số học sinh đã kiểm tra (dựa vào studentId, không dùng distinct trên entity)
+        long studentsChecked = allResults.stream()
+                .map(r -> r.getStudent() != null ? r.getStudent().getStudentId() : null)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
+
+
+        // Trung bình chiều cao/cân nặng (chỉ lấy số, không lấy entity)
+        double averageHeight = allResults.stream()
+                .map(CheckUpEventResult::getHeight)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0);
+
+        double averageWeight = allResults.stream()
+                .map(CheckUpEventResult::getWeight)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0);
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalCheckups", totalCheckups);
+        report.put("studentsChecked", studentsChecked);
+        report.put("averageHeight", averageHeight);
+        report.put("averageWeight", averageWeight);
+
+        return report;
     }
 
 }

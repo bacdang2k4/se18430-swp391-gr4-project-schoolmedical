@@ -16,8 +16,8 @@ public class CheckUpEventResult {
     private Long id;
     private String result = "Not yet";
     private String note;
-    private String height;
-    private String weight;
+    private Double height;
+    private Double weight;
     private String vision;
     private String hearing;
     private LocalDate checkupDate;
@@ -38,7 +38,7 @@ public class CheckUpEventResult {
     public CheckUpEventResult() {
     }
 
-    public CheckUpEventResult(Long id, String result, String note, String height, String weight, String vision, String hearing, LocalDate checkupDate) {
+    public CheckUpEventResult(Long id, String result, String note, Double height, Double weight, String vision, String hearing, LocalDate checkupDate) {
         this.id = id;
         this.result = result;
         this.note = note;

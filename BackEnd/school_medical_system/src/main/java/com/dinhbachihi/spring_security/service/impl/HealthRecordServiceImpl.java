@@ -12,7 +12,9 @@ import com.dinhbachihi.spring_security.service.HealthRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +57,24 @@ public class HealthRecordServiceImpl implements HealthRecordService {
     }
     public List<Student> getAllHealthRecord() {
         return studentRepository.findAll();
+    }
+
+    public Map<String, Object> getHealthOverviewReport() {
+        List<HealthRecord> records = healthRecordRepository.findAll();
+
+        int totalStudents = records.size();
+        long studentsWithAllergies = records.stream().filter(r -> r.getAllergy() != null && !r.getAllergy().isEmpty()).count();
+        long studentsWithChronicDiseases = records.stream().filter(r -> r.getChronic_disease() != null && !r.getChronic_disease().isEmpty()).count();
+        double avgHeight = records.stream().filter(r -> r.getHeight() != null).mapToDouble(HealthRecord::getHeight).average().orElse(0);
+        double avgWeight = records.stream().filter(r -> r.getWeight() != null).mapToDouble(HealthRecord::getWeight).average().orElse(0);
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalStudents", totalStudents);
+        report.put("studentsWithAllergies", studentsWithAllergies);
+        report.put("studentsWithChronicDiseases", studentsWithChronicDiseases);
+        report.put("averageHeight", avgHeight);
+        report.put("averageWeight", avgWeight);
+
+        return report;
     }
 }

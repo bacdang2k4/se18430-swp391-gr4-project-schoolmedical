@@ -5,6 +5,7 @@ import com.dinhbachihi.spring_security.dto.response.MedicineSentResponse;
 import com.dinhbachihi.spring_security.entity.MedicineSent;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MedicineSentService {
     MedicineSent createMedicineSent(MedicineSentRequest request, String stdId);
@@ -12,4 +13,5 @@ public interface MedicineSentService {
     MedicineSent acceptMedicineSent( Long id );
     List<MedicineSentResponse> getMedicineSentsByCurrentParent();
     MedicineSent setUse( Long id );
+    Map<String, Object> getMedicineUsageReport();
 }

@@ -1,6 +1,7 @@
 package com.dinhbachihi.spring_security.service.impl;
 
 import com.dinhbachihi.spring_security.dto.request.UserUpdateRequest;
+import com.dinhbachihi.spring_security.entity.Role;
 import com.dinhbachihi.spring_security.entity.User;
 import com.dinhbachihi.spring_security.exception.AppException;
 import com.dinhbachihi.spring_security.exception.ErrorCode;
@@ -11,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -50,6 +55,26 @@ public class UserServiceImpl implements UserService {
             user.setEmail(request.getEmail());
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public Map<String, Object> getUserReport() {
+        long totalUsers = userRepository.count();
+        long activeUsers = userRepository.countByEnabled(true);
+        long inactiveUsers = userRepository.countByEnabled(false);
+
+        Map<String, Long> roleStats = new HashMap<>();
+        for (Role role : Role.values()) {
+            roleStats.put(role.name(), userRepository.countByRole(role));
+        }
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("totalUsers", totalUsers);
+        report.put("activeUsers", activeUsers);
+        report.put("inactiveUsers", inactiveUsers);
+        report.put("roleStats", roleStats);
+
+        return report;
     }
 
 
