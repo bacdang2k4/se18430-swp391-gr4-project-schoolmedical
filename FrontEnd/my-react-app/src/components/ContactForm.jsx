@@ -6,10 +6,15 @@ import {
   EnvelopeIcon,
   MapPinIcon,
   ClockIcon,
-  UserIcon,
   ChatBubbleLeftEllipsisIcon,
   PaperAirplaneIcon,
   CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ExclamationTriangleIcon,
+  HeartIcon,
+  ShieldCheckIcon,
+  AcademicCapIcon
 } from "@heroicons/react/24/outline"
 
 const contactInfo = [
@@ -17,45 +22,49 @@ const contactInfo = [
     icon: PhoneIcon,
     title: "Điện thoại",
     details: [
-      { label: "Phòng y tế", value: "024.1234.5678" },
-      { label: "Khẩn cấp", value: "024.1234.5679" },
-      { label: "Tư vấn", value: "024.1234.5680" },
+      { label: "Tổng đài chính", value: "024.1234.5678" },
+      { label: "Khẩn cấp 24/7", value: "024.1234.5679" },
+      { label: "Tư vấn sức khỏe", value: "024.1234.5680" }
     ],
-    color: "text-green-600",
-    bgColor: "bg-green-100",
+    textColor: "text-blue-600",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200"
   },
   {
     icon: EnvelopeIcon,
     title: "Email",
     details: [
-      { label: "Phòng y tế", value: "yte@thcsnguyendu.edu.vn" },
-      { label: "Khẩn cấp", value: "emergency@thcsnguyendu.edu.vn" },
-      { label: "Tư vấn", value: "tuvan@thcsnguyendu.edu.vn" },
+      { label: "Email chính", value: "info@school.edu.vn" },
+      { label: "Khẩn cấp", value: "emergency@school.edu.vn" },
+      { label: "Hỗ trợ kỹ thuật", value: "support@school.edu.vn" }
     ],
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
+    textColor: "text-green-600",
+    bgColor: "bg-green-50",
+    borderColor: "border-green-200"
   },
   {
     icon: MapPinIcon,
     title: "Địa chỉ",
     details: [
-      { label: "Trường THCS Nguyễn Du", value: "123 Đường ABC, Quận XYZ, TP.HCM" },
-      { label: "Phòng y tế", value: "Tầng 1, Tòa nhà A" },
+      { label: "Trường học", value: "123 Đường ABC, Quận XYZ, TP.HCM" },
+      { label: "Phòng y tế", value: "Tầng 2, Tòa nhà chính" },
+      { label: "Mã bưu điện", value: "700000" }
     ],
-    color: "text-red-600",
-    bgColor: "bg-red-100",
+    textColor: "text-purple-600",
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200"
   },
   {
     icon: ClockIcon,
     title: "Giờ làm việc",
     details: [
       { label: "Thứ 2 - Thứ 6", value: "7:00 - 17:00" },
-      { label: "Thứ 7", value: "7:00 - 11:00" },
-      { label: "Chủ nhật", value: "Nghỉ" },
-      { label: "Khẩn cấp", value: "24/7" },
+      { label: "Thứ 7", value: "8:00 - 12:00" },
+      { label: "Khẩn cấp", value: "24/7" }
     ],
-    color: "text-purple-600",
-    bgColor: "bg-purple-100",
+    textColor: "text-orange-600",
+    bgColor: "bg-orange-50",
+    borderColor: "border-orange-200"
   },
 ]
 
@@ -65,21 +74,30 @@ const departments = [
     description: "Khám bệnh, tư vấn sức khỏe, xử lý sự cố y tế",
     staff: "BS. Nguyễn Thị Lan, Y tá Trần Văn Nam",
     phone: "024.1234.5678",
-    email: "yte@thcsnguyendu.edu.vn",
+    email: "yte@school.edu.vn",
+    icon: HeartIcon,
+    color: "text-red-600",
+    bgColor: "bg-red-50"
   },
   {
     name: "Phòng cấp cứu",
     description: "Xử lý các tình huống khẩn cấp, tai nạn",
     staff: "BS. Lê Thị Hoa, Y tá Phạm Văn Minh",
     phone: "024.1234.5679",
-    email: "emergency@thcsnguyendu.edu.vn",
+    email: "emergency@school.edu.vn",
+    icon: ShieldCheckIcon,
+    color: "text-blue-600",
+    bgColor: "bg-blue-50"
   },
   {
     name: "Phòng tư vấn dinh dưỡng",
     description: "Tư vấn chế độ ăn, dinh dưỡng học đường",
     staff: "TS. Hoàng Thị Mai, Chuyên viên dinh dưỡng",
     phone: "024.1234.5680",
-    email: "dinhduong@thcsnguyendu.edu.vn",
+    email: "dinhduong@school.edu.vn",
+    icon: AcademicCapIcon,
+    color: "text-green-600",
+    bgColor: "bg-green-50"
   },
 ]
 
@@ -100,6 +118,10 @@ const faqs = [
     question: "Làm sao để cập nhật thông tin sức khỏe của con?",
     answer: "Phụ huynh có thể cập nhật thông tin qua tài khoản cá nhân trên hệ thống hoặc mang hồ sơ y tế đến phòng y tế để cập nhật trực tiếp.",
   },
+  {
+    question: "Trường có chương trình giáo dục sức khỏe không?",
+    answer: "Có, chúng tôi tổ chức các buổi tập huấn về sức khỏe, dinh dưỡng và an toàn cho học sinh và phụ huynh định kỳ hàng tháng.",
+  },
 ]
 
 function ContactForm() {
@@ -118,9 +140,9 @@ function ContactForm() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : value
     }))
   }
 
@@ -128,8 +150,8 @@ function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000))
     
     setIsSubmitting(false)
     setIsSubmitted(true)
@@ -149,267 +171,318 @@ function ContactForm() {
     }, 3000)
   }
 
+  const toggleFaq = (index) => {
+    setExpandedFaq(expandedFaq === index ? null : index)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-pulse animation-delay-1000"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
+            <ChatBubbleLeftEllipsisIcon className="w-10 h-10 text-white" />
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">Liên hệ với chúng tôi</h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
             Chúng tôi luôn sẵn sàng hỗ trợ và tư vấn về sức khỏe học đường cho con em bạn
           </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <span className="font-semibold">📞 Hotline: 024.1234.5678</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <span className="font-semibold">🚨 Khẩn cấp 24/7</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Contact Info Cards */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Thông tin liên hệ</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Contact Info Cards */}
+      <section className="py-16 px-4 -mt-10 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300">
-                <div className={`w-16 h-16 ${info.bgColor} rounded-full flex items-center justify-center mb-4 mx-auto`}>
-                  <info.icon className={`w-8 h-8 ${info.color}`} />
+              <div
+                key={index}
+                className={`${info.bgColor} ${info.borderColor} border-2 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
+              >
+                <div className={`inline-flex items-center justify-center w-14 h-14 ${info.textColor} bg-white rounded-xl mb-4 shadow-md`}>
+                  <info.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 text-center mb-4">{info.title}</h3>
+                <h3 className={`text-xl font-bold ${info.textColor} mb-4`}>{info.title}</h3>
                 <div className="space-y-2">
                   {info.details.map((detail, idx) => (
-                    <div key={idx} className="text-center">
-                      <p className="text-sm text-gray-500">{detail.label}</p>
-                      <p className="font-medium text-gray-800">{detail.value}</p>
+                    <div key={idx}>
+                      <p className="text-sm text-gray-600 font-medium">{detail.label}:</p>
+                      <p className="text-gray-800 font-semibold">{detail.value}</p>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <section className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-              <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-blue-600" />
-              Gửi tin nhắn cho chúng tôi
-            </h2>
+      {/* Main Content */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Contact Form */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-gray-800 mb-4">Gửi tin nhắn</h2>
+                  <p className="text-gray-600">Điền thông tin bên dưới và chúng tôi sẽ phản hồi sớm nhất có thể</p>
+                </div>
 
-            {isSubmitted ? (
-              <div className="text-center py-12">
-                <CheckCircleIcon className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-green-600 mb-2">Gửi thành công!</h3>
-                <p className="text-gray-600">Chúng tôi sẽ phản hồi trong vòng 24 giờ.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {isSubmitted && (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
+                    <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                    <div>
+                      <p className="text-green-800 font-semibold">Gửi thành công!</p>
+                      <p className="text-green-600 text-sm">Chúng tôi sẽ phản hồi trong vòng 24 giờ.</p>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Họ và tên *
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                        placeholder="Nhập họ và tên"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                        placeholder="Nhập email"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Số điện thoại
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                        placeholder="Nhập số điện thoại"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Phòng ban
+                      </label>
+                      <select
+                        name="department"
+                        value={formData.department}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                      >
+                        <option value="">Chọn phòng ban</option>
+                        <option value="medical">Phòng y tế chính</option>
+                        <option value="emergency">Phòng cấp cứu</option>
+                        <option value="nutrition">Phòng tư vấn dinh dưỡng</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Họ và tên <span className="text-red-500">*</span>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Tiêu đề *
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      value={formData.name}
+                      name="subject"
+                      value={formData.subject}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập họ và tên"
                       required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                      placeholder="Nhập tiêu đề tin nhắn"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email <span className="text-red-500">*</span>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Nội dung *
                     </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                    <textarea
+                      name="message"
+                      value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập email"
                       required
+                      rows={6}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                      placeholder="Nhập nội dung tin nhắn..."
                     />
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+                  <div className="flex items-center">
                     <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
+                      type="checkbox"
+                      name="urgent"
+                      checked={formData.urgent}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Nhập số điện thoại"
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                     />
+                    <label className="ml-2 text-sm text-gray-700 flex items-center gap-2">
+                      <ExclamationTriangleIcon className="w-4 h-4 text-red-500" />
+                      Đây là vấn đề khẩn cấp
+                    </label>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phòng ban</label>
-                    <select
-                      name="department"
-                      value={formData.department}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Chọn phòng ban</option>
-                      <option value="medical">Phòng y tế chính</option>
-                      <option value="emergency">Phòng cấp cứu</option>
-                      <option value="nutrition">Phòng tư vấn dinh dưỡng</option>
-                      <option value="admin">Ban giám hiệu</option>
-                    </select>
-                  </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tiêu đề <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Nhập tiêu đề"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nội dung <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                    placeholder="Nhập nội dung tin nhắn..."
-                    required
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="urgent"
-                    checked={formData.urgent}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
-                  />
-                  <label className="ml-2 text-sm text-gray-700">
-                    Đây là vấn đề khẩn cấp cần xử lý ngay
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Đang gửi...
-                    </>
-                  ) : (
-                    <>
-                      <PaperAirplaneIcon className="w-5 h-5" />
-                      Gửi tin nhắn
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </section>
-
-          {/* Departments & FAQ */}
-          <div className="space-y-8">
-            {/* Departments */}
-            <section className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Các phòng ban</h2>
-              <div className="space-y-6">
-                {departments.map((dept, index) => (
-                  <div key={index} className="border-l-4 border-blue-500 pl-4">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2">{dept.name}</h3>
-                    <p className="text-gray-600 mb-2">{dept.description}</p>
-                    <div className="text-sm text-gray-500 space-y-1">
-                      <p><strong>Nhân viên:</strong> {dept.staff}</p>
-                      <p><strong>Điện thoại:</strong> {dept.phone}</p>
-                      <p><strong>Email:</strong> {dept.email}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* FAQ */}
-            <section className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Câu hỏi thường gặp</h2>
-              <div className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg">
-                    <button
-                      onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                      className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-medium text-gray-800">{faq.question}</h3>
-                        <span className="text-gray-500 text-xl">
-                          {expandedFaq === index ? "−" : "+"}
-                        </span>
-                      </div>
-                    </button>
-                    {expandedFaq === index && (
-                      <div className="px-4 pb-4">
-                        <p className="text-gray-600">{faq.answer}</p>
-                      </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                        Đang gửi...
+                      </>
+                    ) : (
+                      <>
+                        <PaperAirplaneIcon className="w-5 h-5" />
+                        Gửi tin nhắn
+                      </>
                     )}
-                  </div>
-                ))}
+                  </button>
+                </form>
               </div>
-            </section>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-8">
+              {/* Departments */}
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Các phòng ban</h3>
+                <div className="space-y-6">
+                  {departments.map((dept, index) => (
+                    <div key={index} className={`${dept.bgColor} rounded-2xl p-6 border border-gray-200`}>
+                      <div className="flex items-start gap-4">
+                        <div className={`${dept.color} bg-white rounded-xl p-3 shadow-md`}>
+                          <dept.icon className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-gray-800 mb-2">{dept.name}</h4>
+                          <p className="text-sm text-gray-600 mb-3">{dept.description}</p>
+                          <div className="space-y-1 text-sm">
+                            <p><span className="font-medium">Nhân viên:</span> {dept.staff}</p>
+                            <p><span className="font-medium">Điện thoại:</span> {dept.phone}</p>
+                            <p><span className="font-medium">Email:</span> {dept.email}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* FAQ */}
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-800 mb-6">Câu hỏi thường gặp</h3>
+                <div className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <div key={index} className="border border-gray-200 rounded-xl overflow-hidden">
+                      <button
+                        onClick={() => toggleFaq(index)}
+                        className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between"
+                      >
+                        <span className="font-semibold text-gray-800">{faq.question}</span>
+                        {expandedFaq === index ? (
+                          <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+                        ) : (
+                          <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+                        )}
+                      </button>
+                      {expandedFaq === index && (
+                        <div className="px-6 py-4 bg-white border-t border-gray-200">
+                          <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Emergency Contact */}
-        <section className="mt-16 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl shadow-lg p-8 text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">🚨 Liên hệ khẩn cấp</h2>
-          <p className="text-xl mb-6">
-            Trong trường hợp khẩn cấp, vui lòng gọi ngay số điện thoại dưới đây
+      {/* Emergency Contact */}
+      <section className="py-16 px-4 bg-gradient-to-r from-red-600 to-pink-600 text-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
+            <ExclamationTriangleIcon className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Liên hệ khẩn cấp</h2>
+          <p className="text-xl mb-8 opacity-90">
+            Trong trường hợp khẩn cấp, vui lòng liên hệ ngay với chúng tôi
           </p>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8">
-            <div className="flex items-center gap-3">
-              <PhoneIcon className="w-8 h-8" />
-              <div>
-                <p className="text-sm opacity-90">Cấp cứu 24/7</p>
-                <p className="text-2xl font-bold">024.1234.5679</p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+              <PhoneIcon className="w-8 h-8 mx-auto mb-4" />
+              <h3 className="font-bold text-lg mb-2">Hotline khẩn cấp</h3>
+              <p className="text-2xl font-bold">024.1234.5679</p>
+              <p className="text-sm opacity-80 mt-2">Hoạt động 24/7</p>
             </div>
-            <div className="flex items-center gap-3">
-              <EnvelopeIcon className="w-8 h-8" />
-              <div>
-                <p className="text-sm opacity-90">Email khẩn cấp</p>
-                <p className="text-lg font-bold">emergency@thcsnguyendu.edu.vn</p>
-              </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+              <EnvelopeIcon className="w-8 h-8 mx-auto mb-4" />
+              <h3 className="font-bold text-lg mb-2">Email khẩn cấp</h3>
+              <p className="text-lg font-bold">emergency@school.edu.vn</p>
+              <p className="text-sm opacity-80 mt-2">Phản hồi trong 15 phút</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Map Section */}
-        <section className="mt-16 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Vị trí trường học</h2>
-          <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <MapPinIcon className="w-16 h-16 mx-auto mb-4" />
-              <p className="text-lg font-medium">Bản đồ Google Maps</p>
-              <p className="text-sm">123 Đường ABC, Quận XYZ, TP.HCM</p>
+      {/* Map Section */}
+      <section className="py-16 px-4 bg-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Vị trí trường học</h2>
+            <p className="text-gray-600 text-lg">Tìm đường đến trường và phòng y tế</p>
+          </div>
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+            <div className="h-96 bg-gray-300 flex items-center justify-center">
+              <div className="text-center">
+                <MapPinIcon className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-600 font-medium">Bản đồ Google Maps sẽ được tích hợp tại đây</p>
+                <p className="text-sm text-gray-500 mt-2">123 Đường ABC, Quận XYZ, TP.HCM</p>
+              </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }
