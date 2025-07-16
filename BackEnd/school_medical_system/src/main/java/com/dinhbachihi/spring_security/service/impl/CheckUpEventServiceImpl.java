@@ -151,5 +151,24 @@ public class CheckUpEventServiceImpl implements CheckUpEventService {
         return parent.getList();
 
     }
+    public String sendResultForParent(Long id){
+        List<User> parents = userRepository.findAllByRole(Role.PARENT);
+        for(User parent : parents){
+            List<Student> students = parent.getStudents();
+            for(Student student : students){
+                List<CheckUpEventResult> list = student.getListCheckupResult();
+                for(CheckUpEventResult ce :list){
+                    if(ce.getEvent()!=null && ce.getEvent().getId().equals(id)){
+                        String content = "Chiều cao : " + ce.getHeight() +", Cân nặng : " +ce.getWeight() + ", Thị lực : " + ce.getVision() + ", Thính lực : " + ce.getHearing();
+                        emailService.sendEmail(parent.getEmail(),"Gửi kết quả kiểm tra y tế định kì của "+ ce.getEvent().getName(), content);
+                    }
+                }
+            }
+        }
+
+        String mess = "Send successfully";
+        return mess;
+
+    }
 
 }

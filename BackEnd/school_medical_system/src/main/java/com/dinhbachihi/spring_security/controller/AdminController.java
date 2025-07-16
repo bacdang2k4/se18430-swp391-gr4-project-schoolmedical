@@ -301,4 +301,10 @@ public class AdminController {
         response.setResult(blogService.getBlogById(id));
         return response;
     }
+    @GetMapping("/checkup/sendresult/{id}")
+    public ApiResponse<String> sendResult(@PathVariable("id") Long id){
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setResult(checkUpEventService.sendResultForParent(id));
+        return response;
+    }
 }

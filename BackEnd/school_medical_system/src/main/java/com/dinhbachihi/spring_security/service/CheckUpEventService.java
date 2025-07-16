@@ -25,4 +25,5 @@ public interface CheckUpEventService {
     CheckUpEventResult recordCheckupEventResult(Long Id , RecordCheckUpEventRequest request);
     List<CheckUpEventResult> getCheckUpEventResults();
     List<CheckUpEventConsent> getList();
+    String sendResultForParent(Long id);
 }
