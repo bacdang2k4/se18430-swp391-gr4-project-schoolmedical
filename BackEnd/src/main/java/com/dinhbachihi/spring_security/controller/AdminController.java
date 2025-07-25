@@ -314,5 +314,12 @@ public class AdminController {
         response.setResult(adminService.getAllClasses());
         return response;
     }
-    
+
+    @GetMapping("/list-users")
+    public ApiResponse<List<User>> getLisstUsers(){
+        ApiResponse<List<User>> response = new ApiResponse<>();
+        response.setResult(adminService.getUserList());
+        return response;
+    }
+
 }

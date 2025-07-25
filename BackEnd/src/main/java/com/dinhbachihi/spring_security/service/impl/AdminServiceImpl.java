@@ -168,4 +168,10 @@ public class AdminServiceImpl implements AdminService {
         return classes;
     }
 
+    @Override
+    public List<User> getUserList() {
+        List<User> users = userRepository.findAll();
+        return users;
+    }
+
 }
