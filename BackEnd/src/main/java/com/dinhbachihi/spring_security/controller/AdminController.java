@@ -307,4 +307,12 @@ public class AdminController {
         response.setResult(checkUpEventService.sendResultForParent(id));
         return response;
     }
+
+    @GetMapping("/list-class")
+    public ApiResponse<List<Classes>> getAllClasses(){
+        ApiResponse<List<Classes>> response = new ApiResponse<>();
+        response.setResult(adminService.getAllClasses());
+        return response;
+    }
+    
 }

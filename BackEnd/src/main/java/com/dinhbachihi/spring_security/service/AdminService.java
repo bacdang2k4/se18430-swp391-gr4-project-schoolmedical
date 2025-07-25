@@ -22,4 +22,5 @@ public interface AdminService {
     Student updateStudentById(String studentId, StudentUpdateRequest request);
     Classes addClass(ClassesAddRequest request);
     List<Student> getStudentsByClassId(String classId);
+    List<Classes> getAllClasses();
 }
