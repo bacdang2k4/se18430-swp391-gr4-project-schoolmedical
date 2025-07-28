@@ -92,7 +92,7 @@ SWP-School-Medical-Management/
 - **Docker**: Đóng gói và triển khai backend
 
 ### Database
-- **MySQL Server on Linux (Docker)**: Chạy trên máy ảo Azure (Linux VM), sử dụng image `mcr.microsoft.com/azure-sql-edge`.
+- **MySQL Server on Linux (Docker)**: Chạy trên máy ảo Azure (Linux VM).
 
 ### DevOps & Testing
 - **Git**: Quản lý phiên bản mã nguồn
@@ -124,11 +124,11 @@ SWP-School-Medical-Management/
 ---
 
 ### 🧑‍💼 Đặng Đình Bắc  
-**Team Leader** | Full-Stack Developer | DevOps | SQL Server DB Designer  
+**Team Leader** | Full-Stack Developer | DevOps | MySQL DB Designer  
 
 - Led the development of the SchoolMedicalManager project  
-- Built both frontend (ReactJS) and backend (.NET 8 Web API)  
-- Designed and optimized SQL Server database (schema, procedures, seed data)  
+- Built both frontend (ReactJS) and backend (Spring Boot)  
+- Designed and optimized MySQL database (schema, procedures, seed data)  
 - Deployed backend & DB using Docker; frontend to Vercel, backend to Render  
 - Registered custom domain and configured DNS for production  
 - Managed team progress, code quality, and final delivery
@@ -136,18 +136,17 @@ SWP-School-Medical-Management/
 ---
 
 ### 👨‍💻 Nguyễn Thanh Nhã
-**Full-Stack Developer** | DevOps | SQL Server DB Designer  
+**Backend Developer** | DevOps | MySQL DB Designer  
 
-- Contributed to frontend and backend development  
-- Co-designed and optimized SQL Server database  
-- Wrote stored procedures, seed/migration scripts  
-- Deployed SQL Server on Linux via Docker  
-- Handled backup, remote access, and DB performance tuning
+- Contributed to the development of system features, covering both frontend and backend components.
+- Designed and optimized relational databases using MySQL, ensuring high performance and scalability.
+- Proficient in using Postman to test APIs, validate responses, and support frontend integration for accurate UI display.
+- Prepared comprehensive documentation, including API references, user guides, and system workflows, to support team collaboration and future development. 
 
 ---
 
 ### 🎨 Dương Hải Nam  
-**Frontend Developer** | SQL Server DB Designer  
+**Frontend Developer** | MySQL DB Designer  
 
 - Developed UI components with ReactJS  
 - Participated in UI/UX design and user flow  
