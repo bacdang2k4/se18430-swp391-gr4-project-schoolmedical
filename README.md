@@ -164,7 +164,7 @@ SWP-School-Medical-Management/
 ---
 
 ### 💻 Trần Nhật Huy  
-**Backend Developer**  
+**Backend Developer**  | MySQL DB Designer  
 - Contributed to the development of system features, covering both frontend and backend components.
 - Designed and optimized relational databases using MySQL, ensuring high performance and scalability.
 - Proficient in using Postman to test APIs, validate responses, and support frontend integration for accurate UI display.
