@@ -84,7 +84,7 @@ SWP-School-Medical-Management/
 - **Axios**: Giao tiếp API với backend
 
 ### Backend
-- **.NET 8.0 (ASP.NET Core)**: Nền tảng phát triển Web API mạnh mẽ, hiện đại
+- **Spring Boot (3.5.4)**: Nền tảng phát triển Web API mạnh mẽ, hiện đại
 - **Entity Framework Core**: ORM thao tác với cơ sở dữ liệu SQL Server
 - **JWT Bearer Authentication**: Xác thực người dùng bảo mật
 - **Redis**: Lưu trữ cache, OTP, dữ liệu tạm thời
@@ -92,7 +92,7 @@ SWP-School-Medical-Management/
 - **Docker**: Đóng gói và triển khai backend
 
 ### Database
-- **SQL Server on Linux (Docker)**: Chạy trên máy ảo Azure (Linux VM), sử dụng image `mcr.microsoft.com/azure-sql-edge`.
+- **MySQL Server on Linux (Docker)**: Chạy trên máy ảo Azure (Linux VM), sử dụng image `mcr.microsoft.com/azure-sql-edge`.
 
 ### DevOps & Testing
 - **Git**: Quản lý phiên bản mã nguồn
