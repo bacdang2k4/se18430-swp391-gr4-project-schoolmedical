@@ -151,14 +151,15 @@ SWP-School-Medical-Management/
 
 - Developed UI components with ReactJS  
 - Participated in UI/UX design and user flow  
-- Assisted in My SQL schema design and seed data
+- Assisted in MySQL schema design and seed data
+- Prepared comprehensive documentation, including API references, user guides, and system workflows, to support team collaboration and future development.
 
 ---
 
 ### 💻 Trần Nhật Huy  
-**Frontend Developer**  
-
-- Developed and styled frontend components (ReactJS)  
-- Participated in UI/UX design
-
+**Backend Developer**  
+- Contributed to the development of system features, covering both frontend and backend components.
+- Designed and optimized relational databases using MySQL, ensuring high performance and scalability.
+- Proficient in using Postman to test APIs, validate responses, and support frontend integration for accurate UI display.
+- Prepared comprehensive documentation, including API references, user guides, and system workflows, to support team collaboration and future development.
 
