@@ -105,8 +105,9 @@ SWP-School-Medical-Management/
 ### DevOps & Testing
 - **Git**: Quản lý phiên bản mã nguồn
 - **Docker**: Đóng gói ứng dụng cho việc triển khai.
-- **Vercel**: Nền tảng triển khai và hosting cho frontend.
-- **Swagger UI**: Test và kiểm thử API trực tiếp trên trình duyệt
+- **Vercel**: Nền tảng triển khai và hosting cho front-end.
+- **Render**: Nền tảng triển khai và hosting cho back-end
+- **Postman**: Test và kiểm thử API trực tiếp trên trình duyệt
 
 ## 🔐 Bảo mật & Quyền riêng tư
 
@@ -135,18 +136,18 @@ SWP-School-Medical-Management/
 **Team Leader** | Full-Stack Developer | DevOps | MySQL DB Designer  
 
 - Led the development of the SchoolMedicalManager project  
-- Built both frontend (ReactJS) and backend (Spring Boot)  
+- Built both front-end (ReactJS) and backend (Spring Boot)  
 - Designed and optimized MySQL database (schema, procedures, seed data)  
-- Deployed backend & DB using Docker; frontend to Vercel, backend to Render  
+- Deployed back-end & DB using Docker; front-end to Vercel, back-end to Render  
 - Registered custom domain and configured DNS for production  
 - Managed team progress, code quality, and final delivery
 
 ---
 
 ### 👨‍💻 Nguyễn Thanh Nhã
-**Backend Developer** | DevOps | MySQL DB Designer  
+**Back-end Developer** | DevOps | MySQL DB Designer  
 
-- Contributed to the development of system features, covering both frontend and backend components.
+- Contributed to the development of system features, covering both frontend and bac-kend components.
 - Designed and optimized relational databases using MySQL, ensuring high performance and scalability.
 - Proficient in using Postman to test APIs, validate responses, and support frontend integration for accurate UI display.
 - Prepared comprehensive documentation, including API references, user guides, and system workflows, to support team collaboration and future development. 
@@ -154,7 +155,7 @@ SWP-School-Medical-Management/
 ---
 
 ### 🎨 Dương Hải Nam  
-**Frontend Developer** | MySQL DB Designer  
+**Front-end Developer** | MySQL DB Designer  
 
 - Developed UI components with ReactJS  
 - Participated in UI/UX design and user flow  
@@ -164,9 +165,9 @@ SWP-School-Medical-Management/
 ---
 
 ### 💻 Trần Nhật Huy  
-**Backend Developer**  | MySQL DB Designer  
-- Contributed to the development of system features, covering both frontend and backend components.
+**Back-end Developer**  | MySQL DB Designer  
+- Contributed to the development of system features, covering both front-end and back-end components.
 - Designed and optimized relational databases using MySQL, ensuring high performance and scalability.
-- Proficient in using Postman to test APIs, validate responses, and support frontend integration for accurate UI display.
+- Proficient in using Postman to test APIs, validate responses, and support front-end integration for accurate UI display.
 - Prepared comprehensive documentation, including API references, user guides, and system workflows, to support team collaboration and future development.
 
