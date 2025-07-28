@@ -51,11 +51,19 @@ School Health Management System là hệ thống phần mềm hỗ trợ quản 
 SWP-School-Medical-Management/
 │
 ├── Backend/
-│   └── SchoolMedicalManagement/
-│       ├── School-Medical-Management.API/        # Lớp API: Controllers, cấu hình, entrypoint backend
-│       ├── SchoolMedicalManagement.Models/        # Lớp Models: Entity, DTO, request/response, utils
-│       ├── SchoolMedicalManagement.Repository/    # Lớp Repository: Truy cập dữ liệu, repository pattern
-│       └── SchoolMedicalManagement.Service/       # Lớp Service: Logic nghiệp vụ, interface & implement
+│   └── src/
+│       └── main/
+│           ├── java/
+│           │   └── com.dinhbachihi.spring_security/
+│           │       ├── config/              # Cấu hình bảo mật, CORS, JWT, ...
+│           │       ├── controller/          # REST API endpoints
+│           │       ├── dto/                 # Đối tượng truyền dữ liệu
+│           │       ├── entity/              # Các class ánh xạ database
+│           │       ├── exception/           # Xử lý ngoại lệ toàn cục
+│           │       ├── repository/          # Giao tiếp với tầng dữ liệu
+│           │       ├── service/             # Business logic và xử lý nghiệp vụ
+│           │       └── SpringSecurityApplication.java  # Điểm khởi chạy Spring Boot
+│           └── resources/                   # Cấu hình application.yml, template nếu có
 │
 ├── Frontend/
 │   ├── public/                                   # Tài nguyên tĩnh (ảnh, favicon, ...)
