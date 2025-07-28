@@ -93,7 +93,7 @@ SWP-School-Medical-Management/
 
 ### Backend
 - **Spring Boot (3.5.4)**: Nền tảng phát triển Web API mạnh mẽ, hiện đại
-- **Entity Framework Core**: ORM thao tác với cơ sở dữ liệu SQL Server
+- **Entity Framework Core**: ORM thao tác với cơ sở dữ liệu MySQL
 - **JWT Bearer Authentication**: Xác thực người dùng bảo mật
 - **Redis**: Lưu trữ cache, OTP, dữ liệu tạm thời
 - **Swagger / OpenAPI**: Sinh tài liệu API tự động, hỗ trợ test API
