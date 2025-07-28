@@ -206,6 +206,13 @@ function MedicalCheckups() {
 
   const handleCreateCheckup = async (e) => {
     e.preventDefault();
+    
+    // Validate date is not in the past
+    if (form.eventDate && new Date(form.eventDate) < new Date()) {
+      setToast({ message: 'Không thể chọn ngày trong quá khứ!', type: 'error' });
+      return;
+    }
+    
     setLoadingCreate(true);
     try {
       await createAdminCheckupEvent(form);
@@ -241,6 +248,13 @@ function MedicalCheckups() {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate date is not in the past
+    if (editModal.eventDate && new Date(editModal.eventDate) < new Date()) {
+      setToast({ message: 'Không thể chọn ngày trong quá khứ!', type: 'error' });
+      return;
+    }
+    
     setLoadingEdit(true);
     try {
       await editAdminCheckupEvent(editModal.id, {
@@ -650,9 +664,13 @@ function MedicalCheckups() {
                   name="eventDate"
                   value={form.eventDate}
                   onChange={handleFormChange}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+                {form.eventDate && new Date(form.eventDate) < new Date() && (
+                  <p className="text-red-500 text-sm mt-1">Không thể chọn ngày trong quá khứ</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
@@ -701,9 +719,13 @@ function MedicalCheckups() {
                   name="eventDate"
                   value={editModal.eventDate}
                   onChange={handleEditChange}
+                  min={new Date().toISOString().split('T')[0]}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+                {editModal.eventDate && new Date(editModal.eventDate) < new Date() && (
+                  <p className="text-red-500 text-sm mt-1">Không thể chọn ngày trong quá khứ</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>

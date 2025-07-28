@@ -47,6 +47,38 @@ function HealthRecordForm() {
     const [editId, setEditId] = useState(null);
     const [search, setSearch] = useState("");
 
+    // Validation functions
+    const validateWeight = (weight) => {
+        if (!weight) return null;
+        const numWeight = parseFloat(weight);
+        if (isNaN(numWeight)) return "Cân nặng phải là số";
+        if (numWeight < 1 || numWeight > 200) return "Cân nặng phải từ 1kg đến 200kg";
+        return null;
+    };
+
+    const validateHeight = (height) => {
+        if (!height) return null;
+        const numHeight = parseFloat(height);
+        if (isNaN(numHeight)) return "Chiều cao phải là số";
+        if (numHeight < 50 || numHeight > 250) return "Chiều cao phải từ 50cm đến 250cm";
+        return null;
+    };
+
+    const validateForm = () => {
+        const weightError = validateWeight(editForm.weight);
+        const heightError = validateHeight(editForm.height);
+        
+        if (weightError) {
+            setEditError(weightError);
+            return false;
+        }
+        if (heightError) {
+            setEditError(heightError);
+            return false;
+        }
+        return true;
+    };
+
     useEffect(() => {
         const fetchStudents = async () => {
             try {
@@ -131,6 +163,12 @@ function HealthRecordForm() {
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate form before submission
+        if (!validateForm()) {
+            return;
+        }
+        
         setEditLoading(true);
         setEditError(null);
         setEditSuccess(false);
@@ -553,7 +591,12 @@ function HealthRecordForm() {
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
                                                 placeholder="Nhập cân nặng..."
                                                 step="0.1"
+                                                min="1"
+                                                max="200"
                                             />
+                                            {editForm.weight && validateWeight(editForm.weight) && (
+                                                <p className="text-red-500 text-sm mt-1">{validateWeight(editForm.weight)}</p>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -567,7 +610,12 @@ function HealthRecordForm() {
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
                                                 placeholder="Nhập chiều cao..."
                                                 step="0.1"
+                                                min="50"
+                                                max="250"
                                             />
+                                            {editForm.height && validateHeight(editForm.height) && (
+                                                <p className="text-red-500 text-sm mt-1">{validateHeight(editForm.height)}</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div>

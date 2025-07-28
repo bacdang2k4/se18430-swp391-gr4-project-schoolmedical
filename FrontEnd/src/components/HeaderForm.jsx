@@ -170,44 +170,9 @@ const ROLE_FEATURES = {
   ]
 }
 
-// Sample notifications
-const sampleNotifications = [
-  {
-    id: 1,
-    icon: ShieldCheckIcon,
-    title: "Lịch tiêm chủng mới",
-    desc: "Vaccine phòng cúm cho học sinh khối 6-7 vào ngày 15/06/2025",
-    time: "2 giờ trước",
-    isRead: false,
-    priority: "high",
-    category: "Tiêm chủng"
-  },
-  {
-    id: 2,
-    icon: HeartIcon,
-    title: "Kết quả kiểm tra sức khỏe",
-    desc: "Kết quả kiểm tra định kỳ đã có, vui lòng xem chi tiết",
-    time: "1 ngày trước",
-    isRead: false,
-    priority: "medium",
-    category: "Sức khỏe"
-  },
-  {
-    id: 3,
-    icon: ExclamationTriangleIcon,
-    title: "Nhắc nhở uống thuốc",
-    desc: "Thuốc dị ứng sẽ hết vào ngày mai, cần chuẩn bị thuốc mới",
-    time: "2 ngày trước",
-    isRead: true,
-    priority: "low",
-    category: "Thuốc"
-  },
-]
-
 // Navigation items
 const navItems = [
   { name: "Trang chủ", path: "/", icon: HomeIcon },
-  { name: "Tài liệu", path: "/documents", icon: DocumentTextIcon },
   { name: "Blog", path: "/blog", icon: ChatBubbleLeftRightIcon },
   { name: "Liên hệ", path: "/contact", icon: PhoneIcon },
 ]
@@ -217,23 +182,17 @@ function HeaderForm() {
   const location = useLocation()
   
   // State management
-  const [showNotifications, setShowNotifications] = useState(false)
   const [showFeatures, setShowFeatures] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const [showSearch, setShowSearch] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState({ firstName: "", lastName: "", role: "" })
   
   // Refs
-  const notificationRef = useRef(null)
   const featureRef = useRef(null)
   const accountRef = useRef(null)
-  const searchRef = useRef(null)
   
   // Computed values
-  const unreadCount = sampleNotifications.filter(n => !n.isRead).length
   const features = user.role && ROLE_FEATURES[user.role] ? ROLE_FEATURES[user.role] : []
   const isLoggedIn = user.firstName || user.lastName
 
@@ -267,9 +226,6 @@ function HeaderForm() {
       if (accountRef.current && !accountRef.current.contains(event.target)) {
         setShowAccount(false)
       }
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-        setShowNotifications(false)
-      }
       if (featureRef.current && !featureRef.current.contains(event.target)) {
         setShowFeatures(false)
       }
@@ -279,13 +235,6 @@ function HeaderForm() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Auto-focus search
-  useEffect(() => {
-    if (showSearch && searchRef.current) {
-      setTimeout(() => searchRef.current?.focus(), 100)
-    }
-  }, [showSearch])
-
   // Handlers
   const handleFeatureClick = (feature) => {
     navigate(feature.path)
@@ -293,25 +242,7 @@ function HeaderForm() {
     setShowMobileMenu(false)
   }
 
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
-      setShowSearch(false)
-      setSearchQuery("")
-    }
-  }
-
   const isActive = (path) => location.pathname === path
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high': return 'border-l-red-500 bg-red-50/30'
-      case 'medium': return 'border-l-amber-500 bg-amber-50/30'
-      case 'low': return 'border-l-emerald-500 bg-emerald-50/30'
-      default: return 'border-l-gray-300'
-    }
-  }
 
   return (
     <>
@@ -445,108 +376,6 @@ function HeaderForm() {
             {/* Right Section */}
             <div className="flex items-center gap-2">
               
-              {/* Search */}
-              <button
-                onClick={() => setShowSearch(true)}
-                className="p-2 rounded-lg text-gray-500 hover:text-sky-600 hover:bg-sky-50 transition-all duration-200"
-                aria-label="Tìm kiếm"
-              >
-                <MagnifyingGlassIcon className="w-5 h-5" />
-              </button>
-
-              {/* Notifications */}
-              <div className="relative" ref={notificationRef}>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-lg text-gray-500 hover:text-sky-600 hover:bg-sky-50 transition-all duration-200"
-                  aria-label="Thông báo"
-                >
-                  {unreadCount > 0 ? (
-                    <BellIconSolid className="w-5 h-5 text-sky-600" />
-                  ) : (
-                    <BellIcon className="w-5 h-5" />
-                  )}
-                  
-                  {unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </div>
-                  )}
-                </button>
-
-                {showNotifications && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200/50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                    {/* Header */}
-                    <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-gray-800">Thông báo</h4>
-                        <span className="text-sm text-gray-500">
-                          {unreadCount > 0 ? `${unreadCount} mới` : 'Không có mới'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Notifications List */}
-                    <div className="max-h-80 overflow-y-auto">
-                      {sampleNotifications.map((notification) => {
-                        const Icon = notification.icon
-                        return (
-                          <div
-                            key={notification.id}
-                            className={`flex items-start gap-3 p-4 hover:bg-gray-50 transition-colors cursor-pointer border-l-4 ${
-                              notification.isRead ? 'border-l-transparent' : getPriorityColor(notification.priority)
-                            }`}
-                          >
-                            <div className="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center flex-shrink-0">
-                              <Icon className="w-5 h-5 text-sky-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2 mb-1">
-                                <h5 className={`font-medium text-sm ${notification.isRead ? 'text-gray-600' : 'text-gray-800'}`}>
-                                  {notification.title}
-                                </h5>
-                                {notification.priority === 'high' && !notification.isRead && (
-                                  <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-medium">
-                                    Khẩn cấp
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-xs text-gray-500 mb-2 line-clamp-2">
-                                {notification.desc}
-                              </p>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-400">{notification.time}</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-sky-600 bg-sky-50 px-2 py-0.5 rounded">
-                                    {notification.category}
-                                  </span>
-                                  {!notification.isRead && (
-                                    <div className="w-2 h-2 bg-sky-500 rounded-full"></div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    
-                    {/* Footer */}
-                    <div className="p-3 border-t border-gray-100 bg-gray-50/50">
-                      <button
-                        onClick={() => {
-                          navigate("/notifications")
-                          setShowNotifications(false)
-                        }}
-                        className="w-full text-sky-600 text-sm font-medium hover:text-sky-700 transition-colors py-1"
-                      >
-                        Xem tất cả thông báo
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* User Account */}
               <div className="relative" ref={accountRef}>
                 {isLoggedIn ? (
@@ -709,54 +538,6 @@ function HeaderForm() {
           </div>
         )}
       </header>
-
-      {/* Search Modal */}
-      {showSearch && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
-            onClick={() => setShowSearch(false)}
-          ></div>
-          <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-gray-200/50 animate-in slide-in-from-top-4 duration-300">
-            <form onSubmit={handleSearch} className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 flex items-center justify-center">
-                  <MagnifyingGlassIcon className="w-5 h-5 text-white" />
-                </div>
-                <input
-                  ref={searchRef}
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Tìm kiếm thông tin y tế, tài liệu, blog..."
-                  className="flex-1 bg-transparent border-none outline-none text-lg placeholder-gray-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowSearch(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <XMarkIcon className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
-              
-              {/* Search Suggestions */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {['Tiêm chủng', 'Kiểm tra sức khỏe', 'Thuốc', 'Dinh dưỡng', 'An toàn'].map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setSearchQuery(tag)}
-                    className="px-3 py-1 bg-sky-50 text-sky-600 rounded-full text-sm hover:bg-sky-100 transition-colors"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   )
 }

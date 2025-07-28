@@ -118,23 +118,6 @@ function MedicineManagement() {
     });
   }
 
-
-
-  if (loading) {
-    return (
-      <AdminLayout>
-        <div className="p-6 text-center">Đang tải danh sách thuốc...</div>
-      </AdminLayout>
-    )
-  }
-  if (error) {
-    return (
-      <AdminLayout>
-        <div className="p-6 text-center text-red-600">{error}</div>
-      </AdminLayout>
-    )
-  }
-
   return (
     <AdminLayout>
       {/* Toast notification */}
@@ -208,7 +191,7 @@ function MedicineManagement() {
 
           {/* Filters */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> {/* Giảm số cột filter */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="relative">
                 <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
                 <input
@@ -259,6 +242,21 @@ function MedicineManagement() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                  {loading && (
+                    <tr>
+                      <td colSpan="5" className="text-center py-8">Đang tải dữ liệu...</td>
+                    </tr>
+                  )}
+                  {error && (
+                    <tr>
+                      <td colSpan="5" className="text-center text-red-500 py-8">{error}</td>
+                    </tr>
+                  )}
+                  {filteredMedicine.length === 0 && !loading && !error && (
+                    <tr>
+                      <td colSpan="5" className="text-center py-8">Không có thuốc/vật tư nào</td>
+                    </tr>
+                  )}
                   {filteredMedicine.map((medicine) => (
                     <tr key={medicine.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">

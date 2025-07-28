@@ -39,6 +39,31 @@ const eventTypeColors = {
   other: 'bg-gray-100 text-gray-800',
 };
 
+// Hàm format ngày giờ
+const formatDateTime = (dateTimeString) => {
+  if (!dateTimeString) return 'Không có';
+  
+  try {
+    const date = new Date(dateTimeString);
+    
+    // Kiểm tra xem date có hợp lệ không
+    if (isNaN(date.getTime())) {
+      return 'Ngày không hợp lệ';
+    }
+    
+    // Format: "16/07/2025 08:03"
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  } catch (error) {
+    return 'Ngày không hợp lệ';
+  }
+};
+
 // Toast component
 function Toast({ message, type, onClose }) {
   if (!message) return null;
@@ -352,7 +377,7 @@ function MedicalEvents() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{event.reportedAt}</div>
+                        <div className="text-sm text-gray-900">{formatDateTime(event.reportedAt)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{event.nurseName}</div>
@@ -416,7 +441,7 @@ function MedicalEvents() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Thời gian</label>
-                <p className="text-sm text-gray-900">{selectedEvent.reportedAt}</p>
+                <p className="text-sm text-gray-900">{formatDateTime(selectedEvent.reportedAt)}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Người ghi nhận</label>

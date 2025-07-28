@@ -506,4 +506,26 @@ export const getMedicineUsageReport = async () => {
   return response.data;
 };
 
+// Gửi mail (Admin)
+export const sendAdminMail = async (mailData) => {
+  const response = await api.post('/v1/admin/send-mail', mailData);
+  return response.data;
+};
 
+// Lấy danh sách lớp học (Admin)
+export const getAdminClassList = async () => {
+  const response = await api.get('/v1/admin/list-class');
+  return response.data;
+};
+
+// Thêm lớp học mới (Admin)
+export const createAdminClass = async (classData) => {
+  const response = await api.post('/v1/admin/classes/add', classData);
+  return response.data;
+};
+
+// Lấy chi tiết lớp học theo ID (Admin)
+export const getAdminClassDetail = async (classId) => {
+  const response = await api.get(`/v1/admin/classes/${classId}`);
+  return response.data;
+};

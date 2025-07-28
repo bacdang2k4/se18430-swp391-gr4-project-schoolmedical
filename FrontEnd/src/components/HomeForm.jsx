@@ -21,6 +21,7 @@ import {
 } from "@heroicons/react/24/outline"
 import { useNavigate } from "react-router-dom"
 import { getProfile } from "../api/axios"
+import { isAuthenticated } from "../utils/auth"
 import banner1 from "../../images/banner1.jpg"
 
 const bannerSlides = [
@@ -233,12 +234,7 @@ const ROLE_FEATURES = {
   ]
 }
 
-const stats = [
-  { value: "1,247", label: "Học sinh đăng ký", icon: "👥", change: "+12%", trend: "up" },
-  { value: "98.5%", label: "Tỷ lệ tiêm chủng đầy đủ", icon: "💉", change: "+2.1%", trend: "up" },
-  { value: "456", label: "Sự kiện y tế đã xử lý", icon: "🚨", change: "+8%", trend: "up" },
-  { value: "100%", label: "Phụ huynh hài lòng", icon: "⭐", change: "0%", trend: "stable" },
-]
+
 
 
 function HomeForm() {
@@ -247,9 +243,15 @@ function HomeForm() {
   const [isAutoPlay, setIsAutoPlay] = useState(true)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [userRole, setUserRole] = useState("PARENT")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   
   const heroRef = useRef(null)
   const observerRef = useRef(null)
+
+  // Check authentication status
+  useEffect(() => {
+    setIsLoggedIn(isAuthenticated())
+  }, [])
 
   // Fetch user profile to get role
   useEffect(() => {
@@ -439,25 +441,27 @@ function HomeForm() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Truy cập nhanh</h2>
             <p className="text-gray-600 text-lg">Các chức năng thường sử dụng nhất</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {(ROLE_FEATURES[userRole] || ROLE_FEATURES.PARENT).map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={idx}
-                  className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-2`}
-                  onClick={() => navigate(item.path)}
-                >
-                  <div className={`w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300 ${item.bgColor}`}>
-                    <Icon className={`w-7 h-7 ${item.color}`} />
+          <div className="flex justify-center items-center">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-6 w-full max-w-6xl">
+              {(ROLE_FEATURES[userRole] || ROLE_FEATURES.PARENT).map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className={`bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-2`}
+                    onClick={() => navigate(item.path)}
+                  >
+                    <div className={`w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300 ${item.bgColor}`}>
+                      <Icon className={`w-7 h-7 ${item.color}`} />
+                    </div>
+                    <h4 className="text-sm font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors text-center line-clamp-2">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-gray-600 text-center line-clamp-2">{item.description}</p>
                   </div>
-                  <h4 className="text-sm font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors text-center line-clamp-2">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-gray-600 text-center line-clamp-2">{item.description}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -473,8 +477,7 @@ function HomeForm() {
             {features.map((feature, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100 hover:shadow-2xl transition-all duration-300 group hover:-translate-y-2 cursor-pointer"
-                onClick={() => navigate(feature.link)}
+                className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100 hover:shadow-2xl transition-all duration-300 group"
               >
                 <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   <feature.icon className="w-10 h-10 text-white" />
@@ -491,35 +494,6 @@ function HomeForm() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-gradient-to-br from-blue-600 to-indigo-700 py-20 px-4 text-white" data-animate="stats">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Thống kê hệ thống</h2>
-            <p className="text-blue-100 text-xl">Năm học 2024-2025</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="text-center">
-                <div className="bg-white/10 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:bg-white/20 transition-all duration-300 group">
-                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{stat.icon}</div>
-                  <h3 className="text-3xl md:text-4xl font-extrabold mb-2">{stat.value}</h3>
-                  <p className="text-blue-100 mb-2">{stat.label}</p>
-                  <div className={`text-sm font-semibold flex items-center justify-center gap-1 ${
-                    stat.trend === 'up' ? 'text-green-300' : stat.trend === 'down' ? 'text-red-300' : 'text-yellow-300'
-                  }`}>
-                    {stat.trend === 'up' && '↗'}
-                    {stat.trend === 'down' && '↘'}
-                    {stat.trend === 'stable' && '→'}
-                    {stat.change}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Call to Action Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-green-600 to-emerald-700 text-white">
         <div className="max-w-4xl mx-auto text-center">
@@ -528,12 +502,14 @@ function HomeForm() {
             Tham gia hệ thống quản lý y tế học đường thông minh ngay hôm nay để đảm bảo sức khỏe tốt nhất cho con em bạn
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-white text-green-600 font-bold py-4 px-8 rounded-full shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
-            >
-              Đăng nhập ngay
-            </button>
+            {!isLoggedIn && (
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-white text-green-600 font-bold py-4 px-8 rounded-full shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+              >
+                Đăng nhập ngay
+              </button>
+            )}
             <button
               onClick={() => navigate("/contact")}
               className="border-2 border-white text-white font-bold py-4 px-8 rounded-full hover:bg-white hover:text-green-600 transition-all duration-300 transform hover:scale-105"

@@ -243,7 +243,7 @@ function HealthCheckupForm() {
             ) : (
               filteredForms.map((item, idx) => {
                 const consentConfig = getConsentConfig(item.consent);
-                const statusConfig = getStatusConfig(item.checkUp?.status);
+                const statusConfig = getStatusConfig(item.event?.status);
                 const ConsentIcon = consentConfig.icon;
 
                 return (
@@ -292,7 +292,7 @@ function HealthCheckupForm() {
                             <ClipboardDocumentCheckIconSolid className="w-5 h-5 text-gray-600" />
                             <span className="font-medium text-gray-700 text-sm">Sự kiện</span>
                           </div>
-                          <p className="text-gray-800 font-semibold">{item.checkUp?.name || 'Không có'}</p>
+                          <p className="text-gray-800 font-semibold">{item.event?.name || 'Không có'}</p>
                         </div>
                         <div className="bg-gray-50 rounded-xl p-4">
                           <div className="flex items-center gap-2 mb-2">
@@ -306,7 +306,7 @@ function HealthCheckupForm() {
                             <CalendarDaysIcon className="w-5 h-5 text-gray-600" />
                             <span className="font-medium text-gray-700 text-sm">Ngày sự kiện</span>
                           </div>
-                          <p className="text-gray-800">{formatDate(item.checkUp?.eventDate)}</p>
+                          <p className="text-gray-800">{formatDate(item.event?.eventDate)}</p>
                         </div>
                         <div className="bg-gray-50 rounded-xl p-4">
                           <div className="flex items-center gap-2 mb-2">

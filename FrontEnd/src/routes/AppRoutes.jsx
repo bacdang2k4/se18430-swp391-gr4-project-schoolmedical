@@ -36,6 +36,7 @@ import VaccinationParent from "../pages/parent/VaccinationParent"
 import VaccinationNurse from "../pages/nurse/VaccinationNurse"
 import HealthCheckupParent from "../pages/parent/HealthCheckupParent"
 import HealthCheckupNurse from "../pages/nurse/HealthCheckupNurse"
+import ClassesManagement from "../components/admin/ClassesManagement"
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -118,6 +119,14 @@ export default function AppRoutes() {
           element={
             <PrivateRoute>
               <UserManagement />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/classes"
+          element={
+            <PrivateRoute>
+              <ClassesManagement />
             </PrivateRoute>
           }
         />

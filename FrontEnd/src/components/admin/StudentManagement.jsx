@@ -11,7 +11,7 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../AdminLayout"
-import { getAdminUserList, addAdminStudent, deleteAdminStudent, updateAdminStudent } from "../../api/axios"
+import { getAdminUserList, addAdminStudent, deleteAdminStudent, updateAdminStudent, getAdminClassList } from "../../api/axios"
 
 // Toast component
 function Toast({ message, type, onClose }) {
@@ -46,6 +46,7 @@ function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
 function StudentManagement() {
   const [students, setStudents] = useState([])
   const [parents, setParents] = useState([])
+  const [classes, setClasses] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedGrade, setSelectedGrade] = useState("")
   const [showAddModal, setShowAddModal] = useState(false)
@@ -96,16 +97,25 @@ function StudentManagement() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersRes = await getAdminUserList();
+        // Fetch users and classes in parallel
+        const [usersRes, classesRes] = await Promise.all([
+          getAdminUserList(),
+          getAdminClassList()
+        ]);
+        
         const users = usersRes.result || usersRes;
         const parentUsers = users.filter(u => u.role === "PARENT");
         setParents(parentUsers);
+        
+        const classesList = classesRes.result || [];
+        setClasses(classesList);
+        
         const allStudents = [];
         parentUsers.forEach(parent => {
           (parent.students || []).forEach(student => {
             allStudents.push({
               ...student,
-              parentName: `${parent.firstName} ${parent.lastName}`,
+              parentName: `${parent.lastName} ${parent.firstName}`,
               parentEmail: parent.email,
               parentPhone: parent.phone,
             });
@@ -114,6 +124,7 @@ function StudentManagement() {
         setStudents(allStudents);
       } catch {
         setStudents([]);
+        setClasses([]);
         console.error("Lỗi khi lấy dữ liệu!");
       }
     };
@@ -178,7 +189,7 @@ function StudentManagement() {
         (parent.students || []).forEach(student => {
           allStudents.push({
             ...student,
-            parentName: `${parent.firstName} ${parent.lastName}`,
+            parentName: `${parent.lastName} ${parent.firstName}`,
             parentEmail: parent.email,
             parentPhone: parent.phone,
           });
@@ -217,7 +228,7 @@ function StudentManagement() {
             (parent.students || []).forEach(student => {
               allStudents.push({
                 ...student,
-                parentName: `${parent.firstName} ${parent.lastName}`,
+                parentName: `${parent.lastName} ${parent.firstName} `,
                 parentEmail: parent.email,
                 parentPhone: parent.phone,
               });
@@ -333,9 +344,11 @@ function StudentManagement() {
                 onChange={(e) => setSelectedGrade(e.target.value)}
               >
                 <option value="">Tất cả khối lớp</option>
-                <option value="10">Lớp 10</option>
-                <option value="11">Lớp 11</option>
-                <option value="12">Lớp 12</option>
+                {classes.map(cls => (
+                  <option key={cls.id} value={cls.id}>
+                    {cls.name}
+                  </option>
+                ))}
               </select>
               <div className="flex items-center text-sm text-gray-600">
                 <FunnelIcon className="w-4 h-4 mr-2" />
@@ -373,7 +386,7 @@ function StudentManagement() {
                       <tr key={student.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {(student.firstName || "") + " " + (student.lastName || "")}
+                            {(student.lastName || "") + " " + (student.firstName || "")}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -485,9 +498,11 @@ function StudentManagement() {
                     onChange={e => setAddForm(f => ({ ...f, classID: e.target.value }))}
                   >
                     <option value="">Chọn lớp...</option>
-                    <option value="10">Lớp 10</option>
-                    <option value="11">Lớp 11</option>
-                    <option value="12">Lớp 12</option>
+                    {classes.map(cls => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex-1">
@@ -501,7 +516,7 @@ function StudentManagement() {
                     <option value="">Chọn phụ huynh...</option>
                     {parents.map(parent => (
                       <option key={parent.id} value={parent.id}>
-                        {parent.firstName} {parent.lastName} ({parent.email})
+                         {parent.lastName} {parent.firstName} ({parent.email})
                       </option>
                     ))}
                   </select>

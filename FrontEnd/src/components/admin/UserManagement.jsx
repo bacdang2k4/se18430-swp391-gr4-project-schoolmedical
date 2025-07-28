@@ -9,9 +9,10 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   EyeIcon,
+  EnvelopeIcon,
 } from "@heroicons/react/24/outline"
 import AdminLayout from "../../components/AdminLayout"
-import { signupUser, deleteUser, getUserById, getAdminUserList } from "../../api/axios"
+import { signupUser, deleteUser, getUserById, getAdminUserList, sendAdminMail } from "../../api/axios"
 
 // Toast component
 function Toast({ message, type, onClose }) {
@@ -77,6 +78,12 @@ function UserManagement() {
   const [addUserError, setAddUserError] = useState("");
   const [showUserDetailModal, setShowUserDetailModal] = useState(false);
   const [userDetail, setUserDetail] = useState(null);
+  const [sendingMail, setSendingMail] = useState(false);
+  const [showMailModal, setShowMailModal] = useState(false);
+  const [mailForm, setMailForm] = useState({
+    subject: '',
+    body: ''
+  });
 
   // Toast state
   const [toast, setToast] = useState({ message: '', type: 'success' });
@@ -163,6 +170,29 @@ function UserManagement() {
     }
   }
 
+  const handleSendMail = () => {
+    setShowMailModal(true);
+  }
+
+  const handleSubmitMail = async () => {
+    if (!mailForm.subject.trim() || !mailForm.body.trim()) {
+      setToast({ message: 'Vui lòng nhập đầy đủ tiêu đề và nội dung!', type: 'error' });
+      return;
+    }
+
+    setSendingMail(true);
+    try {
+      await sendAdminMail(mailForm);
+      setToast({ message: 'Gửi mail thành công!', type: 'success' });
+      setShowMailModal(false);
+      setMailForm({ subject: '', body: '' });
+    } catch {
+      setToast({ message: 'Gửi mail thất bại!', type: 'error' });
+    } finally {
+      setSendingMail(false);
+    }
+  }
+
   return (
     <AdminLayout>
       {/* Toast notification */}
@@ -189,13 +219,23 @@ function UserManagement() {
                 </h1>
                 <p className="text-gray-600 mt-1">Quản lý thông tin và quyền truy cập của tất cả người dùng</p>
               </div>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-              >
-                <PlusIcon className="w-5 h-5" />
-                Thêm người dùng
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSendMail}
+                  disabled={sendingMail}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2 disabled:opacity-50"
+                >
+                  <EnvelopeIcon className="w-5 h-5" />
+                  {sendingMail ? "Đang gửi..." : "Gửi mail"}
+                </button>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  Thêm người dùng
+                </button>
+              </div>
             </div>
           </div>
 
@@ -268,7 +308,7 @@ function UserManagement() {
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{(user.firstName || "") + " " + (user.lastName || "")}</div>
+                          <div className="text-sm font-medium text-gray-900">{(user.lastName || "") + " " + (user.firstName || "")}</div>
                           <div className="text-sm text-gray-500">{user.email}</div>
                         </div>
                       </td>
@@ -476,6 +516,62 @@ function UserManagement() {
                 Đóng
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Mail Modal */}
+      {showMailModal && (
+        <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
+          <div className="bg-white border border-blue-200 shadow-xl rounded-xl p-6 w-full max-w-lg">
+            <h3 className="text-lg font-semibold mb-4">Gửi mail thông báo</h3>
+            <form className="space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmitMail();
+            }}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Nhập tiêu đề mail"
+                  value={mailForm.subject}
+                  onChange={e => setMailForm({ ...mailForm, subject: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
+                <textarea
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows="6"
+                  placeholder="Nhập nội dung mail"
+                  value={mailForm.body}
+                  onChange={e => setMailForm({ ...mailForm, body: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMailModal(false);
+                    setMailForm({ subject: '', body: '' });
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  disabled={sendingMail}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  disabled={sendingMail}
+                >
+                  {sendingMail ? "Đang gửi..." : "Gửi mail"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

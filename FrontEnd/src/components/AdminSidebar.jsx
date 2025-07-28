@@ -19,6 +19,7 @@ import {
   ChevronRightIcon,
   ArrowRightOnRectangleIcon,
   AcademicCapIcon, // thêm icon phù hợp cho học sinh
+  BuildingOfficeIcon, // thêm icon cho quản lý lớp học
 } from "@heroicons/react/24/outline"
 import logo from "../../images/logo-removebg.png"
 import { getProfile } from "../api/axios"
@@ -42,6 +43,12 @@ const menuItems = [
     icon: AcademicCapIcon,
     path: "/admin/students",
     color: "text-yellow-600",
+  },
+  {
+    title: "Quản lý lớp học",
+    icon: BuildingOfficeIcon,
+    path: "/admin/classes",
+    color: "text-emerald-600",
   },
   {
     title: "Hồ sơ sức khỏe",
